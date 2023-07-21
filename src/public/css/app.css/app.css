@@ -1,0 +1,29 @@
+h1 {
+  color: aquamarine; }
+
+h2 {
+  color: red; }
+
+.product-img {
+  max-width: 100%;
+  align-items: center;
+  height: 200px; }
+
+.pagination {
+  margin-right: 10%;
+  margin-top: 30px; }
+
+.col-3 {
+  margin-top: 5px;
+  margin-bottom: 5px; }
+
+.card2 {
+  border: 2px solid #000;
+  border-radius: 7px;
+  height: 100%; }
+
+.card-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden; }

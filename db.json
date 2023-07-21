@@ -1,0 +1,1 @@
+{ "product": [{ "brands": "abc", "size": "XL", "type": "good", "name": "unico", "gia": 17 }, { "brands": "acb", "size": "L", "type": "normal", "name": "lov", "gia": 19 }], "brand": [{ "brand_id": "abc", "name": "unico", "sdt": "0987364365", "email": "tai99@gmail.com" }, { "brand_id": "acb", "name": "lov", "sdt": "0987361234", "email": "ptk95@gmail.com" }] }

@@ -1,0 +1,43 @@
+<form class="form" action="/update/{{product.brands}}-{{product.name}}-{{product.image}}" method="post" enctype="multipart/form-data">
+    <div class="more">
+        <div class="mb-3" style="padding-top: 50px; width:100%">
+            <label for="Product name" class="form-label">Product name</label>
+            <input type="text" class="form-control name" name="name" placeholder="unico" value="{{product.name}}">
+        </div>
+        <div class="mb-3">
+            <label for="Description" class="form-label">Description</label>
+            <textarea class="form-control description" name="description" rows="3">{{product.description}}</textarea>
+        </div>
+        <div class="mb-3 row" style="display: flex; justify-content:space-between; align-items: center;">
+            <div class="col-auto">
+                <label for="Price" class="form-label">Price</label>
+                <input type="text" class="form-control-plaintextl gia" name="gia" value="{{product.gia}}">
+            </div>
+            <div class="col-auto">
+                <label class="form-label" for="Brand">Brand</label>
+                <select class="form-select brand" aria-label="Default select example" name="brand">
+                    {{#each brand}}
+                    <option value="{{this.brand_id}}">{{this.brand_id}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="form-label" for="Type">Type</label>
+                <select class="form-select type" aria-label="Default select example" name="type">
+                    <option value="normal">normal</option>
+                    <option value="good">good</option>
+                    <option value="order">order</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="Image" class="form-label">Image</label>
+                <input class="image" type="file" name="image" onchange="previewImage(event)" multiple>
+                <img class="preview" src="/image/{{product.image}}" alt="Preview" style="max-width: 200px; max-height:90px;">
+            </div>
+        </div>
+        <div class="mb-3">
+            <button type="button" onclick="Moreproduct()" class="btn btn-success" style="float:right;">Back HomePage</button>
+            <button type="submit" class="btn btn-success btn2" style="float:right;margin-right:30px">Save</button>
+        </div>
+    </div>
+</form>
