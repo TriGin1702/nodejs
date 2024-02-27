@@ -1,12 +1,42 @@
-<div class="figure-product" style="display: flex; justify-content: space-around;">
-    <figure class="figure" style="margin-bottom: 10px;">
-        <img src="/image/{{product.image}}" class="figure-img img-fluid rounded" style="max-height: 540px; max-width: 500px;">
-        <figcaption class="figure-caption"><b>{{product.name}}</b></figcaption>
-    </figure>
-    <div class="information" style="display: flex; flex-direction: column; margin-left: 10px;">
-        <h5 style="margin-bottom: 10px;">brand: {{product.brands}}</h5>
-        <p  style="margin-bottom: 10px;"><b>Mô tả:</b> {{product.description}}</p>
-        <span style="display: block; width: 100%; margin-bottom: 10px;"><b>Thể Loại: {{product.type}}</b></span>
-        <h7 style="margin-bottom: 0;">{{product.gia}}.VNĐ</h7>
-    </div>
+<div
+  class="figure-product"
+  style="display: flex; justify-content: space-around;"
+>
+  <figure class="figure" style="margin-bottom: 10px;">
+    <img
+      src="/image/{{product.image}}"
+      class="figure-img img-fluid rounded"
+      style="max-height: 540px; max-width: 500px;"
+    />
+    <h3><figcaption
+        class="figure-caption"
+        style="color: rgba(200, 0, 0, 0.7)"
+      ><b>{{product.name}}</b></figcaption></h3>
+  </figure>
+  <div class="row" style="display:flex; height: 100px; weight: 100px">
+    <div class="col" style="display:block; height: 100%; weight: 100%"></div>
+  </div>
+  <div
+    class="information"
+    style="display: flex; flex-direction: column; margin-left: 20px; max-width:500px;"
+  >
+    <h3 style="margin-bottom: 10px; color: rgba(200, 0, 0, 0.7);">Brand:
+      {{product.brands}}</h3>
+    <p style="margin-bottom: 10px; font-size: 24px; "><b>Mô tả:</b>
+      {{product.description}}</p>
+    <span
+      style="display: block; width: 100%; margin-bottom: 10px;font-size: 20px;"
+    ><b>Thể Loại: {{product.type}}</b></span>
+    <span style="display: flex; align-items: center;"><b
+        style="font-size: 20px; margin-right: 12px;"
+      >Giá hiện tại: </b><b
+        id="price"
+        style="color: rgba(200, 0, 0, 0.7);font-size: 32px;"
+      >{{product.gia}}</b>
+      <button class="addToCart-detail">
+        <i class="bi bi-cart-plus-fill" style="font-size: 28px;"></i>
+      </button>
+    </span>
+  </div>
+
 </div>

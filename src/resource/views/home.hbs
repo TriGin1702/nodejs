@@ -10,22 +10,43 @@
     </tr>
   </thead>
   <tbody>
-      {{#each product}}
-    <tr>
-      <td style="vertical-align: middle; text-align:center;"><img src="/image/{{this.image}}" alt="" style="width: 90px; height:90px;"></td>
-      <td style="vertical-align: middle; text-align:center;">{{this.brands}}</td>
-      <td style="vertical-align: middle; text-align:center;">{{this.type}}</td>
-      <td style="vertical-align: middle; text-align:center;">{{this.name}}</td>
-      <td style="vertical-align: middle; text-align:center;">{{this.gia}}</td>
-      <td style="vertical-align: middle; text-align:center;">{{this.description}}</td>
-      <td style="vertical-align: middle; text-align:center;">
-        <a href="/update/{{this.brands}}-{{this.name}}-{{this.image}}">Update</a>
-      </td>
-      <td style="vertical-align: middle; text-align:center;">
-        <a href="/delete/{{this.brands}}-{{this.name}}-{{this.image}}">Delete</a>
-      </td>
-    </tr>
-      {{/each}}
+    {{#each product}}
+      <tr>
+        <td style="vertical-align: middle; text-align:center;"><img
+            src="/image/{{this.image}}"
+            alt=""
+            style="width: 90px; height:90px;"
+          /></td>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.brands}}</td>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.type}}</td>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.name}}</td>
+        <td style="vertical-align: middle; text-align:center;">{{this.gia}}</td>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.description}}</td>
+        <td style="vertical-align: middle; text-align:center;">
+          <a
+            href="/update/{{this.brands}}-{{this.name}}-{{this.image}}"
+          >Update</a>
+        </td>
+        <td style="vertical-align: middle; text-align:center;">
+          <a
+            href="/delete/{{this.brands}}-{{this.name}}-{{this.image}}"
+          >Delete</a>
+        </td>
+      </tr>
+    {{/each}}
   </tbody>
 </table>
-<button type="button" class="btn btn-success" style="position: relative; left: 90%"><a href="/create" style="color: #F8F9FA;">Add Product</a></button>
+<button
+  type="button"
+  class="btn btn-success"
+  style="position: relative; left: 90%"
+><a href="/create" style="color: #F8F9FA;">Add Product</a></button>
+<script src="/js/view.js"></script>

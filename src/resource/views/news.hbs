@@ -2,14 +2,32 @@
   {{#each product}}
     <div class="col-3">
       <div class="card2">
-        <img src="/image/{{this.image}}" class="card-img-top product-img" alt="...">
-        <div class="card-body" style="min-height: 200px;">
-          <h7 class="card-title" style="display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"><b>{{this.name}}</b></h7>
-          <h5>brand:{{this.brands}}</h5>
-          <p class="card-text">Mô tả: {{this.description}}</p>
-          <a href="/{{this.brands}}-{{this.name}}" class="btn btn-primary mt-auto">Xem chi tiết</a>
-        </div>
+        <a class="card2-box" href="/news/{{this.brands}}-{{this.name}}">
+          <img
+            src="/image/{{this.image}}"
+            class="card-img-top product-img"
+            alt="..."
+          />
+          <div class="card-body" style="min-height: 200px;">
+            <h7
+              class="card-title"
+              style="display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"
+            ><b>{{this.name}}</b></h7>
+            <h5>brand:{{this.brands}}</h5>
+            <p class="card-text">Mô tả: {{this.description}}</p>
+            <div
+              style="display: inline-flex; justify-content:space-between; width:100%;align-items:center"
+            >
+
+              <span class="btn btn-primary mt-auto">Xem chi tiết</span>
+              <button id="addToCart" class="addToCart">
+                <i class="bi bi-cart-plus-fill"></i>
+              </button>
+            </div>
+          </div>
+        </a>
       </div>
     </div>
   {{/each}}
 </div>
+<script src="/js/product_new.js"></script>

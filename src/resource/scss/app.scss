@@ -1,37 +1,103 @@
-@import 'hii';
+@import "hii";
 h1 {
-    color: aquamarine;
+  color: red;
 }
 
 h2 {
-    color: $blue-color;
+  color: $blue-color;
 }
 
 .product-img {
-    max-width: 100%;
-    align-items: center;
-    height: 200px;
+  max-width: 100%;
+  align-items: center;
+  height: 200px;
 }
 
 .pagination {
-    margin-right: 10%;
-    margin-top: 30px;
+  margin-right: 10%;
+  margin-top: 30px;
 }
 
 .col-3 {
-    margin-top: 5px;
-    margin-bottom: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .card2 {
-    border: 2px solid #000;
-    border-radius: 7px;
-    height: 100%;
+  border: 2px solid #000;
+  border-radius: 7px;
+  height: 95%;
 }
 
 .card-text {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.figure-caption {
+  text-align: center;
+}
+
+.card2-box {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card2-box:hover {
+  color: rgba($color: #e14343, $alpha: 1);
+  text-decoration: none;
+}
+
+.card2 {
+  position: relative;
+  box-shadow: 0 0.0625rem 20px 0 rgba(0, 0, 0, 0.15);
+  transition: transform linear 0.1s;
+  margin-bottom: 5px;
+  min-height: 333px;
+  padding-bottom: 5px;
+}
+
+.card2:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.0625rem 20px 0 rgba(0, 0, 0, 0.05);
+}
+
+.addToCart {
+  border: none;
+  background-color: transparent;
+  width: 40px;
+  height: 36px;
+  transition: transform linear 0.1s;
+  padding: 0;
+  margin: 0;
+  border-radius: 30%;
+  /* Xóa tất cả margin */
+}
+
+.addToCart:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.0625rem 20px 0 rgba(0, 0, 0, 0.05);
+  background-color: #dbb4b4;
+  cursor: pointer;
+}
+
+.addToCart-detail {
+  border: none;
+  background-color: transparent;
+  transition: transform linear 0.1s;
+  padding: 0;
+  width: 63px;
+  height: 50px;
+  margin: 0px 0px 0px 20px;
+  border-radius: 30%;
+  /* Xóa tất cả margin */
+}
+
+.addToCart-detail:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.0625rem 20px 0 rgba(0, 0, 0, 0.05);
+  background-color: #dbb4b4;
+  cursor: pointer;
 }

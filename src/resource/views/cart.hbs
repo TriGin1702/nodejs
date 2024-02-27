@@ -1,0 +1,43 @@
+<table class="table table-primary">
+  <thead>
+    <tr class="table-primary">
+      <th scope="col" style="text-align: center;">Name Product</th>
+      <th scope="col" style="text-align: center;">Brand</th>
+      <th scope="col" style="text-align: center;">Date</th>
+      <th scope="col" style="text-align: center;">Number</th>
+      <th scope="col" style="text-align: center;">Price</th>
+      <th scope="col" style="text-align: center;">Payment status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="table-info">
+      <th style="vertical-align: middle; text-align:center;">1</th>
+      <td style="vertical-align: middle; text-align:center;">Mark</td>
+      <td style="vertical-align: middle; text-align:center;">Otto</td>
+      <td style="vertical-align: middle; text-align:center;"><input
+          type="number"
+          min="1"
+          max="99"
+          style="width:30%;"
+        /></td>
+      <td style="vertical-align: middle; text-align:center;">@mdo</td>
+      <td style="vertical-align: middle; text-align:center;"><input
+          type="checkbox"
+          value="true"
+          style="transform: scale(1.5);"
+        /></td>
+      <td style="vertical-align: middle; text-align:center;">
+        <a href="">Delete</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<button
+  type="button"
+  class="btn btn-success"
+  style="position: relative; left: 90%"
+  onclick="showPayment()"
+> Thanh Toán</button>
+<div class="pay" id="pay"></div>
+<script src="/js/cart.js"></script>
