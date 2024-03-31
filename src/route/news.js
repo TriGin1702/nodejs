@@ -1,54 +1,59 @@
 const express = require("express");
 const router1 = express.Router();
-const { exec } = require("child_process");
-const connect = require("../app/control/connect");
 const axios = require("axios");
-// Biên dịch Sass khi khởi động ứng dụng
-// router1.get("/", async (req, res) => {
-//   try {
-//     exec(
-//       "npx node-sass src/resource/scss/app.scss --output src/public/css/app.css",
-//       (err, stdout, stderr) => {
-//         if (err) {
-//           console.error(err);
-//           return;
-//         }
-//         console.log(stdout);
-//       }
-//     );
-//     await connect.query("SELECT * FROM product", (err, rows) => {
-//       if (err) throw err;
-//       const product = rows; // Lưu trữ dữ liệu vào một biến
-//       res.render("news", { product: product }); // Truyền dữ liệu product vào view
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.send("error"); // Xử lý lỗi nếu truy vấn không thành công
-//   }
-// });
+const cookieParser = require("cookie-parser");
+router1.use(cookieParser());
 router1.get("/", async (req, res) => {
   try {
-    exec(
-      "npx node-sass src/resource/scss/app.scss --output src/public/css/app.css",
-      (err, stdout, stderr) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.log(stdout);
-      }
-    );
-    // Lấy dữ liệu từ API
-    const apiResponse = await axios.get("http://localhost:3000/api");
+    // Lấy giá trị của tham số "sort" từ query string
+    const sortValue = req.query.sort || "default"; // Giá trị mặc định nếu không có query string
+
+    // Gửi yêu cầu tới API với tham số "sort"
+    let apiURL = "http://localhost:3000/api?";
+    if (req.app.locals.search) {
+      apiURL += `search=${req.app.locals.search}&`;
+    }
+    apiURL += `sort=${sortValue}`;
+
+    const apiResponse = await axios.get(apiURL);
     const product = apiResponse.data;
-    // console.log(product);
-    // Truyền dữ liệu product vào view
-    res.render("news", { product: product });
+    // const localproduct =
+    // Lấy dữ liệu từ cookie
+    const user = req.cookies.user || null;
+    if (user == null) {
+      res.redirect("/");
+    }
+    if (product.length === 0) {
+      // Sử dụng mã JavaScript để hiển thị cảnh báo và quay lại trang trước đó
+      req.app.locals.search = false;
+      res.redirect("/news");
+    }
+    // Truyền dữ liệu product và user vào view
+    res.render("news", { product, user });
   } catch (err) {
     console.error(err);
     res.send("error");
   }
 });
+
+router1.post("/", async (req, res) => {
+  try {
+    // Lấy dữ liệu từ form POST
+    const searchValue = req.body.search;
+
+    req.app.locals.search = searchValue;
+
+    // Truyền dữ liệu product vào view
+    res.redirect("/news");
+  } catch (err) {
+    console.error(err);
+    res.send("error");
+  }
+});
+// router1.post("/reset-search", (req, res) => {
+//   req.app.locals.search = false;
+//   res.send("Search reset successfully");
+// });
 router1.get("/:id", async (req, res) => {
   const inputproudct = req.params.id.split("-");
   const brand = inputproudct[0];
@@ -74,4 +79,15 @@ router1.get("/:id", async (req, res) => {
     res.send("error");
   }
 });
+// router1.post("/cart", async (req, res) => {
+//   const { brand, name } = req.body;
+//   // console.log(req.body);
+//   const user_id = req.cookies.user.id_kh;
+//   console.log(user_id, brand, name);
+//   await axios.post("http://localhost:3000/api_cart", {
+//     brand: brand,
+//     name: name,
+//     user_id: user_id,
+//   });
+// });
 module.exports = router1;

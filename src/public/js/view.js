@@ -106,14 +106,12 @@ function Moreproduct() {
 
 async function send(formData) {
   try {
-    const response = await fetch("/home", {
-      method: "POST",
-      body: formData, // Gửi FormData thay vì JSON.stringify(data)
-    });
+    const response = await axios.post("/homepage/home", formData);
 
-    const result = await response.text();
-    console.log("Success:", result);
+    // Xử lý kết quả trả về nếu cần
+    console.log("Success:", response.message.data);
   } catch (error) {
+    // Xử lý lỗi nếu có
     console.log("Error:", error);
   }
 }

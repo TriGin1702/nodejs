@@ -8,6 +8,7 @@ const multer = require("multer");
 const { error } = require("console");
 const time = Date.now();
 const axios = require("axios");
+const { router } = require("json-server");
 var product = [];
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -22,8 +23,9 @@ route.get("/", async (req, res) => {
   try {
     await connect.query("select * from product", (err, result) => {
       product = result;
-      req.app.locals.product = product;
-      res.render("home");
+      // req.app.locals.product = product;
+      req.app.locals.customername = "Login";
+      res.render("home", { product: product });
     });
   } catch (err) {
     res.send(err);
@@ -57,6 +59,34 @@ route.get("/update/:id", async (req, res) => {
     res.send(err);
   }
 });
+// route.get("/update", async (req, res) => {
+//   const inputString = req.query.id;
+//   const splittedStrings = inputString.split("-");
+
+//   // Lấy hai chuỗi đã tách ra
+//   const firstPart = splittedStrings[0]; // "anpha"
+//   const secondPart = splittedStrings[1];
+//   try {
+//     const product = await new Promise(async (resolve, reject) => {
+//       await connect.query(
+//         "select * from product where brands = ? and name =?",
+//         [firstPart, secondPart],
+//         (err, result) => {
+//           resolve(result);
+//         }
+//       );
+//     });
+//     const brand = await new Promise(async (resolve, reject) => {
+//       await connect.query("select brand_id from brand", (err, result) => {
+//         resolve(result);
+//       });
+//     });
+//     // res.send({product});
+//     res.render("update", { product: product[0], brand: brand });
+//   } catch (err) {
+//     res.send(err);
+//   }
+// });
 route.post("/update/:id", upload.single("image"), async (req, res) => {
   const inputString = req.params.id;
   const splittedStrings = inputString.split("-");
@@ -100,7 +130,7 @@ route.post("/update/:id", upload.single("image"), async (req, res) => {
       }
 
       // Đã thực hiện thành công cả hai câu lệnh UPDATE
-      res.redirect("/");
+      res.redirect("/homepage");
     } catch (err) {
       // Xử lý lỗi nếu có
       console.error("Lỗi trong quá trình thực hiện câu lệnh UPDATE:", err);
@@ -152,7 +182,7 @@ route.post("/update/:id", upload.single("image"), async (req, res) => {
         }
       });
     });
-    res.redirect("/");
+    res.redirect("/homepage");
   }
 });
 route.get("/delete/:id", async (req, res) => {
@@ -184,7 +214,30 @@ route.get("/delete/:id", async (req, res) => {
       }
     });
   });
-  res.redirect("/");
+  res.redirect("/homepage");
+});
+route.post("/home", upload.single("image"), (req, res) => {
+  const sql =
+    "INSERT INTO product (brands, name, description, type, gia, image) VALUES (?, ?, ?, ?, ?, ?)";
+  const { brand, name, description, type, gia } = req.body;
+  let dongbo;
+  if (req.file) {
+    dongbo = time + "-" + req.file.originalname;
+  } else {
+    dongbo = "anhthu.png";
+  }
+  connect.query(
+    sql,
+    [brand, name, description, type, gia, dongbo],
+    (err, result) => {
+      if (err) {
+        console.error("Error saving product:", err);
+      } else {
+        console.log("Product saved:", result);
+      }
+    }
+  );
+  res.send(req.body);
 });
 route.use("/create", create);
 module.exports = route;

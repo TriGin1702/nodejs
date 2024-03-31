@@ -1,3 +1,15 @@
+<div class="select_option">
+  <span style="padding: 0 12px;">Sắp xếp theo: </span>
+  <select
+    id="sortingSelect"
+    style="margin-right: 12px; border-radius: 8px"
+    onchange="sortproducts()"
+  >
+    <option value="" hidden selected>Giá</option>
+    <option value="top">Giá từ cao đến thấp</option>
+    <option value="down">Giá từ thấp đến cao</option>
+  </select>
+</div>
 <div class="row justify-content-start">
   {{#each product}}
     <div class="col-3">
@@ -20,7 +32,11 @@
             >
 
               <span class="btn btn-primary mt-auto">Xem chi tiết</span>
-              <button id="addToCart" class="addToCart">
+              <button
+                id="addToCart"
+                class="addToCart"
+                onclick="showSuccessToast(event)"
+              >
                 <i class="bi bi-cart-plus-fill"></i>
               </button>
             </div>
@@ -30,4 +46,5 @@
     </div>
   {{/each}}
 </div>
+<div id="toast"></div>
 <script src="/js/product_new.js"></script>

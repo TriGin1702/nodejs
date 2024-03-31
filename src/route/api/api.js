@@ -4,8 +4,24 @@ const router2 = express.Router();
 
 router2.get("/", async (req, res) => {
   try {
+    let sortQuery = "";
+    const sortValue = req.query.sort; // Lấy giá trị của tham số "sort" từ query string
+    const searchValue = req.query.search;
+    // Xử lý giá trị của tham số "sort" để tạo câu truy vấn sắp xếp phù hợp
+    if (sortValue == "top") {
+      sortQuery = "ORDER BY gia DESC"; // Sắp xếp từ cao đến thấp dựa trên trường "price"
+    } else if (sortValue == "down") {
+      sortQuery = "ORDER BY gia ASC"; // Sắp xếp từ thấp đến cao dựa trên trường "price"
+    }
+    let checkquery = "";
+    if (searchValue) {
+      checkquery = `SELECT * FROM product where brands = '${searchValue}' or name = '${searchValue}' ${sortQuery}`;
+    } else {
+      checkquery = `SELECT * FROM product ${sortQuery}`; // Tạo câu truy vấn SQL hoàn chỉnh
+    }
+    const query = checkquery;
     const brand = await new Promise((resolve, reject) => {
-      connect.query("SELECT * FROM product", (err, rows) => {
+      connect.query(query, (err, rows) => {
         if (err) reject(err);
         resolve(rows);
       });

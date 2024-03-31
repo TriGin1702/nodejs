@@ -1,43 +1,80 @@
-<table class="table table-primary">
-  <thead>
-    <tr class="table-primary">
-      <th scope="col" style="text-align: center;">Name Product</th>
-      <th scope="col" style="text-align: center;">Brand</th>
-      <th scope="col" style="text-align: center;">Date</th>
-      <th scope="col" style="text-align: center;">Number</th>
-      <th scope="col" style="text-align: center;">Price</th>
-      <th scope="col" style="text-align: center;">Payment status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="table-info">
-      <th style="vertical-align: middle; text-align:center;">1</th>
-      <td style="vertical-align: middle; text-align:center;">Mark</td>
-      <td style="vertical-align: middle; text-align:center;">Otto</td>
-      <td style="vertical-align: middle; text-align:center;"><input
-          type="number"
-          min="1"
-          max="99"
-          style="width:30%;"
-        /></td>
-      <td style="vertical-align: middle; text-align:center;">@mdo</td>
-      <td style="vertical-align: middle; text-align:center;"><input
-          type="checkbox"
-          value="true"
-          style="transform: scale(1.5);"
-        /></td>
-      <td style="vertical-align: middle; text-align:center;">
-        <a href="">Delete</a>
-      </td>
-    </tr>
-  </tbody>
-</table>
+{{#if cartdetail}}
+  <!-- Hiển thị bảng nếu có cartdetail -->
+  <table class="table table-primary">
+    <thead>
+      <tr class="table-primary">
+        <th scope="col" style="text-align: center;">Image</th>
+        <th scope="col" style="text-align: center;">Name Product</th>
+        <th scope="col" style="text-align: center;">Brand</th>
+        <th scope="col" style="text-align: center;">Date</th>
+        <th scope="col" style="text-align: center;">Number</th>
+        <th scope="col" style="text-align: center;">Price</th>
+        <th scope="col" style="text-align: center;">Payment status</th>
+        <th scope="col" style="text-align: center;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each cartdetail}}
+        <tr class="table-info">
+          <td style="vertical-align: middle; text-align:center;"><img
+              src="/image/{{this.image}}"
+              alt=""
+              style="width: 90px; height:90px;"
+            /></td>
+          <td
+            style="vertical-align: middle; text-align:center;"
+          >{{this.name}}</td>
+          <td
+            style="vertical-align: middle; text-align:center;"
+          >{{this.brands}}</td>
+          <td style="vertical-align: middle; text-align:center;">{{formatDate
+              this.date
+            }}</td>
+          <td style="vertical-align: middle; text-align:center;">
+            <input
+              type="number"
+              min="1"
+              max="99"
+              style="width:40%;"
+              value="{{this.quantity}}"
+              onchange="increaseQuantity(event)"
+            />
+          </td>
+          <td
+            style="vertical-align: middle; text-align:center;"
+          >{{this.price}}</td>
+          <td style="vertical-align: middle; text-align:center;">
+            <input type="checkbox" style="transform: scale(1.5);" />
+          </td>
+          <td style="vertical-align: middle; text-align:center;">
+            <a href="">Delete</a>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <!-- Nút thanh toán -->
+  <button
+    type="button"
+    class="btn btn-success"
+    style="float: right; margin-left: 16px"
+    onclick="showPayment()"
+  >Thanh Toán</button>
+{{else}}
+  <!-- Hiển thị ảnh và nút chờ giao hàng nếu không có cartdetail -->
+  <div style="text-align: center;">
+    <img
+      src="/image/image.png"
+      alt="Default Image"
+      style="width: 50%; height: 400px; display: inline-block;"
+    />
+  </div>
 
-<button
-  type="button"
-  class="btn btn-success"
-  style="position: relative; left: 90%"
-  onclick="showPayment()"
-> Thanh Toán</button>
+{{/if}}
+
+<!-- Nút chờ giao hàng -->
+<button type="button" class="btn btn-success" style="float: right;">Chờ giao
+  hàng</button>
+
 <div class="pay" id="pay"></div>
 <script src="/js/cart.js"></script>

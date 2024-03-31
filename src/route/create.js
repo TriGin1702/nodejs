@@ -35,18 +35,24 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
   const prices = req.body.gia;
   const brands = req.body.brand;
   const types = req.body.type;
-  const images = req.files;
+  const images = req.files; // Đổi lại thành req.files
 
   // Xử lý thông tin và tạo mảng sản phẩm
   for (let i = 0; i < names.length; i++) {
-    let anh = time + "-" + images[i].originalname;
+    let dongbo;
+    if (images[i]) {
+      // Đảm bảo images[i] tồn tại
+      dongbo = time + "-" + images[i].originalname;
+    } else {
+      dongbo = "anhthu.png";
+    }
     const product = {
       name: names[i],
       description: descriptions[i],
       gia: prices[i],
       brand: brands[i],
       type: types[i],
-      image: anh,
+      image: dongbo,
     };
     if (product.image == null) {
       product.image = "anhthu.png";

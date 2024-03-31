@@ -1,12 +1,11 @@
-const { error } = require('console');
-const fs = require('fs');
-const mysql = require('mysql');
+const { error } = require("console");
+const fs = require("fs");
+const mysql = require("mysql");
 const connect = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'course',
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "web",
 });
-
 
 module.exports = connect;

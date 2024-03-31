@@ -21,7 +21,7 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
     <button class="close"
       style="position: absolute; top:0; right:0; background-color:red; border-radius: 4px; border: 1px solid black"
     ><i class="bi bi-x-lg" style="color: aliceblue;"></i></button>
-    <form class="row g-3">
+    <form class="row g-3" id="paymentForm">
       <div class="col-md-6">
         <label for="validationDefault01" class="form-label">First name</label>
         <input
@@ -34,11 +34,11 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
       </div>
 
       <div class="col-md-6">
-        <label for="validationDefault03" class="form-label">Phone Number</label>
+        <label for="validationDefault02" class="form-label">Phone Number</label>
         <input
           type="text"
           class="form-control"
-          id="validationDefault03"
+          id="validationDefault02"
           required
         />
       </div>
@@ -47,14 +47,14 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
       >
         <div class="col-md-3" style=" margin: 12px 0">
           <label
-            for="validationDefault04"
+            for="validationDefault03"
             class="form-label"
             style="display: block;"
           >City</label>
-          <select class="form-select" id="validationDefault04" required>
-            <option value="">Choose...</option>
-            <option value="">Choose...</option>
-            <option value="">Choose...</option>
+          <select class="form-select" id="validationDefault03" required>
+            <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+            <option value="Hà Nội">Hà Nội</option>
+            <option value="Quảng Ngãi">Quảng Ngãi</option>
           </select>
         </div>
         <div class="col-md-3" style=" margin: 12px 0">
@@ -64,14 +64,14 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
             style="display: block;"
           >District</label>
           <select class="form-select" id="validationDefault04" required>
-            <option value="">Choose...</option>
-            <option value="">Choose...</option>
-            <option value="">Choose...</option>
+            <option value="Quận 1">Quận 1</option>
+            <option value="Quận 12">Quận 12</option>
+            <option value="Quận 10">Quận 10</option>
           </select>
         </div>
         <div class="col-md-6" style=" margin: 12px 0">
-          <label for="validationDefault04" class="form-label">Address</label>
-          <input type="text" class="form-control" />
+          <label for="validationDefault05" class="form-label">Address</label>
+          <input type="text" class="form-control" id="validationDefault05" />
         </div>
 
       </div>
@@ -123,6 +123,7 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
             name="inlineRadioOptions"
             id="inlineRadio3"
             value="option3"
+            checked
           />
           <label
             class="form-check-label"
@@ -139,6 +140,7 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
             value=""
             id="invalidCheck2"
             required
+            checked
           />
           <label class="form-check-label" for="invalidCheck2">
             Agree to terms and conditions
@@ -149,7 +151,7 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
         class="col-12"
         style="display: flex; justify-content: flex-end; margin-top:12px;"
       >
-        <button class="btn btn-primary" type="submit">Submit form</button>
+        <button class="btn btn-primary" type="button" onclick="submitPayment()">Submit form</button>
       </div>
     </form>
   </div>
@@ -159,6 +161,76 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
   main.appendChild(Payment);
 }
 
+var checkedProducts = [];
+
 function showPayment() {
-  Payment({});
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach((checkbox) => {
+    if (checkbox.checked) {
+      const row = checkbox.closest("tr");
+      const productName = row.querySelector("td:nth-child(2)").textContent;
+      const productBrand = row.querySelector("td:nth-child(3)").textContent;
+      checkedProducts.push({ productName, productBrand });
+    }
+  });
+
+  if (checkedProducts.length > 0) {
+    Payment({ checkedProducts });
+  } else {
+    alert("Please select at least one product to proceed with payment.");
+  }
+}
+async function submitPayment() {
+  const name = document.querySelector("#validationDefault01").value;
+  const phoneNumber = document.querySelector("#validationDefault02").value;
+  const city = document.querySelector("#validationDefault03").value;
+  const district = document.querySelector("#validationDefault04").value;
+  const address = document.querySelector("#validationDefault05").value;
+  // Lấy giá trị của phương thức thanh toán được chọn
+  // const paymentMethod = document.querySelector(
+  //   'input[name="paymentMethod"]:checked'
+  // ).value;
+  console.log(checkedProducts);
+  if (checkedProducts.length > 0) {
+    const data = {
+      name,
+      phoneNumber,
+      city,
+      district,
+      address,
+      checkedProducts,
+    };
+    // Gửi dữ liệu đi sử dụng Axios
+    await axios
+      .post("/cart/address", data)
+      .then((response) => {
+        // console.log(response.data);
+        alert("Payment successful!");
+        checkedProducts.length = 0;
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error(error);
+        alert(
+          "An error occurred while processing your payment. Please try again later."
+        );
+      });
+  }
+}
+async function updateQuantity(data) {
+  try {
+    const response = await axios.post("/cart/quantity", data);
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+    alert("An error occurred while updating quantity. Please try again later.");
+  }
+}
+
+function increaseQuantity(event) {
+  const row = event.target.closest("tr");
+  const quantity = row.querySelector("input[type='number']").value;
+  const brand = row.querySelector("td:nth-child(3)").textContent; // Lấy brand từ cột thứ 3 trong hàng
+  const name = row.querySelector("td:nth-child(2)").textContent; // Lấy name từ cột thứ 2 trong hàng
+  updateQuantity({ brand, name, quantity }); // Gọi hàm để cập nhật số lượng, truyền brand, name và số lượng mới
 }
