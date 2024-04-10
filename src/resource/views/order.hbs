@@ -1,60 +1,55 @@
-{{#if cartdetail}}
+{{#if cartorder}}
   <!-- Hiển thị bảng nếu có cartdetail -->
   <table class="table table-primary">
     <thead>
       <tr class="table-primary">
         <th scope="col" style="text-align: center;">Image</th>
-        <th scope="col" style="text-align: center;">Name Product</th>
-        <th scope="col" style="text-align: center;">Brand</th>
+        <th scope="col" style="text-align: center;">Product</th>
+        <th scope="col" style="text-align: center;">Address</th>
         <th scope="col" style="text-align: center;">Date</th>
-        <th scope="col" style="text-align: center;">Number</th>
+        <th scope="col" style="text-align: center;">Quantity</th>
         <th scope="col" style="text-align: center;">Price</th>
-        <th scope="col" style="text-align: center;">Payment status</th>
+        <th scope="col" style="text-align: center;">Name</th>
+        <th scope="col" style="text-align: center;">Phone</th>
         <th scope="col" style="text-align: center;">Action</th>
       </tr>
     </thead>
     <tbody>
-      {{#each cartdetail}}
+      {{#each cartorder}}
         <tr class="table-info">
-          <!-- Thêm cột ẩn id_product -->
-          <td style="vertical-align: middle; text-align:center;">
-            <input
-              type="hidden"
-              name="id_product"
-              value="{{this.id_product}}"
-            />
-            <img
+          <td style="vertical-align: middle; text-align:center;"><img
               src="/image/{{this.image}}"
               alt=""
               style="width: 90px; height:90px;"
             /></td>
+          <td style="vertical-align: middle; text-align:center;">{{this.name}}
+            thương hiệu:
+            {{this.brands}}</td>
           <td
             style="vertical-align: middle; text-align:center;"
-          >{{this.name}}</td>
-          <td
-            style="vertical-align: middle; text-align:center;"
-          >{{this.brands}}</td>
+          >{{this.address}}-{{this.district}}-{{this.city}}</td>
           <td style="vertical-align: middle; text-align:center;">{{formatDate
-              this.date
+              this.bill_date
             }}</td>
           <td style="vertical-align: middle; text-align:center;">
-            <input
-              type="number"
-              min="1"
-              max="99"
-              style="width:40%;"
-              value="{{this.quantity}}"
-              onchange="increaseQuantity(event)"
-            />
+            {{this.quantity}}
           </td>
           <td
             style="vertical-align: middle; text-align:center;"
           >{{this.price}}</td>
           <td style="vertical-align: middle; text-align:center;">
-            <input type="checkbox" style="transform: scale(1.5);" />
+            {{this.user_name}}
           </td>
           <td style="vertical-align: middle; text-align:center;">
-            <a href="">Delete</a>
+            {{this.user_phone}}
+          </td>
+          <td style="vertical-align: middle; text-align:center;">
+            <button
+              type="button"
+              class="btn btn-info"
+              onclick="showPayment(event)"
+            >Update</button>
+            <input type="hidden" name="id_ad" value="{{this.id_ad}}" />
           </td>
         </tr>
       {{/each}}
@@ -66,7 +61,7 @@
     class="btn btn-success"
     style="float: right; margin-left: 16px"
     onclick="showPayment()"
-  >Thanh Toán</button>
+  >Quang lại đơn hàng</button>
 {{else}}
   <!-- Hiển thị ảnh và nút chờ giao hàng nếu không có cartdetail -->
   <div style="text-align: center;">
@@ -79,16 +74,5 @@
 
 {{/if}}
 
-<!-- Nút chờ giao hàng -->
-<a href="../order">
-
-  <button
-    type="button"
-    class="btn btn-success"
-    style="float: right;"
-    href="../order"
-  >Chờ giao hàng</button>
-</a>
-
 <div class="pay" id="pay"></div>
-<script src="/js/cart.js"></script>
+<script src="/js/order.js"></script>

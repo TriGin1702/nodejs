@@ -34,15 +34,15 @@ router2.get("/", async (req, res) => {
   }
 });
 
-router2.delete("/:brands/:name", async (req, res) => {
+router2.delete("/:id", async (req, res) => {
   try {
-    const { brands, name } = req.params;
-
+    const id_product = req.params.id;
+    console.log(id_product);
     // Thực hiện xóa sản phẩm từ cơ sở dữ liệu
     await new Promise((resolve, reject) => {
       connect.query(
-        "DELETE FROM product WHERE brands = ? AND name = ?",
-        [brands, name],
+        "DELETE FROM product WHERE id_product = ?",
+        [id_product],
         (err, result) => {
           if (err) reject(err);
           resolve(result);

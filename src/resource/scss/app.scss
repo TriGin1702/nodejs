@@ -233,3 +233,38 @@ h2 {
   color: rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
+
+.image-slider {
+  overflow: hidden;
+  height: auto;
+  /* Thiết lập chiều cao tự động cho slider */
+}
+
+.slides-container {
+  display: flex;
+  border: 1px solid black;
+  /* Khung viền đen 1px */
+  flex-wrap: nowrap;
+  /* Ngăn các phần tử trượt qua hàng */
+  margin-top: 20px;
+  /* Khoảng cách từ header */
+  margin-bottom: 20px;
+  /* Khoảng cách dưới cùng */
+  align-items: center;
+  /* Canh giữa các phần tử con */
+}
+
+.slide {
+  flex: 0 0 100%;
+  /* Sử dụng transition để tạo hiệu ứng mờ dần */
+  width: 100%;
+  /* Chiếm toàn bộ chiều rộng của slider */
+  height: 360px;
+  object-fit: fill;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.slide.active {
+  opacity: 1;
+}

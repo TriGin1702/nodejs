@@ -1,0 +1,54 @@
+<table class="table table-success table-striped">
+  <thead>
+    <tr>
+      <th scope="col" style="text-align: center;">ID</th>
+      <th scope="col" style="text-align: center;">Name</th>
+      <th scope="col" style="text-align: center;">Gender</th>
+      <th scope="col" style="text-align: center;">Age</th>
+      <th scope="col" style="text-align: center;">Account</th>
+      <th scope="col" style="text-align: center;">Password</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each users}}
+      <tr>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.id_kh}}</td>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.name}}</td>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.gender}}</td>
+        <td style="vertical-align: middle; text-align:center;">{{this.age}}</td>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.account}}</td>
+        <td
+          style="vertical-align: middle; text-align:center;"
+        >{{this.password}}</td>
+        <!-- Thêm các cột khác của bảng customer nếu cần -->
+        {{!-- <td style="vertical-align: middle; text-align:center;">
+          <a
+            href="/homepage/update/{{this.id_kh}}"
+            style="color: rgb(17, 203, 141);"
+          >Update</a>
+        </td>
+        <td style="vertical-align: middle; text-align:center;">
+          <a
+            href="/homepage/delete/{{this.id_kh}}"
+            style="color: red;"
+          >Delete</a>
+        </td> --}}
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+<a href="../homepage" style="color: #F8F9FA;">
+  <button
+    type="button"
+    class="btn btn-success"
+    style="float: right; margin-left: 16px"
+  >Back to homepage</button>
+</a>

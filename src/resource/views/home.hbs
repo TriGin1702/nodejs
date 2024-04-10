@@ -32,21 +32,30 @@
         >{{this.description}}</td>
         <td style="vertical-align: middle; text-align:center;">
           <a
-            href="/homepage/update/{{this.brands}}-{{this.name}}-{{this.image}}"
+            href="/homepage/update/{{this.id_product}}-{{this.image}}"
           >Update</a>
         </td>
         <td style="vertical-align: middle; text-align:center;">
           <a
-            href="/homepage/delete/{{this.brands}}-{{this.name}}-{{this.image}}"
+            href="/homepage/delete/{{this.id_product}}-{{this.image}}"
           >Delete</a>
         </td>
       </tr>
     {{/each}}
   </tbody>
 </table>
-<button
-  type="button"
-  class="btn btn-success"
-  style="position: relative; left: 90%"
-><a href="/homepage/create" style="color: #F8F9FA;">Add Product</a></button>
-<script src="/js/view.js"></script>
+<a href="/homepage/create" style="color: #F8F9FA;">
+  <button
+    type="button"
+    class="btn btn-success"
+    style="float: right; margin-left: 16px"
+  >Add Product</button>
+</a>
+<a href="/homepage/list_users">
+  <button
+    type="button"
+    class="btn btn-success"
+    style="float: right;"
+  >List_users</button>
+</a>
+{{! <script src="/js/view.js"></script> }}

@@ -1,3 +1,18 @@
+function isValidName(name) {
+  // Kiểm tra xem tên có chứa ký tự đặc biệt hoặc số không
+  return /^[a-zA-Z ]+$/.test(name);
+}
+
+function isValidPhoneNumber(phoneNumber) {
+  // Kiểm tra xem số điện thoại có đủ 10 số không
+  return /^\d{10}$/.test(phoneNumber);
+}
+
+function isValidAddress(address) {
+  // Kiểm tra xem địa chỉ có chứa cả chữ cái và số không
+  return /[a-zA-Z]/.test(address) && /\d/.test(address);
+}
+
 function Payment({}) {
   const main = document.querySelector("#pay");
   const Payment = document.createElement("div");
@@ -28,7 +43,6 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
           type="text"
           class="form-control"
           id="validationDefault01"
-          value="Mark"
           required
         />
       </div>
@@ -71,7 +85,7 @@ style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; jus
         </div>
         <div class="col-md-6" style=" margin: 12px 0">
           <label for="validationDefault05" class="form-label">Address</label>
-          <input type="text" class="form-control" id="validationDefault05" />
+          <input type="text" class="form-control" id="validationDefault05" required />
         </div>
 
       </div>
@@ -168,9 +182,15 @@ function showPayment() {
   checkboxes.forEach((checkbox) => {
     if (checkbox.checked) {
       const row = checkbox.closest("tr");
-      const productName = row.querySelector("td:nth-child(2)").textContent;
-      const productBrand = row.querySelector("td:nth-child(3)").textContent;
-      checkedProducts.push({ productName, productBrand });
+      const idProduct = row.querySelector("input[name='id_product']").value;
+      const index = checkedProducts.indexOf(idProduct);
+      if (index === -1) {
+        // Nếu sản phẩm chưa có trong danh sách, thêm vào
+        checkedProducts.push(idProduct);
+      } else {
+        // Nếu sản phẩm đã có trong danh sách, loại bỏ khỏi danh sách
+        checkedProducts.splice(index, 1);
+      }
     }
   });
 
@@ -180,6 +200,7 @@ function showPayment() {
     alert("Please select at least one product to proceed with payment.");
   }
 }
+
 async function submitPayment() {
   const name = document.querySelector("#validationDefault01").value;
   const phoneNumber = document.querySelector("#validationDefault02").value;
@@ -201,20 +222,28 @@ async function submitPayment() {
       checkedProducts,
     };
     // Gửi dữ liệu đi sử dụng Axios
-    await axios
-      .post("/cart/address", data)
-      .then((response) => {
-        // console.log(response.data);
-        alert("Payment successful!");
-        checkedProducts.length = 0;
-        window.location.reload();
-      })
-      .catch((error) => {
-        console.error(error);
-        alert(
-          "An error occurred while processing your payment. Please try again later."
-        );
-      });
+    if (
+      isValidAddress(address) &&
+      isValidPhoneNumber(phoneNumber) &&
+      isValidName(name)
+    ) {
+      await axios
+        .post("/cart/address", data)
+        .then((response) => {
+          // console.log(response.data);
+          alert("Payment successful!");
+          checkedProducts.length = 0;
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error(error);
+          alert(
+            "An error occurred while processing your payment. Please try again later."
+          );
+        });
+    } else {
+      alert("Xin hãy nhập đúng các thông tin !");
+    }
   }
 }
 async function updateQuantity(data) {
@@ -230,7 +259,6 @@ async function updateQuantity(data) {
 function increaseQuantity(event) {
   const row = event.target.closest("tr");
   const quantity = row.querySelector("input[type='number']").value;
-  const brand = row.querySelector("td:nth-child(3)").textContent; // Lấy brand từ cột thứ 3 trong hàng
-  const name = row.querySelector("td:nth-child(2)").textContent; // Lấy name từ cột thứ 2 trong hàng
-  updateQuantity({ brand, name, quantity }); // Gọi hàm để cập nhật số lượng, truyền brand, name và số lượng mới
+  const idProduct = row.querySelector("input[name='id_product']").value;
+  updateQuantity({ idProduct, quantity }); // Gọi hàm để cập nhật số lượng, truyền brand, name và số lượng mới
 }

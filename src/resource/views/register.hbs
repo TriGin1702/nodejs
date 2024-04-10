@@ -1,4 +1,4 @@
-<form action="/register" method="post">
+<form id="registerForm" method="post">
   <section class="vh-100 gradient-custom">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -46,13 +46,12 @@
                     id="Age"
                     class="form-control form-control-lg"
                     name="Age"
-                    type="number"
-                    inputmode="numeric" <!-- Thêm thuộc tính inputmode -->
+                    type="text"
                     required
                   />
                 </div>
                 <div class="form-outline form-white mb-4">
-                  <label class="form-label text-left">AccountName</label>
+                  <label class="form-label text-left">Account</label>
                   <input
                     type="accountName"
                     id="accountName"
@@ -81,6 +80,7 @@
                   >Forgot password?</a></p> }}
 
                 <button
+                  id="submitBtn"
                   class="btn btn-outline-light btn-lg px-5 mx-auto d-block"
                   type="submit"
                 >Submit</button>
@@ -95,7 +95,7 @@
 
               <div>
                 <p class="mb-0 text-center">Already have an account?
-                  <a href="#!" class="text-white-50 fw-bold">Login</a>
+                  <a href="../" class="text-white-50 fw-bold">Login</a>
                 </p>
               </div>
 
@@ -106,3 +106,4 @@
     </div>
   </section>
 </form>
+<script src="js/register.js"></script>

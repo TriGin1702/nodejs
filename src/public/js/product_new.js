@@ -72,17 +72,14 @@ async function showSuccessToast(event) {
   const inputone = event.target.closest(".col-3");
 
   if (inputone) {
-    const nameElement = inputone.querySelector(".card-title");
-    const brandElement = inputone.querySelector("h5");
-
-    if (nameElement && brandElement) {
-      const name = nameElement.textContent.trim();
-      const brand = brandElement.textContent.split(":")[1].trim();
+    const idProductElement = inputone.querySelector("input[name='id_product']");
+    console.log(idProductElement.value);
+    if (idProductElement) {
+      const idProduct = idProductElement.value;
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("brand", brand);
+      formData.append("id_product", idProduct);
 
-      console.log("Brand:", brand, "Name:", name);
+      console.log("ID Product:", idProduct);
 
       try {
         // Gửi dữ liệu sử dụng Axios
@@ -110,9 +107,31 @@ async function showSuccessToast(event) {
         });
       }
     } else {
-      console.error("Không tìm thấy phần tử 'card-title' hoặc 'h5'");
+      console.error("Không tìm thấy phần tử input[name='id_product']");
     }
   } else {
     console.error("Không tìm thấy phần tử cha với class 'col-3'");
   }
 }
+document.addEventListener("DOMContentLoaded", function () {
+  const images = [
+    "/image/kobiet.jpg",
+    "/image/end.jpg",
+    "/image/kurumi.jpg",
+    "/image/saber.jpg",
+  ];
+  const slide = document.querySelector("#slide");
+  let currentSlide = 0;
+
+  // Hàm nextSlide sẽ được gọi sau mỗi 3 giây
+  function nextSlide() {
+    const nextIndex = currentSlide + 1 < images.length ? currentSlide + 1 : 0;
+    slide.style.opacity = 0; // Tạm thời ẩn slide hiện tại
+    setTimeout(function () {
+      slide.src = images[nextIndex]; // Thay đổi ảnh của slide
+      slide.style.opacity = 1; // Hiển thị slide mới
+    }, 800); // Delay để đảm bảo slide đã ẩn hoàn toàn trước khi thay đổi ảnh và hiển thị
+    currentSlide = nextIndex;
+  }
+  setInterval(nextSlide, 3000);
+});

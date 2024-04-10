@@ -4,15 +4,15 @@ const router = express.Router();
 const multer = require("multer");
 const upload = multer();
 router.post("/quantity", async function (req, res) {
-  const { brand, name, user_id, quantity } = req.body;
+  const { checkedProducts, user_id, quantity } = req.body;
   try {
     // Kiểm tra xem người dùng đã đăng nhập chưa
     if (!user_id) {
       return res.status(401).json({ message: "User not logged in." });
     }
     // Gọi stored procedure để cập nhật quantity và price
-    const sql = "CALL UpdateQuantityAndPrice(?, ?, ?, ?)";
-    await connect.query(sql, [brand, name, user_id, quantity]);
+    const sql = "CALL UpdateQuantityAndPrice( ?, ?, ?)";
+    await connect.query(sql, [checkedProducts, user_id, quantity]);
     // Kiểm tra xem sản phẩm đã được cập nhật thành công hay không
     return res.status(200).json({ message: "Quantity updated successfully." });
   } catch (error) {
@@ -39,21 +39,10 @@ router.post("/address", async (req, res) => {
     }
     // Thực hiện lặp qua từng sản phẩm trong mảng checkedProducts để gọi store procedure
     for (const product of checkedProducts) {
-      const { productName, productBrand } = product;
-
       // Thực thi store procedure InsertOrUpdateAddressAndSetBillStatus
       await connect.query(
-        "CALL InsertOrUpdateAddressAndSetBillStatus(?, ?, ?, ?, ?, ?, ?, ?)",
-        [
-          user_id,
-          productBrand,
-          productName,
-          city,
-          district,
-          address,
-          name,
-          phoneNumber,
-        ]
+        "CALL InsertOrUpdateAddressAndSetBillStatus(?, ?, ?, ?, ?, ?, ?)",
+        [user_id, product, city, district, address, name, phoneNumber]
       );
     }
     res
@@ -100,9 +89,10 @@ router.get("/:user_id", async function (req, res) {
 router.post("/:user_id", upload.none(), async function (req, res) {
   try {
     // Lấy user_id, brand, và name từ body của request
-    const { brand, name } = req.body;
+    const { idProduct } = req.body;
+    console.log(idProduct);
     const user_id = req.params.user_id;
-    if (!user_id || !brand || !name) {
+    if (!user_id) {
       return res.status(400).json({
         success: false,
         message: "Missing user ID, brand, or name in request body",
@@ -111,8 +101,8 @@ router.post("/:user_id", upload.none(), async function (req, res) {
 
     // Gọi stored procedure AddProductToCart với các tham số từ client
     connect.query(
-      "CALL AddProductToCart(?, ?, ?)",
-      [user_id, name, brand],
+      "CALL AddProductToCart( ?, ?)",
+      [user_id, idProduct],
       function (error, results) {
         if (error) {
           // Xử lý lỗi khi gọi stored procedure

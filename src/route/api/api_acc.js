@@ -1,7 +1,21 @@
 const express = require("express");
 const connect = require("../../app/control/connect");
 const router2 = express.Router();
-
+router2.get("/list_users", async (req, res) => {
+  try {
+    connect.query(`SELECT * FROM customer`, (err, rows) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("error"); // Gửi lỗi về client nếu có lỗi xảy ra trong truy vấn
+        return;
+      }
+      res.json(rows); // Gửi dữ liệu về client dưới dạng JSON khi truy vấn thành công
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("error"); // Xử lý lỗi nếu có lỗi xảy ra trong try-catch
+  }
+});
 router2.get("/", async (req, res) => {
   try {
     const { accountName, password } = req.query;

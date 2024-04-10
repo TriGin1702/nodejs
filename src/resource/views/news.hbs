@@ -1,3 +1,9 @@
+<div class="image-slider">
+  <div class="slides-container">
+    <img src="/image/kobiet.jpg" class="slide active" id="slide" />
+  </div>
+</div>
+
 <div class="select_option">
   <span style="padding: 0 12px;">Sắp xếp theo: </span>
   <select
@@ -15,6 +21,7 @@
     <div class="col-3">
       <div class="card2">
         <a class="card2-box" href="/news/{{this.brands}}-{{this.name}}">
+          <input type="hidden" name="id_product" value="{{this.id_product}}" />
           <img
             src="/image/{{this.image}}"
             class="card-img-top product-img"

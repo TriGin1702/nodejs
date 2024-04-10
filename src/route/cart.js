@@ -12,16 +12,15 @@ Handlebars.registerHelper("formatDate", function (date) {
 router.use(cookieParser());
 router.post("/quantity", upload.none(), async function (req, res) {
   const user_id = req.cookies.user ? req.cookies.user.id_kh : null;
-  const { brand, name, quantity } = req.body;
-  console.log(user_id, brand, name, quantity);
+  const { idProduct, quantity } = req.body;
+  console.log(user_id, idProduct, quantity);
   try {
     // Gửi dữ liệu đến địa chỉ /api_cart
     const response = await axios.post(
       `http://localhost:3000/api_cart/quantity`,
       {
         quantity: quantity,
-        brand: brand,
-        name: name,
+        checkedProducts: idProduct,
         user_id: user_id,
       }
     );
@@ -47,17 +46,15 @@ router.get("/", upload.none(), async function (req, res) {
   }
 });
 router.post("/", upload.none(), async (req, res) => {
-  const { brand, name } = req.body;
   const user_id = req.cookies.user ? req.cookies.user.id_kh : null;
-  console.log(user_id, brand, name);
-
+  const { id_product } = req.body;
+  console.log(id_product);
   try {
     // Gửi dữ liệu đến địa chỉ /api_cart
     const response = await axios.post(
       `http://localhost:3000/api_cart/${user_id}`,
       {
-        brand: brand,
-        name: name,
+        idProduct: id_product,
       }
     );
 
