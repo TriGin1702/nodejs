@@ -1,9 +1,9 @@
 const express = require("express");
 const connect = require("../app/control/connect");
 const fs = require("fs");
-const imageFolderPath = "D:/studyonweb/json_server/src/public/image/";
+const path = require("path");
+const imageFolderPath = path.join(__dirname, "../../src/public/image/");
 const route = express.Router();
-const create = require("./create");
 const multer = require("multer");
 const { error } = require("console");
 const time = Date.now();
@@ -25,38 +25,38 @@ route.get("/list_users", async (req, res) => {
   try {
     const admin = req.cookies.admin || null;
     if (admin == null) {
-      res.redirect("/");
+      return res.redirect("/");
     }
     const listusers = await axios.get(
       "http://localhost:3000/api_acc/list_users"
     );
     const users = listusers.data;
     console.log(users);
-    res.render("list_user", { users: users });
+    return res.render("list_user", { users: users });
   } catch (err) {
-    res.send(err);
+    return res.send(err);
   }
 });
 route.get("/", async (req, res) => {
   try {
     const admin = req.cookies.admin || null;
     if (admin == null) {
-      res.redirect("/");
+      return res.redirect("/");
     }
     await connect.query("select * from product", (err, result) => {
       product = result;
       // req.app.locals.product = product;
       req.app.locals.customername = "Login";
-      res.render("home", { product: product });
+      return res.render("home", { product: product });
     });
   } catch (err) {
-    res.send(err);
+    return res.send(err);
   }
 });
 route.get("/update/:id", async (req, res) => {
   const admin = req.cookies.admin || null;
   if (admin == null) {
-    res.redirect("/");
+    return res.redirect("/");
   }
   const inputString = req.params.id;
   const splittedStrings = inputString.split("-");
@@ -77,15 +77,15 @@ route.get("/update/:id", async (req, res) => {
       });
     });
     // res.send({product});
-    res.render("update", { product: product[0], brand: brand });
+    return res.render("update", { product: product[0], brand: brand });
   } catch (err) {
-    res.send(err);
+    return res.send(err);
   }
 });
 route.post("/update/:id", upload.single("image"), async (req, res) => {
   const admin = req.cookies.admin || null;
   if (admin == null) {
-    res.redirect("/");
+    return res.redirect("/");
   }
   const inputString = req.params.id;
   const splittedStrings = inputString.split("-");
@@ -101,40 +101,39 @@ route.post("/update/:id", upload.single("image"), async (req, res) => {
   const { brand, name, description, type, gia } = req.body;
   const image = req.file ? req.file.originalname : ImageFileName;
   try {
-    let dongbo = "";
-    if (image.match(ImageFileName)) {
-      dongbo = image;
-    } else {
+    let dongbo = ImageFileName;
+    if (!image.match(ImageFileName)) {
       dongbo = time + "-" + image;
-    }
+      fs.readdir(imageFolderPath, (err, files) => {
+        if (err) throw err;
 
-    fs.readdir(imageFolderPath, (err, files) => {
-      if (err) throw err;
-
-      files.forEach((file) => {
-        if (file === ImageFileName) {
-          fs.unlinkSync(imageFolderPath + file);
-          console.log(`${file} has been deleted.`);
-        }
+        files.forEach((file) => {
+          if (file === ImageFileName) {
+            fs.unlinkSync(imageFolderPath + file);
+            console.log(`${file} has been deleted.`);
+          }
+        });
       });
-    });
+    }
     // Câu lệnh UPDATE đầu tiên
     await connect.query(
       "UPDATE product SET brands=?, name=?, description=?, type=?, gia=?, image=? WHERE id_product = ?",
       [brand, name, description, type, gia, dongbo, idProduct]
     );
 
-    res.redirect("/homepage");
+    return res.redirect("/homepage");
   } catch (err) {
     // Xử lý lỗi nếu có
     console.error("Lỗi trong quá trình thực hiện câu lệnh UPDATE:", err);
-    res.status(500).send("Đã xảy ra lỗi trong quá trình cập nhật dữ liệu.");
+    return res
+      .status(500)
+      .send("Đã xảy ra lỗi trong quá trình cập nhật dữ liệu.");
   }
 });
 route.get("/delete/:id", upload.none(), async (req, res) => {
   const admin = req.cookies.admin || null;
   if (admin == null) {
-    res.redirect("/");
+    return res.redirect("/");
   }
   const inputString = req.params.id;
   const splittedStrings = inputString.split("-");
@@ -157,7 +156,7 @@ route.get("/delete/:id", upload.none(), async (req, res) => {
       }
     });
   });
-  res.redirect("/homepage");
+  return res.redirect("/homepage");
 });
 route.post("/home", upload.single("image"), (req, res) => {
   const sql =
@@ -180,7 +179,7 @@ route.post("/home", upload.single("image"), (req, res) => {
       }
     }
   );
-  res.send(req.body);
+  return res.send(req.body);
 });
-route.use("/create", create);
+// route.use("/create", create);
 module.exports = route;

@@ -15,6 +15,16 @@ router.post("/quantity", upload.none(), async function (req, res) {
   const { idProduct, quantity } = req.body;
   console.log(user_id, idProduct, quantity);
   try {
+    if (quantity > 50) {
+      return res
+        .status(400)
+        .json({ message: "Số lượng sản phẩm không được vượt quá 50." });
+    }
+    if (quantity < 1) {
+      return res
+        .status(400)
+        .json({ message: "Số lượng sản phẩm phải lớn hơn hoặc bằng 1." });
+    }
     // Gửi dữ liệu đến địa chỉ /api_cart
     const response = await axios.post(
       `http://localhost:3000/api_cart/quantity`,
@@ -26,23 +36,38 @@ router.post("/quantity", upload.none(), async function (req, res) {
     );
     // Xử lý phản hồi từ server
     // console.log(response); // Log kết quả từ server
-    res.send(response.data); // Trả về kết quả cho client
+    return res.send(response.data); // Trả về kết quả cho client
   } catch (error) {
     console.error("Đã xảy ra lỗi khi gửi dữ liệu tới /api_cart:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error2" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error2" });
+  }
+});
+router.get("/delete/:id", upload.none(), async (req, res) => {
+  const user = req.cookies.user ? req.cookies.user : null;
+  const id = req.params.id;
+  if (user == null) {
+    // Xử lý khi không có user trong cookies
+    return res.redirect("/");
+  } else {
+    const delete_cart = await axios.delete(
+      `http://localhost:3000/api_cart/delete/${id}`
+    );
+    return res.redirect("/cart");
   }
 });
 router.get("/", upload.none(), async function (req, res) {
   const user = req.cookies.user ? req.cookies.user : null;
   if (user == null) {
     // Xử lý khi không có user trong cookies
-    res.redirect("/");
+    return res.redirect("/");
   } else {
     const cart = await axios.get(
       `http://localhost:3000/api_cart/${user.id_kh}`
     );
     const cartdetail = cart.data.data;
-    res.render("cart", { cartdetail, user });
+    return res.render("cart", { cartdetail, user });
   }
 });
 router.post("/", upload.none(), async (req, res) => {
@@ -59,10 +84,12 @@ router.post("/", upload.none(), async (req, res) => {
     );
 
     // Xử lý phản hồi từ server
-    res.send(response.data); // Trả về kết quả cho client
+    return res.send(response.data); // Trả về kết quả cho client
   } catch (error) {
     console.error("Đã xảy ra lỗi khi gửi dữ liệu tới /api_cart:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error2" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error2" });
   }
 });
 router.post("/address", upload.none(), async (req, res) => {
@@ -84,11 +111,13 @@ router.post("/address", upload.none(), async (req, res) => {
       }
     );
     // Xử lý phản hồi từ server
-    res.send(response.data); // Trả về kết quả cho client
+    return res.send(response.data); // Trả về kết quả cho client
     // res.redirect("/cart");
   } catch (error) {
     console.error("Đã xảy ra lỗi khi gửi dữ liệu tới /api_cart:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error2" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error2" });
   }
 });
 module.exports = router;

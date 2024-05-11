@@ -36,7 +36,6 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
   const brands = req.body.brand;
   const types = req.body.type;
   const images = req.files; // Đổi lại thành req.files
-
   // Xử lý thông tin và tạo mảng sản phẩm
   for (let i = 0; i < names.length; i++) {
     let dongbo;
@@ -54,9 +53,6 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
       type: types[i],
       image: dongbo,
     };
-    if (product.image == null) {
-      product.image = "anhthu.png";
-    }
     products.push(product);
   }
 
@@ -81,7 +77,7 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
     }
   });
 
-  res.redirect("/");
+  res.redirect("/homepage");
 });
 
 module.exports = router2;

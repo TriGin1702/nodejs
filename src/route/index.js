@@ -6,26 +6,27 @@ const api_order = require("./api/api_order");
 const login = require("./login");
 const register = require("./register");
 const homepage = require("./home");
+const create = require("./create");
 const cart = require("./cart");
 const order = require("./order");
 const { exec } = require("child_process");
-const connection = require("../app/control/connect");
-const time = Date.now();
-const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./src/public/image");
-  },
-  filename: (req, file, cb) => {
-    cb(null, time + "-" + file.originalname);
-  },
-});
-const upload = multer({ storage });
+// const connection = require("../app/control/connect");
+// const time = Date.now();
+// const multer = require("multer");
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "./src/public/image");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, time + "-" + file.originalname);
+//   },
+// });
+// const upload = multer({ storage });
 
-connection.connect((err) => {
-  if (err) throw err;
-  console.log("connected");
-});
+// connection.connect((err) => {
+//   if (err) throw err;
+//   console.log("connected");
+// });
 
 function route(app) {
   exec(
@@ -46,6 +47,7 @@ function route(app) {
   app.use("/news", news);
   app.use("/register", register);
   app.use("/order", order);
+  app.use("/homepage/create", create);
   app.use("/homepage", homepage);
   app.use("/", login);
 }

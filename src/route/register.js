@@ -5,7 +5,7 @@ const axios = require("axios");
 // Route để hiển thị trang đăng nhập
 router1.get("/", (req, res) => {
   // Render trang đăng ký ở đây
-  res.render("register");
+  return res.render("register");
 });
 router1.post("/", (req, res) => {
   const customer = {
@@ -20,22 +20,24 @@ router1.post("/", (req, res) => {
   axios
     .post("http://localhost:3000/api_acc/register", customer)
     .then((response) => {
-      console.log(response.data); // Log dữ liệu phản hồi từ API
-
-      // Hiển thị thông báo thành công
-
-      // Chuyển hướng người dùng đến trang khác hoặc làm bất kỳ hành động nào khác tùy thuộc vào yêu cầu của bạn
-      // res.redirect("/");
-
-      res
-        .status(200)
-        .send(
-          "<script>alert('Registration successful!'); window.location.href = '/';</script>"
-        ); // Phản hồi về cho người dùng
+      console.log(response.data);
+      // Xử lý phản hồi từ máy chủ API
+      return res.status(200).redirect("/");
     })
     .catch((error) => {
-      console.error(error);
-      res.status(500).send("Error"); // Xử lý lỗi nếu gặp lỗi khi gửi yêu cầu
+      if (error.response && error.response.status === 400) {
+        // Nếu API trả về mã lỗi 400, gửi lại mã lỗi 400 và phản hồi từ máy chủ API cho máy khách
+        return res
+          .status(400)
+          .send(
+            '<script>alert("' +
+              error.response.data +
+              '"); window.location.href = window.location.href;</script>'
+          );
+      } else {
+        console.error(error);
+        return res.status(500).send("Error");
+      }
     });
 });
 

@@ -67,6 +67,10 @@ async function inputForm(event) {
     inputone.querySelector(".description").value = "";
     inputone.querySelector(".gia").value = "";
     inputone.querySelector(".image").files[0] = "";
+    // var preview = inputone
+    //   .querySelector(".image")
+    //   .parentElement.querySelector(".preview");
+    // preview.src = "";
   }
 }
 
@@ -83,13 +87,17 @@ function previewImage(event) {
     reader.readAsDataURL(input.files[0]);
   }
 }
+var moreProductClicked = false;
 
 function Moreproduct() {
   const elements = document.querySelector(".more");
   const form = document.querySelector(".form");
-  const saveAll = document.getElementById("allsave");
-  saveAll.remove();
   const newDiv = document.createElement("div");
+  if (moreProductClicked == true) {
+    const saveAll = document.getElementById("allsave");
+    saveAll.remove();
+  }
+  moreProductClicked = true;
   newDiv.className = "more";
   newDiv.innerHTML = elements.innerHTML;
   const saveAllButton = document.createElement("button");
@@ -107,7 +115,6 @@ function Moreproduct() {
 async function send(formData) {
   try {
     const response = await axios.post("/homepage/home", formData);
-
     // Xử lý kết quả trả về nếu cần
     console.log("Success:", response.message.data);
   } catch (error) {

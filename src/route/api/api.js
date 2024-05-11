@@ -1,7 +1,25 @@
 const express = require("express");
 const connect = require("../../app/control/connect");
 const router2 = express.Router();
+router2.get("/quantity_product/:user_id", (req, res) => {
+  const userId = req.params.user_id; // Lấy id của người dùng từ URL params
 
+  // Query để tính tổng số lượng sản phẩm trong hóa đơn của người dùng
+  const query = `SELECT SUM(quantity) AS totalQuantity FROM bill WHERE id_kh = ?`;
+
+  // Thực hiện truy vấn
+  connect.query(query, [userId], (err, result) => {
+    if (err) {
+      console.error("Error while getting total quantity:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    // Nếu không có lỗi, trả về kết quả với tổng số lượng sản phẩm
+    const totalQuantity = result[0].totalQuantity || 0;
+    res.status(200).json({ totalQuantity });
+  });
+});
 router2.get("/", async (req, res) => {
   try {
     let sortQuery = "";
@@ -20,20 +38,19 @@ router2.get("/", async (req, res) => {
       checkquery = `SELECT * FROM product ${sortQuery}`; // Tạo câu truy vấn SQL hoàn chỉnh
     }
     const query = checkquery;
-    const brand = await new Promise((resolve, reject) => {
+    const product = await new Promise((resolve, reject) => {
       connect.query(query, (err, rows) => {
         if (err) reject(err);
         resolve(rows);
       });
     });
 
-    res.json(brand); // Chuyển dữ liệu brand sang dạng JSON và gửi về client
+    return res.json(product); // Chuyển dữ liệu brand sang dạng JSON và gửi về client
   } catch (err) {
     console.error(err);
-    res.send("error"); // Xử lý lỗi nếu truy vấn không thành công
+    return res.send("error"); // Xử lý lỗi nếu truy vấn không thành công
   }
 });
-
 router2.delete("/:id", async (req, res) => {
   try {
     const id_product = req.params.id;

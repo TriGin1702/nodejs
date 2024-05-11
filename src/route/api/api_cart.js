@@ -11,12 +11,28 @@ router.post("/quantity", async function (req, res) {
       return res.status(401).json({ message: "User not logged in." });
     }
     // Gọi stored procedure để cập nhật quantity và price
-    const sql = "CALL UpdateQuantityAndPrice( ?, ?, ?)";
+    const sql = "CALL UpdateQuantityAndPrice(?, ?, ?)";
     await connect.query(sql, [checkedProducts, user_id, quantity]);
+
     // Kiểm tra xem sản phẩm đã được cập nhật thành công hay không
     return res.status(200).json({ message: "Quantity updated successfully." });
   } catch (error) {
-    // console.error("Error updating quantity:", error);
+    console.error("Error updating quantity:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+});
+router.delete("/delete/:id", upload.none(), async (req, res) => {
+  const cartId = req.params.id;
+  try {
+    // Xóa dòng trong bảng bill dựa trên id sản phẩm
+    const deleteProductSql = "DELETE FROM bill WHERE id_dh = ?";
+    await connect.query(deleteProductSql, [cartId]);
+
+    return res
+      .status(200)
+      .json({ message: "Product deleted from bill successfully." });
+  } catch (error) {
+    console.error("Error deleting product from bill:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 });

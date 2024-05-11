@@ -23,7 +23,7 @@ router.post("/address", async function (req, res) {
       selectedDistrict: selectedDistrict,
       address: address,
     });
-    res.send(firstName);
+    return res.send(firstName);
   } catch (error) {
     console.error("Đã xảy ra lỗi khi gửi dữ liệu tới /api_cart:", error);
   }
@@ -33,13 +33,13 @@ router.get("/", async function (req, res) {
   console.log("user:", user);
   if (user == null) {
     // Xử lý khi không có user trong cookies
-    res.redirect("/");
+    return res.redirect("/");
   } else {
     const cart = await axios.get(
       `http://localhost:3000/api_order/${user.id_kh}`
     );
     const cartorder = cart.data.data;
-    res.render("order", { cartorder, user });
+    return res.render("order", { cartorder, user });
   }
 });
 module.exports = router;

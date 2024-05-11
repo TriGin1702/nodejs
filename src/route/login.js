@@ -13,7 +13,7 @@ router1.use(cookieParser());
 router1.get("/", async (req, res) => {
   try {
     res.clearCookie("user");
-    res.render("login");
+    return res.render("login");
   } catch (err) {
     console.error(err);
     res.send("error");
@@ -34,8 +34,8 @@ router1.post("/", upload.none(), async (req, res) => {
     const maxAge = 3 * 60 * 60 * 1000;
     if (account && account.id_kh) {
       res.cookie("user", account, maxAge);
-      console.log(req.cookies.user);
-      res.redirect("/news");
+      // console.log(req.cookies.user);
+      return res.redirect("/news");
     } else if (
       req.body.accountName.match("system") &&
       req.body.password.match("master123")
@@ -45,17 +45,17 @@ router1.post("/", upload.none(), async (req, res) => {
         password: "master123",
       };
       res.cookie("admin", admin, maxAge);
-      console.log(req.cookies.admin);
-      res.redirect("/homepage");
+      // console.log(req.cookies.admin);
+      return res.redirect("/homepage");
     } else {
       // Nếu thông tin đăng nhập không chính xác, hiển thị thông báo lỗi
-      res.send(
+      return res.send(
         "<script>alert('Incorrect account or password'); window.location.href = '/';</script>"
       );
     }
   } catch (err) {
     console.error(err);
-    res.send("Error");
+    return res.send("Error");
   }
 });
 

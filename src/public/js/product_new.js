@@ -1,20 +1,25 @@
 function sortproducts() {
   var selectedValue = document.getElementById("sortingSelect").value;
   var currentUrl = window.location.href;
-  var baseUrl = currentUrl.split("?")[0]; // Lấy phần URL cơ bản, bỏ qua phần query string
+  // var baseUrl = currentUrl.split("?")[0]; // Lấy phần URL cơ bản, bỏ qua phần query string
 
   // Loại bỏ query string hiện tại nếu nó đã tồn tại trong URL
-  if (currentUrl.includes("sort=top") || currentUrl.includes("sort=down")) {
-    currentUrl = currentUrl.split("?")[0];
+  if (currentUrl.includes("?sort=top") || currentUrl.includes("&sort=top")) {
+    currentUrl = currentUrl.replace("?sort=top", "");
+    currentUrl = currentUrl.replace("&sort=top", "");
+  }
+  if (currentUrl.includes("?sort=down") || currentUrl.includes("&sort=down")) {
+    currentUrl = currentUrl.replace("?sort=down", "");
+    currentUrl = currentUrl.replace("&sort=down", "");
   }
   // Tạo query string dựa trên giá trị được chọn
   var queryString = currentUrl.includes("?") ? "&" : "?";
 
   // Tạo URL mới bằng cách thêm query string dựa trên giá trị được chọn
   if (selectedValue === "top") {
-    window.location.href = baseUrl + queryString + "sort=top";
+    window.location.href = currentUrl + queryString + "sort=top";
   } else if (selectedValue === "down") {
-    window.location.href = baseUrl + queryString + "sort=down";
+    window.location.href = currentUrl + queryString + "sort=down";
   }
 }
 

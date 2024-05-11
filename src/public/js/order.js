@@ -1,6 +1,6 @@
 function isValidName(name) {
-  // Kiểm tra xem tên có chứa ký tự đặc biệt hoặc số không
-  return /^[a-zA-Z ]+$/.test(name);
+  // Kiểm tra xem tên không chứa số
+  return /^[^\d]+$/.test(name);
 }
 
 function isValidPhoneNumber(phoneNumber) {
@@ -221,16 +221,12 @@ async function submitPayment() {
       " " +
       address +
       " " +
-      selectedCity +
-      " " +
-      selectedDistrict +
-      " " +
       id_ad
   );
   if (
     isValidAddress(address) &&
     isValidPhoneNumber(phoneNumber) &&
-    isValidName(name)
+    isValidName(firstName)
   ) {
     await axios
       .post("/order/address", {
@@ -243,7 +239,7 @@ async function submitPayment() {
       })
       .then(function (response) {
         console.log(response);
-        //   window.location.reload();
+        window.location.reload();
         // Xử lý phản hồi từ server sau khi gửi thành công
       })
       .catch(function (error) {

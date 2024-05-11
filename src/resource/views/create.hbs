@@ -5,7 +5,7 @@
   enctype="multipart/form-data"
 >
   <div class="more">
-    <div class="mb-3" style="padding-top: 50px; width:100%">
+    <div class="mb-3" style="padding-top: 50px; width:100%;">
       <label for="Product name" class="form-label">Product name</label>
       <input
         type="text"
@@ -76,7 +76,7 @@
         type="button"
         onclick="Moreproduct()"
         class="btn btn-success"
-        style="float:right;"
+        style="float:right; margin-bottom: 50px;"
       >More product</button>
       <button
         type="button"
@@ -84,13 +84,14 @@
         style="float:right;margin-right:30px"
         onclick="inputForm(event)"
       >Save</button>
+      <a href="/homepage">
+        <button
+          type="button"
+          class="btn btn-success"
+          style="float:right; margin-right: 30px;"
+        >Come Back</button>
+      </a>
     </div>
-    <button
-      type="submit"
-      id="allsave"
-      class="btn btn-success"
-      style="float:right;margin-right:20px"
-    >Save All</button>
   </div>
 </form>
 <script src="/js/view.js"></script>

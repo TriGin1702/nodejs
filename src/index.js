@@ -28,6 +28,6 @@ app.engine(
 );
 app.set("view engine", ".hbs");
 app.set("views", path.join(__dirname, "./resource/views"));
-console.log("__dirname: ", path.join(__dirname, "resource/views"));
+console.log("__dirname: ", path.join(__dirname, "/resource/views"));
 route(app);
 app.listen(port, () => console.log(`listening on port  + ${port}`));

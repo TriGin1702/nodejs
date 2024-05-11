@@ -1,21 +1,21 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-dark" style="margin-bottom: 10px;">
-  <a class="navbar-brand" href="#">test</a>
+  <a class="navbar-brand" href="/news" onclick="resetSearch()">News</a>
   {{!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button> --}}
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
+      {{!-- <li class="nav-item active">
         <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="../news" onclick="resetSearch()">News</a>
-      </li>
+      </li> --}}
       
     </ul>
-    <form class="form-inline my-2 my-lg-0" action="/news" method="post">
-      <input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search">
+    <form class="form-inline my-2 my-lg-0" autocomplete="off" id="searchForm">
+      <input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search" id="searchInput">
       <button class="btn btn-outline-success mr-sm-5" type="submit">Search</button>
     </form>
       {{#if user}}
@@ -24,10 +24,12 @@
         <a href="/"><button class="btn btn-outline-info" type="submit" style="margin: 0px 12px;"><i class="bi bi-person-circle"></i>Login</button></a>
       {{/if}}
       {{!-- <button class="btn btn-outline-info" type="submit" style="margin: 0 12px 0 0;"><i class="bi bi-person-add"></i></i>Register</button> --}}
-      <a href="/cart" style="color: azure; display: inline-block; position: relative;">
+      {{#if nummberproducts}}
+        <a href="/cart" style="color: azure; display: inline-block; position: relative;">
         <i class="bi bi-bag-fill" style="font-size: 36px;"></i>
-        <input class="quantity_cart" type="text" value="10" readonly>
+        <input class="quantity_cart" type="text" value="{{nummberproducts}}" readonly>
       </a>
+      {{/if}}
 
       </div>
   </div>

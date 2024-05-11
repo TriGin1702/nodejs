@@ -1,6 +1,6 @@
 function isValidName(name) {
-  // Kiểm tra xem tên có chứa ký tự đặc biệt hoặc số không
-  return /^[a-zA-Z ]+$/.test(name);
+  // Kiểm tra xem tên không chứa số
+  return /^[^\d]+$/.test(name);
 }
 
 function isValidPhoneNumber(phoneNumber) {
@@ -252,7 +252,18 @@ async function updateQuantity(data) {
     console.log(response.data);
   } catch (error) {
     console.error(error);
-    alert("An error occurred while updating quantity. Please try again later.");
+    if (error.response) {
+      // Nếu có phản hồi từ server và có mã lỗi
+      alert(
+        "An error occurred while updating quantity: " +
+          error.response.data.message
+      );
+    } else {
+      // Nếu không có phản hồi từ server hoặc không có mã lỗi
+      alert(
+        "An error occurred while updating quantity. Please try again later."
+      );
+    }
   }
 }
 
