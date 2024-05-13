@@ -76,6 +76,8 @@ services:
       - 3000:3000
     volumes:
       - ./src/public:/usr/src/app/src/public:rw
+    depends_on: # Add this line to specify dependencies
+      - mysql-db # Specify that this service depends on mysql-db
     networks:
       - nodejs
 volumes:
