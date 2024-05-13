@@ -67,7 +67,7 @@ services:
   server:
     build:
       context: .
-    restart: unless-stopped
+    restart: always
     stdin_open: true
     tty: true
     environment:
