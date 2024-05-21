@@ -24,10 +24,13 @@ router1.post("/", upload.none(), async (req, res) => {
   // Sử dụng upload.none() để xử lý form không có files
   try {
     // Gửi yêu cầu POST đến API để kiểm tra thông tin đăng nhập
-    const apiResponse = await axios.post("http://localhost:3000/api_acc", {
-      accountName: req.body.accountName,
-      password: req.body.password,
-    });
+    const apiResponse = await axios.post(
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ACC}`,
+      {
+        accountName: req.body.accountName,
+        password: req.body.password,
+      }
+    );
     const account = apiResponse.data;
     // Nếu đăng nhập thành công, lưu thông tin người dùng vào cookie và chuyển hướng đến trang tin tức
     console.log(account);

@@ -1,14 +1,5 @@
 // // const products = [];
 
-function product(brand, name, description, type, gia, image) {
-  this.brand = brand;
-  this.name = name;
-  this.description = description;
-  this.type = type;
-  this.gia = gia;
-  this.image = image;
-}
-
 // // async function inputForms() {
 // //     const infors = document.querySelectorAll('.more');
 // //     infors.forEach((element) => {
@@ -32,7 +23,7 @@ function product(brand, name, description, type, gia, image) {
 // //     products.length = 0;
 // // }
 
-async function inputForm(event) {
+function inputForm(event) {
   const inputone = event.target.closest(".more");
   if (event.target.closest(".btn2") === inputone.querySelector(".btn2")) {
     const name = inputone.querySelector(".name").value;
@@ -43,21 +34,22 @@ async function inputForm(event) {
     const brand = brandSelect.options[brandSelect.selectedIndex].value;
     const typeSelect = inputone.querySelector(".type");
     const type = typeSelect.options[typeSelect.selectedIndex].value;
-    if (!image) {
-      // Nếu image là null, gán giá trị mặc định
-      image = "anhthu.png";
-    }
     // Tạo đối tượng FormData và thêm dữ liệu và file vào đó
+    // Tạo một đối tượng FormData
     const formData = new FormData();
+
+    // Thêm các trường dữ liệu vào FormData
     formData.append("name", name);
     formData.append("description", description);
     formData.append("gia", gia);
     formData.append("brand", brand);
     formData.append("type", type);
+
+    // Thêm tệp hình ảnh vào FormData
     formData.append("image", image);
 
     // Gọi hàm send với đối tượng FormData
-    await send(formData);
+    send(formData);
 
     // const inputs = inputone.querySelectorAll(".more textarea");
     // inputs.forEach((input) => {
@@ -114,9 +106,9 @@ function Moreproduct() {
 
 async function send(formData) {
   try {
-    const response = await axios.post("/homepage/home", formData);
+    await axios.post("/homepage/home", formData);
     // Xử lý kết quả trả về nếu cần
-    console.log("Success:", response.message.data);
+    console.log("Success");
   } catch (error) {
     // Xử lý lỗi nếu có
     console.log("Error:", error);

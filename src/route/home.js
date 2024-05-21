@@ -2,15 +2,15 @@ const express = require("express");
 const connect = require("../app/control/connect");
 const fs = require("fs");
 const path = require("path");
-const imageFolderPath = path.join(__dirname, "../../src/public/image/");
+const imageFolderPath = path.join(__dirname, "../public/image/");
 const route = express.Router();
 const multer = require("multer");
 const { error } = require("console");
 const time = Date.now();
 const axios = require("axios");
 const cookieParser = require("cookie-parser"); // Import cookie-parser
-const { router } = require("json-server");
 route.use(cookieParser());
+require("dotenv").config();
 var product = [];
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -27,9 +27,10 @@ route.get("/list_users", async (req, res) => {
     if (admin == null) {
       return res.redirect("/");
     }
-    const listusers = await axios.get(
-      "http://localhost:3000/api_acc/list_users"
-    );
+    const url = `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ACC}/list_users`;
+    console.log("Fetching users from URL:", url);
+
+    const listusers = await axios.get(url);
     const users = listusers.data;
     console.log(users);
     return res.render("list_user", { users: users });
@@ -37,21 +38,26 @@ route.get("/list_users", async (req, res) => {
     return res.send(err);
   }
 });
-route.get("/", async (req, res) => {
-  try {
-    const admin = req.cookies.admin || null;
-    if (admin == null) {
-      return res.redirect("/");
-    }
-    await connect.query("select * from product", (err, result) => {
-      product = result;
-      // req.app.locals.product = product;
-      req.app.locals.customername = "Login";
-      return res.render("home", { product: product });
-    });
-  } catch (err) {
-    return res.send(err);
+route.post("/home", upload.single("image"), async (req, res) => {
+  const sql =
+    "INSERT INTO product (brands, name, description, type, gia, image) VALUES (?, ?, ?, ?, ?, ?)";
+  const { brand, name, description, type, gia } = req.body;
+  let dongbo;
+  if (req.file) {
+    dongbo = time + "-" + req.file.originalname;
+  } else {
+    dongbo = "anhthu.png";
   }
+  await new Promise((resolve, reject) => {
+    connect.query(
+      sql,
+      [brand, name, description, type, gia, dongbo],
+      (err, result) => {
+        if (err) reject(err);
+        resolve(result);
+      }
+    );
+  });
 });
 route.get("/update/:id", async (req, res) => {
   const admin = req.cookies.admin || null;
@@ -62,17 +68,19 @@ route.get("/update/:id", async (req, res) => {
   const splittedStrings = inputString.split("-");
   const firstPart = splittedStrings[0];
   try {
-    const product = await new Promise(async (resolve, reject) => {
-      await connect.query(
+    const product = await new Promise((resolve, reject) => {
+      connect.query(
         "select * from product where id_product = ?",
         [firstPart],
         (err, result) => {
+          if (err) reject(err);
           resolve(result);
         }
       );
     });
-    const brand = await new Promise(async (resolve, reject) => {
-      await connect.query("select brand_id from brand", (err, result) => {
+    const brand = await new Promise((resolve, reject) => {
+      connect.query("select brand_id from brand", (err, result) => {
+        if (err) reject(err);
         resolve(result);
       });
     });
@@ -89,7 +97,6 @@ route.post("/update/:id", upload.single("image"), async (req, res) => {
   }
   const inputString = req.params.id;
   const splittedStrings = inputString.split("-");
-
   // Lấy phần id_product từ mảng splittedStrings
   const idProduct = splittedStrings[0];
   console.log(idProduct); // In ra id_product để kiểm tra xem nó đã đúng chưa
@@ -116,10 +123,16 @@ route.post("/update/:id", upload.single("image"), async (req, res) => {
       });
     }
     // Câu lệnh UPDATE đầu tiên
-    await connect.query(
-      "UPDATE product SET brands=?, name=?, description=?, type=?, gia=?, image=? WHERE id_product = ?",
-      [brand, name, description, type, gia, dongbo, idProduct]
-    );
+    await new Promise((resolve, reject) => {
+      connect.query(
+        "UPDATE product SET brands=?, name=?, description=?, type=?, gia=?, image=? WHERE id_product = ?",
+        [brand, name, description, type, gia, dongbo, idProduct],
+        (err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        }
+      );
+    });
 
     return res.redirect("/homepage");
   } catch (err) {
@@ -140,46 +153,46 @@ route.get("/delete/:id", upload.none(), async (req, res) => {
   // Lấy hai chuỗi đã tách ra
   const firstPart = splittedStrings[0];
   const ImageFileName = splittedStrings[1] + "-" + splittedStrings[2];
-  const response = await axios.delete(`http://localhost:3000/api/${firstPart}`);
-  console.log(firstPart);
-  // Kiểm tra xem có lỗi khi gửi yêu cầu không
-  if (response.status !== 200) {
-    throw new Error("Failed to delete product");
-  }
-  fs.readdir(imageFolderPath, (err, files) => {
-    if (err) throw err;
+  try {
+    await axios.delete(
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_PRODUCT}/${firstPart}`
+    );
 
-    files.forEach((file) => {
-      if (file === ImageFileName) {
-        fs.unlinkSync(imageFolderPath + file);
-        console.log(`${file} has been deleted.`);
-      }
+    fs.readdir(imageFolderPath, (err, files) => {
+      if (err) throw err;
+
+      files.forEach((file) => {
+        if (file === ImageFileName) {
+          fs.unlinkSync(imageFolderPath + file);
+          console.log(`${file} has been deleted.`);
+        }
+      });
     });
-  });
-  return res.redirect("/homepage");
-});
-route.post("/home", upload.single("image"), (req, res) => {
-  const sql =
-    "INSERT INTO product (brands, name, description, type, gia, image) VALUES (?, ?, ?, ?, ?, ?)";
-  const { brand, name, description, type, gia } = req.body;
-  let dongbo;
-  if (req.file) {
-    dongbo = time + "-" + req.file.originalname;
-  } else {
-    dongbo = "anhthu.png";
+
+    return res.redirect("/homepage");
+  } catch (err) {
+    return res.send(err);
   }
-  connect.query(
-    sql,
-    [brand, name, description, type, gia, dongbo],
-    (err, result) => {
-      if (err) {
-        console.error("Error saving product:", err);
-      } else {
-        console.log("Product saved:", result);
-      }
-    }
-  );
-  return res.send(req.body);
 });
 // route.use("/create", create);
+route.get("/", async (req, res) => {
+  try {
+    const admin = req.cookies.admin || null;
+    if (admin == null) {
+      return res.redirect("/");
+    }
+    await new Promise((resolve, reject) => {
+      connect.query("select * from product", (err, result) => {
+        if (err) reject(err);
+        product = result;
+        resolve();
+      });
+    });
+    // req.app.locals.product = product;
+    return res.render("home", { product: product });
+  } catch (err) {
+    return res.send(err);
+  }
+});
+
 module.exports = route;

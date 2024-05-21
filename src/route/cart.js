@@ -27,7 +27,7 @@ router.post("/quantity", upload.none(), async function (req, res) {
     }
     // Gửi dữ liệu đến địa chỉ /api_cart
     const response = await axios.post(
-      `http://localhost:3000/api_cart/quantity`,
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_CART}/quantity`,
       {
         quantity: quantity,
         checkedProducts: idProduct,
@@ -51,8 +51,8 @@ router.get("/delete/:id", upload.none(), async (req, res) => {
     // Xử lý khi không có user trong cookies
     return res.redirect("/");
   } else {
-    const delete_cart = await axios.delete(
-      `http://localhost:3000/api_cart/delete/${id}`
+    await axios.delete(
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_CART}/delete/${id}`
     );
     return res.redirect("/cart");
   }
@@ -64,7 +64,7 @@ router.get("/", upload.none(), async function (req, res) {
     return res.redirect("/");
   } else {
     const cart = await axios.get(
-      `http://localhost:3000/api_cart/${user.id_kh}`
+      `${process.env.DOMAIN}:${process.env.PORT}/api_cart/${user.id_kh}`
     );
     const cartdetail = cart.data.data;
     return res.render("cart", { cartdetail, user });
@@ -77,7 +77,7 @@ router.post("/", upload.none(), async (req, res) => {
   try {
     // Gửi dữ liệu đến địa chỉ /api_cart
     const response = await axios.post(
-      `http://localhost:3000/api_cart/${user_id}`,
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_CART}/${user_id}`,
       {
         idProduct: id_product,
       }
@@ -99,7 +99,7 @@ router.post("/address", upload.none(), async (req, res) => {
   try {
     // Gửi dữ liệu đến địa chỉ /api_cart
     const response = await axios.post(
-      `http://localhost:3000/api_cart/address`,
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_CART}/address`,
       {
         user_id: user_id,
         name: name,

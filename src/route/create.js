@@ -53,7 +53,7 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
       type: types[i],
       image: dongbo,
     };
-    products.push(product);
+    await products.push(product);
   }
 
   // Lưu mảng sản phẩm vào cơ sở dữ liệu tại đây
@@ -63,14 +63,23 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
     "INSERT INTO product (brands, name, description, type, gia, image) VALUES (?, ?, ?, ?, ?, ?)";
   products.forEach(async (product) => {
     try {
-      await connect.query(sql, [
-        product.brand,
-        product.name,
-        product.description,
-        product.type,
-        product.gia,
-        product.image,
-      ]);
+      await new Promise((resolve, reject) => {
+        connect.query(
+          sql,
+          [
+            product.brand,
+            product.name,
+            product.description,
+            product.type,
+            product.gia,
+            product.image,
+          ],
+          (err, result) => {
+            if (err) reject(err);
+            resolve(result);
+          }
+        );
+      });
       console.log("Product inserted:", product);
     } catch (err) {
       console.error("Error inserting product:", err);

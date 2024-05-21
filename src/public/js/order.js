@@ -66,7 +66,6 @@ function Payment({}) {
                   style="display: block;"
                 >City</label>
                 <select class="form-select" id="validationDefault03" required>
-                  <option value="">Select City</option>
                   <option value="Hồ Chí Minh">Hồ Chí Minh</option>
                   <option value="Hà Nội">Hà Nội</option>
                   <option value="Quảng Ngãi">Quảng Ngãi</option>
@@ -202,6 +201,7 @@ function showPayment(event) {
   document.getElementById("validationDefault03").value = city.trim();
   document.getElementById("validationDefault04").value = district.trim();
   document.getElementById("validationDefault05").value = street.trim();
+  console.log(name, phone, address, street, district, city);
 }
 
 async function submitPayment() {

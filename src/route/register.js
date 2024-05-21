@@ -18,7 +18,10 @@ router1.post("/", (req, res) => {
 
   // Gửi dữ liệu của khách hàng đến API để chèn vào cơ sở dữ liệu
   axios
-    .post("http://localhost:3000/api_acc/register", customer)
+    .post(
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ACC}/register`,
+      customer
+    )
     .then((response) => {
       console.log(response.data);
       // Xử lý phản hồi từ máy chủ API

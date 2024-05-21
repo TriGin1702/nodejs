@@ -5,12 +5,12 @@ var handlebars = require("express-handlebars");
 const express = require("express");
 const app = express();
 const route = require("./route/index");
+require("dotenv").config();
 
-// Các dòng mã khác
-
-const port = 3000;
+const port = process.env.PORT || 3001;
 //HTTP logger
 app.use(express.static(path.join(__dirname, "public")));
+console.log("__dirname: ", path.join(__dirname, "./public"));
 app.use(
   express.urlencoded({
     extended: true,

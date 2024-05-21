@@ -15,14 +15,17 @@ router.post("/address", async function (req, res) {
   console.log(req.body);
   const user = req.cookies.user ? req.cookies.user.id_kh : null;
   try {
-    await axios.post(`http://localhost:3000/api_order/${user}`, {
-      id_ad: id_ad,
-      firstName: firstName,
-      phoneNumber: phoneNumber,
-      selectedCity: selectedCity,
-      selectedDistrict: selectedDistrict,
-      address: address,
-    });
+    await axios.post(
+      `${process.env.DOMAIN}:${process.env.PORT}/api_order/${user}`,
+      {
+        id_ad: id_ad,
+        firstName: firstName,
+        phoneNumber: phoneNumber,
+        selectedCity: selectedCity,
+        selectedDistrict: selectedDistrict,
+        address: address,
+      }
+    );
     return res.send(firstName);
   } catch (error) {
     console.error("Đã xảy ra lỗi khi gửi dữ liệu tới /api_cart:", error);
@@ -36,7 +39,7 @@ router.get("/", async function (req, res) {
     return res.redirect("/");
   } else {
     const cart = await axios.get(
-      `http://localhost:3000/api_order/${user.id_kh}`
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ORDER}/${user.id_kh}`
     );
     const cartorder = cart.data.data;
     return res.render("order", { cartorder, user });

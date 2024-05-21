@@ -1,25 +1,31 @@
 const express = require("express");
 const connect = require("../../app/control/connect");
 const router2 = express.Router();
-router2.get("/quantity_product/:user_id", (req, res) => {
-  const userId = req.params.user_id; // Lấy id của người dùng từ URL params
+router2.get("/quantity_product/:user_id", async (req, res) => {
+  const userId = req.params.user_id;
 
-  // Query để tính tổng số lượng sản phẩm trong hóa đơn của người dùng
-  const query = `SELECT SUM(quantity) AS totalQuantity FROM bill WHERE id_kh = ?`;
+  try {
+    const query = `SELECT SUM(quantity) AS totalQuantity FROM bill WHERE id_kh = ?`;
 
-  // Thực hiện truy vấn
-  connect.query(query, [userId], (err, result) => {
-    if (err) {
-      console.error("Error while getting total quantity:", err);
-      res.status(500).json({ error: "Internal server error" });
-      return;
-    }
+    const result = await new Promise((resolve, reject) => {
+      connect.query(query, [userId], (err, result) => {
+        if (err) {
+          console.error("Error while getting total quantity:", err);
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
 
-    // Nếu không có lỗi, trả về kết quả với tổng số lượng sản phẩm
     const totalQuantity = result[0].totalQuantity || 0;
     res.status(200).json({ totalQuantity });
-  });
+  } catch (error) {
+    console.error("Error while getting total quantity:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
+
 router2.get("/", async (req, res) => {
   try {
     let sortQuery = "";

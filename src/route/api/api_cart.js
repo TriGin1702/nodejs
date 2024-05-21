@@ -6,15 +6,26 @@ const upload = multer();
 router.post("/quantity", async function (req, res) {
   const { checkedProducts, user_id, quantity } = req.body;
   try {
-    // Kiểm tra xem người dùng đã đăng nhập chưa
     if (!user_id) {
       return res.status(401).json({ message: "User not logged in." });
     }
-    // Gọi stored procedure để cập nhật quantity và price
-    const sql = "CALL UpdateQuantityAndPrice(?, ?, ?)";
-    await connect.query(sql, [checkedProducts, user_id, quantity]);
 
-    // Kiểm tra xem sản phẩm đã được cập nhật thành công hay không
+    const sql = "CALL UpdateQuantityAndPrice(?, ?, ?)";
+    await new Promise((resolve, reject) => {
+      connect.query(
+        sql,
+        [checkedProducts, user_id, quantity],
+        (error, results) => {
+          if (error) {
+            console.error("Error updating quantity:", error);
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+
     return res.status(200).json({ message: "Quantity updated successfully." });
   } catch (error) {
     console.error("Error updating quantity:", error);
@@ -26,7 +37,12 @@ router.delete("/delete/:id", upload.none(), async (req, res) => {
   try {
     // Xóa dòng trong bảng bill dựa trên id sản phẩm
     const deleteProductSql = "DELETE FROM bill WHERE id_dh = ?";
-    await connect.query(deleteProductSql, [cartId]);
+    await new Promise((resolve, reject) => {
+      connect.query(deleteProductSql, [cartId], (err, result) => {
+        if (err) reject(err);
+        resolve(result);
+      });
+    });
 
     return res
       .status(200)
@@ -53,20 +69,29 @@ router.post("/address", async (req, res) => {
         .status(400)
         .json({ success: false, message: "User ID not found in request body" });
     }
-    // Thực hiện lặp qua từng sản phẩm trong mảng checkedProducts để gọi store procedure
+
     for (const product of checkedProducts) {
-      // Thực thi store procedure InsertOrUpdateAddressAndSetBillStatus
-      await connect.query(
-        "CALL InsertOrUpdateAddressAndSetBillStatus(?, ?, ?, ?, ?, ?, ?)",
-        [user_id, product, city, district, address, name, phoneNumber]
-      );
+      await new Promise((resolve, reject) => {
+        connect.query(
+          "CALL InsertOrUpdateAddressAndSetBillStatus(?, ?, ?, ?, ?, ?, ?)",
+          [user_id, product, city, district, address, name, phoneNumber],
+          (error, results) => {
+            if (error) {
+              console.error("Error processing data:", error);
+              reject(error);
+            } else {
+              resolve(results);
+            }
+          }
+        );
+      });
     }
+
     res
       .status(200)
       .json({ success: true, message: "Data processed successfully" });
   } catch (error) {
     console.error("Error processing data:", error);
-    // Xử lý lỗi khi thực thi store procedure hoặc các lỗi khác
     res.status(500).json({ success: false, error: "Error processing data" });
   }
 });

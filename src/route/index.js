@@ -9,46 +9,30 @@ const homepage = require("./home");
 const create = require("./create");
 const cart = require("./cart");
 const order = require("./order");
-const { exec } = require("child_process");
-// const connection = require("../app/control/connect");
-// const time = Date.now();
-// const multer = require("multer");
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "./src/public/image");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, time + "-" + file.originalname);
-//   },
-// });
-// const upload = multer({ storage });
-
-// connection.connect((err) => {
-//   if (err) throw err;
-//   console.log("connected");
-// });
+require("dotenv").config();
+// const { exec } = require("child_process");
 
 function route(app) {
-  exec(
-    "npx node-sass src/resource/scss/app.scss --output src/public/css/app.css",
-    (err, stdout, stderr) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      console.log(stdout);
-    }
-  );
-  app.use("/api", api);
-  app.use("/api_acc", api_acc);
-  app.use("/api_cart", api_cart);
-  app.use("/api_order", api_order);
+  // exec(
+  //   "npx node-sass src/resource/scss/app.scss --output src/public/css/app.css",
+  //   (err, stdout, stderr) => {
+  //     if (err) {
+  //       console.error(err);
+  //       return;
+  //     }
+  //     console.log(stdout);
+  //   }
+  // );
+  app.use(`/${process.env.API_PRODUCT}`, api);
+  app.use(`/${process.env.API_ACC}`, api_acc);
+  app.use(`/${process.env.API_CART}`, api_cart);
+  app.use(`/${process.env.API_ORDER}`, api_order);
+  app.use("/homepage/create", create);
+  app.use("/homepage", homepage);
   app.use("/cart", cart);
   app.use("/news", news);
   app.use("/register", register);
   app.use("/order", order);
-  app.use("/homepage/create", create);
-  app.use("/homepage", homepage);
   app.use("/", login);
 }
 module.exports = route;

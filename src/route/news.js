@@ -17,7 +17,7 @@ router1.get("/", async (req, res) => {
     const sortValue = req.query.sort || "default"; // Giá trị mặc định nếu không có query string
     console.log(req.query.search);
     // Gửi yêu cầu tới API với tham số "sort"
-    let apiURL = "http://localhost:3000/api?";
+    let apiURL = `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_PRODUCT}?`;
     if (req.query.search) {
       apiURL += `search=${req.query.search}&`;
     }
@@ -32,7 +32,7 @@ router1.get("/", async (req, res) => {
       return res.redirect("/");
     }
     const totalProducts = await axios.get(
-      `http://localhost:3000/api/quantity_product/${user.id_kh}`
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_PRODUCT}/quantity_product/${user.id_kh}`
     );
     const nummberproducts = totalProducts.data.totalQuantity;
     console.log(nummberproducts);
@@ -42,22 +42,6 @@ router1.get("/", async (req, res) => {
     return res.send("error");
   }
 });
-
-// router1.post("/", async (req, res) => {
-//   try {
-//     // Lấy dữ liệu từ form POST
-//     const searchValue = req.body.search;
-
-//     // req.app.locals.search = searchValue;
-//     req.session.searchValue = searchValue;
-
-//     // Truyền dữ liệu product vào view
-//     return res.redirect("/news");
-//   } catch (err) {
-//     console.error(err);
-//     return res.send("error");
-//   }
-// });
 router1.get("/:id", async (req, res) => {
   const inputproudct = req.params.id.split("-");
   const brand = inputproudct[0];
@@ -69,7 +53,9 @@ router1.get("/:id", async (req, res) => {
     return res.redirect("/");
   }
   try {
-    const listproducts = await axios.get("http://localhost:3000/api");
+    const listproducts = await axios.get(
+      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_PRODUCT}`
+    );
     const products = listproducts.data;
     console.log(typeof products);
     console.log(Array.isArray(products));
@@ -87,15 +73,4 @@ router1.get("/:id", async (req, res) => {
     return res.send("error");
   }
 });
-// router1.post("/cart", async (req, res) => {
-//   const { brand, name } = req.body;
-//   // console.log(req.body);
-//   const user_id = req.cookies.user.id_kh;
-//   console.log(user_id, brand, name);
-//   await axios.post("http://localhost:3000/api_cart", {
-//     brand: brand,
-//     name: name,
-//     user_id: user_id,
-//   });
-// });
 module.exports = router1;
