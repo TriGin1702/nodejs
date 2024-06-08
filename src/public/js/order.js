@@ -14,10 +14,10 @@ function isValidAddress(address) {
 }
 
 function Payment({}) {
-  const main = document.querySelector("#pay");
-  const Payment = document.createElement("div");
+  const main = document.querySelector('#pay');
+  const Payment = document.createElement('div');
   Payment.onclick = function (e) {
-    if (e.target.closest(".close")) {
+    if (e.target.closest('.close')) {
       main.removeChild(Payment);
     }
   };
@@ -174,53 +174,53 @@ function Payment({}) {
       `;
   main.appendChild(Payment);
 }
-var id = "";
+var id = '';
 
 function showPayment(event) {
   const selectedRowInput = event.target
-    .closest("tr")
+    .closest('tr')
     .querySelector('input[name="id_ad"]');
   if (!selectedRowInput) {
     // Không có hàng nào được chọn, bạn có thể hiển thị một thông báo hoặc thực hiện hành động khác ở đây
-    console.error("Không có hàng nào được chọn.");
+    console.error('Không có hàng nào được chọn.');
     return;
   }
 
-  const selectedRow = selectedRowInput.closest("tr");
-  const name = selectedRow.querySelector("td:nth-child(7)").innerText;
-  const phone = selectedRow.querySelector("td:nth-child(8)").innerText;
-  const address = selectedRow.querySelector("td:nth-child(3)").innerText;
+  const selectedRow = selectedRowInput.closest('tr');
+  const name = selectedRow.querySelector('td:nth-child(7)').innerText;
+  const phone = selectedRow.querySelector('td:nth-child(8)').innerText;
+  const address = selectedRow.querySelector('td:nth-child(3)').innerText;
   id_ad = selectedRowInput.value;
 
   Payment({ name, phone, address });
 
   // Tự động điền dữ liệu vào các ô input trong form Payment
-  document.getElementById("validationDefault01").value = name;
-  document.getElementById("validationDefault02").value = phone;
-  const [street, district, city] = address.split("-");
-  document.getElementById("validationDefault03").value = city.trim();
-  document.getElementById("validationDefault04").value = district.trim();
-  document.getElementById("validationDefault05").value = street.trim();
+  document.getElementById('validationDefault01').value = name;
+  document.getElementById('validationDefault02').value = phone;
+  const [street, district, city] = address.split('-');
+  document.getElementById('validationDefault03').value = city.trim();
+  document.getElementById('validationDefault04').value = district.trim();
+  document.getElementById('validationDefault05').value = street.trim();
   console.log(name, phone, address, street, district, city);
 }
 
 async function submitPayment() {
-  const firstName = document.getElementById("validationDefault01").value;
-  const phoneNumber = document.getElementById("validationDefault02").value;
-  const selectedCity = document.getElementById("validationDefault03").value;
-  const selectedDistrict = document.getElementById("validationDefault04").value;
-  const address = document.getElementById("validationDefault05").value;
+  const firstName = document.getElementById('validationDefault01').value;
+  const phoneNumber = document.getElementById('validationDefault02').value;
+  const selectedCity = document.getElementById('validationDefault03').value;
+  const selectedDistrict = document.getElementById('validationDefault04').value;
+  const address = document.getElementById('validationDefault05').value;
   console.log(
     firstName +
-      " " +
+      ' ' +
       phoneNumber +
-      " " +
+      ' ' +
       selectedCity +
-      " " +
+      ' ' +
       selectedDistrict +
-      " " +
+      ' ' +
       address +
-      " " +
+      ' ' +
       id_ad
   );
   if (
@@ -229,7 +229,7 @@ async function submitPayment() {
     isValidName(firstName)
   ) {
     await axios
-      .post("/order/address", {
+      .post('/order/address', {
         id_ad,
         firstName,
         phoneNumber,
@@ -247,6 +247,6 @@ async function submitPayment() {
         // Xử lý lỗi khi gửi dữ liệu
       });
   } else {
-    alert("Xin hãy nhập đúng các thông tin !");
+    alert('Xin hãy nhập đúng các thông tin !');
   }
 }

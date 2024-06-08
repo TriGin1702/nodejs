@@ -1,77 +1,77 @@
 {{#if cartorder}}
   <!-- Hiển thị bảng nếu có cartdetail -->
-  <table class="table table-primary">
+  <table class='table table-primary'>
     <thead>
-      <tr class="table-primary">
-        <th scope="col" style="text-align: center;">Image</th>
-        <th scope="col" style="text-align: center;">Product</th>
-        <th scope="col" style="text-align: center;">Address</th>
-        <th scope="col" style="text-align: center;">Date</th>
-        <th scope="col" style="text-align: center;">Quantity</th>
-        <th scope="col" style="text-align: center;">Price</th>
-        <th scope="col" style="text-align: center;">Name</th>
-        <th scope="col" style="text-align: center;">Phone</th>
-        <th scope="col" style="text-align: center;">Action</th>
+      <tr class='table-primary'>
+        <th scope='col' style='text-align: center;'>Image</th>
+        <th scope='col' style='text-align: center;'>Product</th>
+        <th scope='col' style='text-align: center;'>Address</th>
+        <th scope='col' style='text-align: center;'>Date</th>
+        <th scope='col' style='text-align: center;'>Quantity</th>
+        <th scope='col' style='text-align: center;'>Price</th>
+        <th scope='col' style='text-align: center;'>Name</th>
+        <th scope='col' style='text-align: center;'>Phone</th>
+        <th scope='col' style='text-align: center;'>Action</th>
       </tr>
     </thead>
     <tbody>
       {{#each cartorder}}
-        <tr class="table-info">
-          <td style="vertical-align: middle; text-align:center;"><img
-              src="/image/{{this.image}}"
-              alt=""
-              style="width: 90px; height:90px;"
+        <tr class='table-info'>
+          <td style='vertical-align: middle; text-align:center;'><img
+              src='/image/{{this.image}}'
+              alt=''
+              style='width: 90px; height:90px;'
             /></td>
-          <td style="vertical-align: middle; text-align:center;">{{this.name}}
+          <td style='vertical-align: middle; text-align:center;'>{{this.name}}
             thương hiệu:
             {{this.brands}}</td>
           <td
-            style="vertical-align: middle; text-align:center;"
+            style='vertical-align: middle; text-align:center;'
           >{{this.address}}-{{this.district}}-{{this.city}}</td>
-          <td style="vertical-align: middle; text-align:center;">{{formatDate
+          <td style='vertical-align: middle; text-align:center;'>{{formatDate
               this.bill_date
             }}</td>
-          <td style="vertical-align: middle; text-align:center;">
+          <td style='vertical-align: middle; text-align:center;'>
             {{this.quantity}}
           </td>
           <td
-            style="vertical-align: middle; text-align:center;"
+            style='vertical-align: middle; text-align:center;'
           >{{this.price}}</td>
-          <td style="vertical-align: middle; text-align:center;">
+          <td style='vertical-align: middle; text-align:center;'>
             {{this.user_name}}
           </td>
-          <td style="vertical-align: middle; text-align:center;">
+          <td style='vertical-align: middle; text-align:center;'>
             {{this.user_phone}}
           </td>
-          <td style="vertical-align: middle; text-align:center;">
+          <td style='vertical-align: middle; text-align:center;'>
             <button
-              type="button"
-              class="btn btn-info"
-              onclick="showPayment(event)"
+              type='button'
+              class='btn btn-info'
+              onclick='showPayment(event)'
             >Update</button>
-            <input type="hidden" name="id_ad" value="{{this.id_ad}}" />
+            <input type='hidden' name='id_ad' value='{{this.id_ad}}' />
           </td>
         </tr>
       {{/each}}
     </tbody>
   </table>
   <!-- Nút thanh toán -->
-  <a href="/cart"><button
-      type="button"
-      class="btn btn-success"
-      style="float: right; margin-left: 16px"
+  <a href='/cart'><button
+      type='button'
+      class='btn btn-success'
+      style='float: right; margin-left: 16px'
     >Quay lại đơn hàng</button></a>
 {{else}}
   <!-- Hiển thị ảnh và nút chờ giao hàng nếu không có cartdetail -->
-  <div style="text-align: center;">
+  <div style='text-align: center;'>
     <img
-      src="/image/image.png"
-      alt="Default Image"
-      style="width: 50%; height: 400px; display: inline-block;"
+      src='/image/image.png'
+      alt='Default Image'
+      style='width: 50%; height: 400px; display: inline-block;'
     />
   </div>
 
 {{/if}}
 
-<div class="pay" id="pay"></div>
-<script src="/js/order.js"></script>
+<div class='pay' id='pay'></div>
+<script src='/js/order.js'></script>

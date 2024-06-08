@@ -1,93 +1,93 @@
 <form
-  class="form"
-  action="/homepage/update/{{product.id_product}}-{{product.image}}"
-  method="post"
-  enctype="multipart/form-data"
+  class='form'
+  action='/homepage/update/{{product.id_product}}-{{product.image}}'
+  method='post'
+  enctype='multipart/form-data'
 >
-  <div class="more">
-    <div class="mb-3" style="padding-top: 50px; width:100%">
-      <label for="Product name" class="form-label">Product name</label>
+  <div class='more'>
+    <div class='mb-3' style='padding-top: 50px; width:100%'>
+      <label for='Product name' class='form-label'>Product name</label>
       <input
-        type="text"
-        class="form-control name"
-        name="name"
-        placeholder="unico"
-        value="{{product.name}}"
+        type='text'
+        class='form-control name'
+        name='name'
+        placeholder='unico'
+        value='{{product.name}}'
       />
     </div>
-    <div class="mb-3">
-      <label for="Description" class="form-label">Description</label>
+    <div class='mb-3'>
+      <label for='Description' class='form-label'>Description</label>
       <textarea
-        class="form-control description"
-        name="description"
-        rows="3"
+        class='form-control description'
+        name='description'
+        rows='3'
       >{{product.description}}</textarea>
     </div>
     <div
-      class="mb-3 row"
-      style="display: flex; justify-content:space-between; align-items: center;"
+      class='mb-3 row'
+      style='display: flex; justify-content:space-between; align-items: center;'
     >
-      <div class="col-auto">
-        <label for="Price" class="form-label">Price</label>
+      <div class='col-auto'>
+        <label for='Price' class='form-label'>Price</label>
         <input
-          type="text"
-          class="form-control-plaintextl gia"
-          name="gia"
-          value="{{product.gia}}"
+          type='text'
+          class='form-control-plaintextl gia'
+          name='gia'
+          value='{{product.gia}}'
         />
       </div>
-      <div class="col-auto">
-        <label class="form-label" for="Brand">Brand</label>
+      <div class='col-auto'>
+        <label class='form-label' for='Brand'>Brand</label>
         <select
-          class="form-select brand"
-          aria-label="Default select example"
-          name="brand"
+          class='form-select brand'
+          aria-label='Default select example'
+          name='brand'
         >
           {{#each brand}}
-            <option value="{{this.brand_id}}">{{this.brand_id}}</option>
+            <option value='{{this.brand_id}}'>{{this.brand_id}}</option>
           {{/each}}
         </select>
       </div>
-      <div class="col-auto">
-        <label class="form-label" for="Type">Type</label>
+      <div class='col-auto'>
+        <label class='form-label' for='Type'>Type</label>
         <select
-          class="form-select type"
-          aria-label="Default select example"
-          name="type"
+          class='form-select type'
+          aria-label='Default select example'
+          name='type'
         >
-          <option value="normal">normal</option>
-          <option value="good">good</option>
-          <option value="order">order</option>
+          <option value='normal'>normal</option>
+          <option value='good'>good</option>
+          <option value='order'>order</option>
         </select>
       </div>
-      <div class="col-auto">
-        <label for="Image" class="form-label">Image</label>
+      <div class='col-auto'>
+        <label for='Image' class='form-label'>Image</label>
         <input
-          class="image"
-          type="file"
-          name="image"
-          onchange="previewImage(event)"
+          class='image'
+          type='file'
+          name='image'
+          onchange='previewImage(event)'
           multiple
         />
         <img
-          class="preview"
-          src="/image/{{product.image}}"
-          alt="Preview"
-          style="max-width: 200px; max-height:90px;"
+          class='preview'
+          src='/image/{{product.image}}'
+          alt='Preview'
+          style='max-width: 200px; max-height:90px;'
         />
       </div>
     </div>
-    <div class="mb-3">
-      <a href="/homepage">
-        <button type="button" class="btn btn-success" style="float:right;">Back
+    <div class='mb-3'>
+      <a href='/homepage'>
+        <button type='button' class='btn btn-success' style='float:right;'>Back
           HomePage</button>
       </a>
       <button
-        type="submit"
-        class="btn btn-success btn2"
-        style="float:right;margin-right:30px"
+        type='submit'
+        class='btn btn-success btn2'
+        style='float:right;margin-right:30px'
       >Save</button>
     </div>
   </div>
 </form>
-<script src="/js/view.js"></script>
+<script src='/js/view.js'></script>

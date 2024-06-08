@@ -1,26 +1,26 @@
-const express = require("express");
+const express = require('express');
 const router1 = express.Router();
-const axios = require("axios");
-const multer = require("multer"); // Import multer
-const cookieParser = require("cookie-parser"); // Import cookie-parser
+const axios = require('axios');
+const multer = require('multer'); // Import multer
+// const cookieParser = require("cookie-parser"); // Import cookie-parser
 
 const upload = multer(); // Khởi tạo multer
 
 // Sử dụng cookie-parser middleware để xử lý cookie
-router1.use(cookieParser());
-
+// router1.use(cookieParser());
 // Route để hiển thị trang đăng nhập
-router1.get("/", async (req, res) => {
+router1.get('/', async (req, res) => {
   try {
-    res.clearCookie("user");
-    return res.render("login");
+    // res.clearCookie("user");
+    req.session.destroy();
+    return res.render('login');
   } catch (err) {
     console.error(err);
-    res.send("error");
+    return res.send('error');
   }
 });
 // Route để xử lý việc đăng nhập
-router1.post("/", upload.none(), async (req, res) => {
+router1.post('/', upload.none(), async (req, res) => {
   // Sử dụng upload.none() để xử lý form không có files
   try {
     // Gửi yêu cầu POST đến API để kiểm tra thông tin đăng nhập
@@ -36,20 +36,26 @@ router1.post("/", upload.none(), async (req, res) => {
     console.log(account);
     const maxAge = 3 * 60 * 60 * 1000;
     if (account && account.id_kh) {
-      res.cookie("user", account, maxAge);
-      // console.log(req.cookies.user);
-      return res.redirect("/news");
+      req.session.user = account;
+      console.log(req.session.user);
+      // res.cookie("user", account, maxAge);
+      // console.log(req.session.user);
+      return res.redirect('/news');
     } else if (
-      req.body.accountName.match("system") &&
-      req.body.password.match("master123")
+      req.body.accountName.match('system') &&
+      req.body.password.match('master123')
     ) {
-      const admin = {
-        admin: "system",
-        password: "master123",
+      // const admin = {
+      //   admin: "system",
+      //   password: "master123",
+      // };
+      req.session.admin = {
+        admin: 'system',
+        password: 'master123',
       };
-      res.cookie("admin", admin, maxAge);
+      // res.cookie("admin", admin, maxAge);
       // console.log(req.cookies.admin);
-      return res.redirect("/homepage");
+      return res.redirect('/homepage');
     } else {
       // Nếu thông tin đăng nhập không chính xác, hiển thị thông báo lỗi
       return res.send(
@@ -58,7 +64,7 @@ router1.post("/", upload.none(), async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.send("Error");
+    return res.send('Error');
   }
 });
 

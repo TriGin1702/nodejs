@@ -1,9 +1,9 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const axios = require("axios");
-const cookieParser = require("cookie-parser");
-router.use(cookieParser());
-router.post("/address", async function (req, res) {
+const axios = require('axios');
+// const cookieParser = require("cookie-parser");
+// router.use(cookieParser());
+router.post('/address', async function (req, res) {
   const {
     id_ad,
     firstName,
@@ -13,7 +13,7 @@ router.post("/address", async function (req, res) {
     address,
   } = req.body;
   console.log(req.body);
-  const user = req.cookies.user ? req.cookies.user.id_kh : null;
+  const user = req.session.user ? req.session.user.id_kh : null;
   try {
     await axios.post(
       `${process.env.DOMAIN}:${process.env.PORT}/api_order/${user}`,
@@ -28,21 +28,21 @@ router.post("/address", async function (req, res) {
     );
     return res.send(firstName);
   } catch (error) {
-    console.error("Đã xảy ra lỗi khi gửi dữ liệu tới /api_cart:", error);
+    console.error('Đã xảy ra lỗi khi gửi dữ liệu tới /api_cart:', error);
   }
 });
-router.get("/", async function (req, res) {
-  const user = req.cookies.user ? req.cookies.user : null;
-  console.log("user:", user);
+router.get('/', async function (req, res) {
+  const user = req.session.user ? req.session.user : null;
+  console.log('user:', user);
   if (user == null) {
-    // Xử lý khi không có user trong cookies
-    return res.redirect("/");
+    // Xử lý khi không có user trong session
+    return res.redirect('/');
   } else {
     const cart = await axios.get(
       `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ORDER}/${user.id_kh}`
     );
     const cartorder = cart.data.data;
-    return res.render("order", { cartorder, user });
+    return res.render('order', { cartorder, user });
   }
 });
 module.exports = router;

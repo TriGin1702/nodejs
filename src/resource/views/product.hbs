@@ -20,7 +20,6 @@
     class="information"
     style="display: flex; flex-direction: column; margin-left: 20px; max-width:500px;"
   >
-    <input type="hidden" name="id_product" value="{{product.id_product}}" />
     <h3 style="margin-bottom: 10px; color: rgba(200, 0, 0, 0.7);">Brand:
       {{product.brands}}</h3>
     <p style="margin-bottom: 10px; font-size: 24px; "><b>Mô tả:</b>
@@ -40,5 +39,104 @@
     </span>
   </div>
 </div>
-<div id="toast"></div>
-<script src="/js/product_detail.js"></script>
+<!-- Phần giao diện bình luận -->
+<div class="comments-section mt-4">
+  <h3 class="text-danger">Bình luận</h3>
+  <!-- Form thêm bình luận mới -->
+  <div class="add-comment mb-4">
+    {{!-- <form >
+    </form> --}}
+        <input type="hidden" id="addcmt" name="id_product" value="{{product.id_product}}" />
+        <div class="" style="width: 100%; height:fit-content;display: flex; align-items:flex-start; flex-wrap: wrap;">
+          <img src="/image/{{this.gender}}.jpg" alt="" srcset="" style="max-width: 56px; max-height: 36px; margin-right: 10px;">
+          <div class="mb-3" style="flex-grow: 1;">
+            <textarea 
+              id="comment-content"
+              name="description"
+              class="form-control"
+              rows="3"
+              aria-label="Add a comment"
+              placeholder="Thêm bình luận"
+              required
+            ></textarea>
+          </div>
+        </div>
+      <button type="button" class="btn btn-danger" style="margin: 8px 28px 20px 0px; float: right;" onclick="AddComment()">Gửi</button>
+  </div>
+  <!-- Hiển thị các bình luận hiện tại -->
+  <div class="comments-list mb-4"  style="width: 100%;display: flex; align-items:flex-start;justify-content:center; flex-wrap: wrap;">
+    {{#each comments_and_replies}}
+    <!-- Hiển thị nội dung của comment nếu id_product khớp -->
+    <div class="comment border-bottom pb-3 mb-3 form-control" style="width:100%;">
+        <!-- Hiển thị thông tin của người dùng -->
+        <img src="/image/{{this.gender}}.jpg" alt="" srcset="" style="max-width: 56px; max-height: 36px; margin-right: 10px;">
+        <span><b>{{user.name}}</b></span>
+        <span style="float: right;">đã đăng vào ngày {{formatDate this.date}}</span>
+        <p class="form-control" style="border-top: solid 1px #d8d8d8; border-left: none; border-right: none; border-bottom: none;margin-top: 12px; max-width:100%; padding-left: 0">{{this.description}}</p>
+
+        <!-- Hiển thị các phản hồi của bình luận -->
+        <div class="replies ms-4 mt-3">
+                {{#each this.replies}}
+                    
+                    <div class="reply border-bottom pb-2 mb-2" style="width: 96%; margin-right: auto; float:right;">
+                        <div style="display: inline-flex;">
+                            <img src="/image/{{this.gender}}.jpg" alt="" srcset="" style="max-width: 56px; max-height: 36px; margin-right: 10px;">
+                            <p><b>{{this.name}}</b></p>
+                        </div>
+                        <span class="text-muted fs-6" style="float: right;">đã trả lời vào ngày: {{formatDate this.date}}</span>
+                        <p>{{this.description}}</p>
+                        <ul class="list-option-cmt" style="width:100%; display:inline-flex; list-style-type: none; justify-content:flex-end; margin-bottom:0;">
+                        {{#ifEqual this.id_kh ../../user.id_kh}}
+                          <li onclick="DeleteComment('{{this.id_cmt}}', '{{../../product.id_product}}')" style="margin-right: 12px; margin-bottom:12px;"><i class="bi bi-trash3" style="margin-right: 12px;"> Remove</i></li>
+                        {{else}}
+                          <li class="reply-Comment" onclick="renderComment(event)" style="margin-right: 12px; margin-bottom:12px;"><i class="bi bi-chat" style="margin-right: 12px;"> Reply</i></li>
+                        {{/ifEqual}}
+                        </ul>
+                    </div>
+                {{/each}}
+        </div>
+
+        <!-- Hiển thị các tùy chọn -->
+            <ul class="list-option-cmt" style="width:100%; display:inline-flex; list-style-type: none; justify-content:flex-end; margin-bottom:0;">
+            {{#ifEqual this.id_kh ../user.id_kh}}
+                <li onclick="DeleteComment('{{this.id_cmt}}', '{{../product.id_product}}')"><a href="/cmt/delete/{{this.id_cmt}}-{{this.id_product}}"><i class="bi bi-trash3" style="margin-right: 12px;"> Remove</i></a></li>
+            {{else}}
+                <li class="reply-Comment" onclick="renderComment(event)"><i class="bi bi-chat" style="margin-right: 12px;"> Reply</i></li>
+            {{/ifEqual}}
+            </ul>
+        </div>
+      <!-- Nơi chèn form trả lời -->
+        <div class="reply-form-container" style="width:100%; margin-right:12px;">
+          <input type="hidden" name="product_id" value="{{this.id_product}}" />
+          <input type="hidden" name="comment_id" value="{{this.id_cmt}}" />
+        </div>
+      {{/each}}
+    <button id="loadMoreComments" class="btn btn-primary" style="width:100%; margin-top:20px;" type="button">Tải thêm 5 bình luận tiếp theo ...</button>
+  </div>
+</div>
+</div>
+<script src="/js/comment.js"></script>
+<script>
+let totalCommentsLoaded = 0; // Số bình luận đã hiển thị
+const commentsPerPage = 5; // Số bình luận cần hiển thị mỗi lần
+
+document.getElementById('loadMoreComments').addEventListener('click', loadMoreComments);
+
+function loadMoreComments() {
+    const comments = document.querySelectorAll('.comments-list .comment');
+    for (let i = totalCommentsLoaded; i < totalCommentsLoaded + commentsPerPage && i < comments.length; i++) {
+        comments[i].style.display = 'block';
+    }
+    totalCommentsLoaded += commentsPerPage;
+
+    // Nếu không còn bình luận nào để hiển thị, ẩn nút tải thêm
+    if (totalCommentsLoaded >= comments.length) {
+        document.getElementById('loadMoreComments').style.display = 'none';
+    }
+}
+
+// Hiển thị 5 bình luận đầu tiên khi trang được tải
+window.onload = function() {
+    loadMoreComments();
+}
+</script>

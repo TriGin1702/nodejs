@@ -1,32 +1,32 @@
-const express = require("express");
-const connect = require("../app/control/connect");
-const multer = require("multer");
+const express = require('express');
+const connect = require('../app/control/connect');
+const multer = require('multer');
 const time = Date.now();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./src/public/image");
+    cb(null, './src/public/image');
   },
   filename: (req, file, cb) => {
-    cb(null, time + "-" + file.originalname);
+    cb(null, time + '-' + file.originalname);
   },
 });
 const upload = multer({ storage });
 const router2 = express.Router();
-router2.get("/", async (req, res) => {
+router2.get('/', async (req, res) => {
   try {
     const brand = await new Promise((resolve, reject) => {
-      connect.query("SELECT * FROM brand", (err, rows) => {
+      connect.query('SELECT * FROM brand', (err, rows) => {
         if (err) reject(err);
         resolve(rows);
       });
     });
-    res.render("create", { brand: brand });
+    res.render('create', { brand: brand });
   } catch (err) {
     console.error(err);
-    res.send("error"); // Xử lý lỗi nếu truy vấn không thành công
+    res.send('error'); // Xử lý lỗi nếu truy vấn không thành công
   }
 });
-router2.post("/", upload.array("image", 9), async (req, res) => {
+router2.post('/', upload.array('image', 9), async (req, res) => {
   const products = [];
 
   // Lấy thông tin từ form gửi lên
@@ -41,9 +41,9 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
     let dongbo;
     if (images[i]) {
       // Đảm bảo images[i] tồn tại
-      dongbo = time + "-" + images[i].originalname;
+      dongbo = time + '-' + images[i].originalname;
     } else {
-      dongbo = "anhthu.png";
+      dongbo = 'anhthu.png';
     }
     const product = {
       name: names[i],
@@ -60,7 +60,7 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
 
   // Ví dụ: Lưu vào cơ sở dữ liệu sử dụng MySQL
   const sql =
-    "INSERT INTO product (brands, name, description, type, gia, image) VALUES (?, ?, ?, ?, ?, ?)";
+    'INSERT INTO product (brands, name, description, type, gia, image) VALUES (?, ?, ?, ?, ?, ?)';
   products.forEach(async (product) => {
     try {
       await new Promise((resolve, reject) => {
@@ -80,13 +80,13 @@ router2.post("/", upload.array("image", 9), async (req, res) => {
           }
         );
       });
-      console.log("Product inserted:", product);
+      console.log('Product inserted:', product);
     } catch (err) {
-      console.error("Error inserting product:", err);
+      console.error('Error inserting product:', err);
     }
   });
 
-  res.redirect("/homepage");
+  res.redirect('/homepage');
 });
 
 module.exports = router2;

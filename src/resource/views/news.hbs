@@ -20,7 +20,7 @@
   {{#each product}}
     <div class="col-3">
       <div class="card2">
-        <a class="card2-box" href="/news/{{this.brands}}-{{this.name}}">
+        <a class="card2-box" href="/cmt/{{this.id_product}}">
           <input type="hidden" name="id_product" value="{{this.id_product}}" />
           <img
             src="/image/{{this.image}}"
@@ -54,4 +54,24 @@
   {{/each}}
 </div>
 <div id="toast"></div>
-<script src="/js/product_new.js"></script>
+<script type="text/javascript" src="/js/product_new2.js"></script>
+{{!-- <script>
+  async function loadScript() {
+    const url = '/api_product/js'; // Đặt URL của bạn ở đây
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const scriptText = await response.text();
+        const scriptElement = document.createElement('script');
+        scriptElement.text = scriptText;
+        document.body.appendChild(scriptElement);
+      } else {
+        console.error('Không thể tải tệp: ' + url);
+      }
+    } catch (error) {
+      console.error('Lỗi khi tải tệp: ' + error);
+    }
+  }
+
+  loadScript();
+</script> --}}

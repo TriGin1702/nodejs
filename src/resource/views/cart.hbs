@@ -1,60 +1,60 @@
 {{#if cartdetail}}
   <!-- Hiển thị bảng nếu có cartdetail -->
-  <table class="table table-primary">
+  <table class='table table-primary'>
     <thead>
-      <tr class="table-primary">
-        <th scope="col" style="text-align: center;">Image</th>
-        <th scope="col" style="text-align: center;">Name Product</th>
-        <th scope="col" style="text-align: center;">Brand</th>
-        <th scope="col" style="text-align: center;">Date</th>
-        <th scope="col" style="text-align: center;">Number</th>
-        <th scope="col" style="text-align: center;">Price</th>
-        <th scope="col" style="text-align: center;">Payment status</th>
-        <th scope="col" style="text-align: center;">Action</th>
+      <tr class='table-primary'>
+        <th scope='col' style='text-align: center;'>Image</th>
+        <th scope='col' style='text-align: center;'>Name Product</th>
+        <th scope='col' style='text-align: center;'>Brand</th>
+        <th scope='col' style='text-align: center;'>Date</th>
+        <th scope='col' style='text-align: center;'>Number</th>
+        <th scope='col' style='text-align: center;'>Price</th>
+        <th scope='col' style='text-align: center;'>Payment status</th>
+        <th scope='col' style='text-align: center;'>Action</th>
       </tr>
     </thead>
     <tbody>
       {{#each cartdetail}}
-        <tr class="table-info">
+        <tr class='table-info'>
           <!-- Thêm cột ẩn id_product -->
-          <td style="vertical-align: middle; text-align:center;">
+          <td style='vertical-align: middle; text-align:center;'>
             <input
-              type="hidden"
-              name="id_product"
-              value="{{this.id_product}}"
+              type='hidden'
+              name='id_product'
+              value='{{this.id_product}}'
             />
             <img
-              src="/image/{{this.image}}"
-              alt=""
-              style="width: 90px; height:90px;"
+              src='/image/{{this.image}}'
+              alt=''
+              style='width: 90px; height:90px;'
             /></td>
           <td
-            style="vertical-align: middle; text-align:center;"
+            style='vertical-align: middle; text-align:center;'
           >{{this.name}}</td>
           <td
-            style="vertical-align: middle; text-align:center;"
+            style='vertical-align: middle; text-align:center;'
           >{{this.brands}}</td>
-          <td style="vertical-align: middle; text-align:center;">{{formatDate
+          <td style='vertical-align: middle; text-align:center;'>{{formatDate
               this.date
             }}</td>
-          <td style="vertical-align: middle; text-align:center;">
+          <td style='vertical-align: middle; text-align:center;'>
             <input
-              type="number"
-              min="1"
-              max="50"
-              style="width: 56%;"
-              value="{{this.quantity}}"
-              onchange="increaseQuantity(event)"
+              type='number'
+              min='1'
+              max='50'
+              style='width: 56%;'
+              value='{{this.quantity}}'
+              onchange='increaseQuantity(event)'
             />
           </td>
           <td
-            style="vertical-align: middle; text-align:center;"
+            style='vertical-align: middle; text-align:center;'
           >{{this.price}}</td>
-          <td style="vertical-align: middle; text-align:center;">
-            <input type="checkbox" style="transform: scale(1.5);" />
+          <td style='vertical-align: middle; text-align:center;'>
+            <input type='checkbox' style='transform: scale(1.5);' />
           </td>
-          <td style="vertical-align: middle; text-align:center;">
-            <a href="/cart/delete/{{this.id_dh}}">Delete</a>
+          <td style='vertical-align: middle; text-align:center;'>
+            <a href='/cart/delete/{{this.id_dh}}'>Delete</a>
           </td>
         </tr>
       {{/each}}
@@ -62,33 +62,33 @@
   </table>
   <!-- Nút thanh toán -->
   <button
-    type="button"
-    class="btn btn-success"
-    style="float: right; margin-left: 16px"
-    onclick="showPayment()"
+    type='button'
+    class='btn btn-success'
+    style='float: right; margin-left: 16px'
+    onclick='showPayment()'
   >Thanh Toán</button>
 {{else}}
   <!-- Hiển thị ảnh và nút chờ giao hàng nếu không có cartdetail -->
-  <div style="text-align: center;">
+  <div style='text-align: center;'>
     <img
-      src="/image/image.png"
-      alt="Default Image"
-      style="width: 50%; height: 400px; display: inline-block;"
+      src='/image/image.png'
+      alt='Default Image'
+      style='width: 50%; height: 400px; display: inline-block;'
     />
   </div>
 
 {{/if}}
 
 <!-- Nút chờ giao hàng -->
-<a href="../order">
+<a href='../order'>
 
   <button
-    type="button"
-    class="btn btn-success"
-    style="float: right;"
-    href="../order"
+    type='button'
+    class='btn btn-success'
+    style='float: right;'
+    href='../order'
   >Chờ giao hàng</button>
 </a>
 
-<div class="pay" id="pay"></div>
-<script src="/js/cart.js"></script>
+<div class='pay' id='pay'></div>
+<script src='/js/cart.js'></script>

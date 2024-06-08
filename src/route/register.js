@@ -1,13 +1,13 @@
-const express = require("express");
+const express = require('express');
 const router1 = express.Router();
-const axios = require("axios");
+const axios = require('axios');
 
 // Route để hiển thị trang đăng nhập
-router1.get("/", (req, res) => {
+router1.get('/', (req, res) => {
   // Render trang đăng ký ở đây
-  return res.render("register");
+  return res.render('register');
 });
-router1.post("/", (req, res) => {
+router1.post('/', (req, res) => {
   const customer = {
     name: req.body.Name,
     gender: req.body.gender,
@@ -25,7 +25,7 @@ router1.post("/", (req, res) => {
     .then((response) => {
       console.log(response.data);
       // Xử lý phản hồi từ máy chủ API
-      return res.status(200).redirect("/");
+      return res.status(200).redirect('/');
     })
     .catch((error) => {
       if (error.response && error.response.status === 400) {
@@ -39,7 +39,7 @@ router1.post("/", (req, res) => {
           );
       } else {
         console.error(error);
-        return res.status(500).send("Error");
+        return res.status(500).send('Error');
       }
     });
 });

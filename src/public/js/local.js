@@ -1,13 +1,13 @@
-const form = document.getElementById("searchForm");
+const form = document.getElementById('searchForm');
 // Lắng nghe sự kiện "submit" của form
-form.addEventListener("submit", function (event) {
+form.addEventListener('submit', function (event) {
   // Ngăn chặn hành vi mặc định của form
   event.preventDefault();
-  const searchInput = document.getElementById("searchInput");
+  const searchInput = document.getElementById('searchInput');
 
   var currentUrl = window.location.href;
-  var baseUrl = currentUrl.split("?")[0]; // Lấy phần URL cơ bản, bỏ qua phần query string
-  window.location.href = baseUrl + "?search=" + searchInput.value;
+  var baseUrl = currentUrl.split('?')[0]; // Lấy phần URL cơ bản, bỏ qua phần query string
+  window.location.href = baseUrl + '?search=' + searchInput.value;
 });
 // form.addEventListener("submit", function (event) {
 //   event.preventDefault();

@@ -14,10 +14,10 @@ function isValidAddress(address) {
 }
 
 function Payment({}) {
-  const main = document.querySelector("#pay");
-  const Payment = document.createElement("div");
+  const main = document.querySelector('#pay');
+  const Payment = document.createElement('div');
   Payment.onclick = function (e) {
-    if (e.target.closest(".close")) {
+    if (e.target.closest('.close')) {
       main.removeChild(Payment);
     }
   };
@@ -181,7 +181,7 @@ function showPayment() {
   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
   checkboxes.forEach((checkbox) => {
     if (checkbox.checked) {
-      const row = checkbox.closest("tr");
+      const row = checkbox.closest('tr');
       const idProduct = row.querySelector("input[name='id_product']").value;
       const index = checkedProducts.indexOf(idProduct);
       if (index === -1) {
@@ -197,16 +197,16 @@ function showPayment() {
   if (checkedProducts.length > 0) {
     Payment({ checkedProducts });
   } else {
-    alert("Please select at least one product to proceed with payment.");
+    alert('Please select at least one product to proceed with payment.');
   }
 }
 
 async function submitPayment() {
-  const name = document.querySelector("#validationDefault01").value;
-  const phoneNumber = document.querySelector("#validationDefault02").value;
-  const city = document.querySelector("#validationDefault03").value;
-  const district = document.querySelector("#validationDefault04").value;
-  const address = document.querySelector("#validationDefault05").value;
+  const name = document.querySelector('#validationDefault01').value;
+  const phoneNumber = document.querySelector('#validationDefault02').value;
+  const city = document.querySelector('#validationDefault03').value;
+  const district = document.querySelector('#validationDefault04').value;
+  const address = document.querySelector('#validationDefault05').value;
   // Lấy giá trị của phương thức thanh toán được chọn
   // const paymentMethod = document.querySelector(
   //   'input[name="paymentMethod"]:checked'
@@ -228,47 +228,47 @@ async function submitPayment() {
       isValidName(name)
     ) {
       await axios
-        .post("/cart/address", data)
+        .post('/cart/address', data)
         .then((response) => {
           // console.log(response.data);
-          alert("Payment successful!");
+          alert('Payment successful!');
           checkedProducts.length = 0;
           window.location.reload();
         })
         .catch((error) => {
           console.error(error);
           alert(
-            "An error occurred while processing your payment. Please try again later."
+            'An error occurred while processing your payment. Please try again later.'
           );
         });
     } else {
-      alert("Xin hãy nhập đúng các thông tin !");
+      alert('Xin hãy nhập đúng các thông tin !');
     }
   }
 }
 async function updateQuantity(data) {
   try {
-    const response = await axios.post("/cart/quantity", data);
+    const response = await axios.post('/cart/quantity', data);
     console.log(response.data);
   } catch (error) {
     console.error(error);
     if (error.response) {
       // Nếu có phản hồi từ server và có mã lỗi
       alert(
-        "An error occurred while updating quantity: " +
+        'An error occurred while updating quantity: ' +
           error.response.data.message
       );
     } else {
       // Nếu không có phản hồi từ server hoặc không có mã lỗi
       alert(
-        "An error occurred while updating quantity. Please try again later."
+        'An error occurred while updating quantity. Please try again later.'
       );
     }
   }
 }
 
 function increaseQuantity(event) {
-  const row = event.target.closest("tr");
+  const row = event.target.closest('tr');
   const quantity = row.querySelector("input[type='number']").value;
   const idProduct = row.querySelector("input[name='id_product']").value;
   updateQuantity({ idProduct, quantity }); // Gọi hàm để cập nhật số lượng, truyền brand, name và số lượng mới

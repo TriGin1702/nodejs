@@ -1,8 +1,8 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const connect = require("../../app/control/connect");
+const connect = require('../../app/control/connect');
 
-router.post("/:user_id", async (req, res) => {
+router.post('/:user_id', async (req, res) => {
   const { name, phoneNumber, city, district, address, checkedProducts } =
     req.body;
 
@@ -11,7 +11,7 @@ router.post("/:user_id", async (req, res) => {
     if (!user_id) {
       return res
         .status(400)
-        .json({ success: false, message: "User ID not found in request body" });
+        .json({ success: false, message: 'User ID not found in request body' });
     }
 
     for (const product of checkedProducts) {
@@ -19,7 +19,7 @@ router.post("/:user_id", async (req, res) => {
 
       await new Promise((resolve, reject) => {
         connect.query(
-          "CALL InsertOrUpdateAddressAndSetBillStatus(?, ?, ?, ?, ?, ?, ?, ?)",
+          'CALL InsertOrUpdateAddressAndSetBillStatus(?, ?, ?, ?, ?, ?, ?, ?)',
           [
             user_id,
             productBrand,
@@ -32,7 +32,7 @@ router.post("/:user_id", async (req, res) => {
           ],
           (error, results) => {
             if (error) {
-              console.error("Error processing data:", error);
+              console.error('Error processing data:', error);
               reject(error);
             } else {
               resolve(results);
@@ -44,10 +44,10 @@ router.post("/:user_id", async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Data processed successfully" });
+      .json({ success: true, message: 'Data processed successfully' });
   } catch (error) {
-    console.error("Error processing data:", error);
-    res.status(500).json({ success: false, error: "Error processing data" });
+    console.error('Error processing data:', error);
+    res.status(500).json({ success: false, error: 'Error processing data' });
   }
 });
 

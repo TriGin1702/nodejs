@@ -1,61 +1,61 @@
-<table class="table table-success table-striped">
+<table class='table table-success table-striped'>
   <thead>
     <tr>
-      <th scope="col" style="text-align: center;">Image</th>
-      <th scope="col" style="text-align: center;">Brands</th>
-      <th scope="col" style="text-align: center;">Type</th>
-      <th scope="col" style="text-align: center;">Name</th>
-      <th scope="col" style="text-align: center;">Price</th>
-      <th scope="col" style="text-align: center;">Description</th>
+      <th scope='col' style='text-align: center;'>Image</th>
+      <th scope='col' style='text-align: center;'>Brands</th>
+      <th scope='col' style='text-align: center;'>Type</th>
+      <th scope='col' style='text-align: center;'>Name</th>
+      <th scope='col' style='text-align: center;'>Price</th>
+      <th scope='col' style='text-align: center;'>Description</th>
     </tr>
   </thead>
   <tbody>
     {{#each product}}
       <tr>
-        <td style="vertical-align: middle; text-align:center;"><img
-            src="/image/{{this.image}}"
-            alt=""
-            style="width: 90px; height:90px;"
+        <td style='vertical-align: middle; text-align:center;'><img
+            src='/image/{{this.image}}'
+            alt=''
+            style='width: 90px; height:90px;'
           /></td>
         <td
-          style="vertical-align: middle; text-align:center;"
+          style='vertical-align: middle; text-align:center;'
         >{{this.brands}}</td>
         <td
-          style="vertical-align: middle; text-align:center;"
+          style='vertical-align: middle; text-align:center;'
         >{{this.type}}</td>
         <td
-          style="vertical-align: middle; text-align:center;"
+          style='vertical-align: middle; text-align:center;'
         >{{this.name}}</td>
-        <td style="vertical-align: middle; text-align:center;">{{this.gia}}</td>
+        <td style='vertical-align: middle; text-align:center;'>{{this.gia}}</td>
         <td
-          style="vertical-align: middle; text-align:center;"
+          style='vertical-align: middle; text-align:center;'
         >{{this.description}}</td>
-        <td style="vertical-align: middle; text-align:center;">
+        <td style='vertical-align: middle; text-align:center;'>
           <a
-            href="/homepage/update/{{this.id_product}}-{{this.image}}"
+            href='/homepage/update/{{this.id_product}}-{{this.image}}'
           >Update</a>
         </td>
-        <td style="vertical-align: middle; text-align:center;">
+        <td style='vertical-align: middle; text-align:center;'>
           <a
-            href="/homepage/delete/{{this.id_product}}-{{this.image}}"
+            href='/homepage/delete/{{this.id_product}}-{{this.image}}'
           >Delete</a>
         </td>
       </tr>
     {{/each}}
   </tbody>
 </table>
-<a href="/homepage/create" style="color: #F8F9FA;">
+<a href='/homepage/create' style='color: #F8F9FA;'>
   <button
-    type="button"
-    class="btn btn-success"
-    style="float: right; margin-left: 16px;margin-bottom: 20px"
+    type='button'
+    class='btn btn-success'
+    style='float: right; margin-left: 16px;margin-bottom: 20px'
   >Add Product</button>
 </a>
-<a href="/homepage/list_users">
+<a href='/homepage/list_users'>
   <button
-    type="button"
-    class="btn btn-success"
-    style="float: right;"
+    type='button'
+    class='btn btn-success'
+    style='float: right;'
   >List_users</button>
 </a>
 {{! <script src="/js/view.js"></script> }}
