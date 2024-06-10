@@ -3,8 +3,8 @@ const path = require('path');
 const inputPath = path.join(__dirname, '../public/js/');
 const JavaScriptObfuscator = require('javascript-obfuscator');
 
-const inputFilePath = inputPath + "product_new.js"; // Đường dẫn tới mã gốc
-const outputFilePath = inputPath + "product_new2.js"; // Đường dẫn lưu mã đã làm rối
+const inputFilePath = inputPath + "product_detail.js"; // Đường dẫn tới mã gốc
+const outputFilePath = inputPath + "product_detail2.js"; // Đường dẫn lưu mã đã làm rối
 
 const originalCode = fs.readFileSync(inputFilePath, 'utf8');
 

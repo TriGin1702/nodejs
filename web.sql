@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 07, 2024 lúc 08:24 PM
+-- Thời gian đã tạo: Th6 09, 2024 lúc 09:09 PM
 -- Phiên bản máy phục vụ: 10.4.22-MariaDB
 -- Phiên bản PHP: 8.1.2
 
@@ -26,16 +26,28 @@ DELIMITER $$
 -- Thủ tục
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddComment` (IN `id_kh` INT, IN `id_product` INT, IN `description` VARCHAR(500), IN `id_rep` INT)  BEGIN
+    -- Khai báo biến để lưu trữ id_cmt
+    DECLARE last_insert_id INT;
+
     -- Kiểm tra xem id_rep đã được truyền giá trị hay không
     IF id_rep IS NULL THEN
         -- Nếu không có giá trị, sử dụng NULL mặc định
         INSERT INTO comment (id_kh, id_product, description, date) 
         VALUES (id_kh, id_product, description, CURRENT_DATE());
+
+        -- Lấy id_cmt của hàng vừa được chèn
+        SET last_insert_id = LAST_INSERT_ID();
     ELSE
         -- Nếu có giá trị, sử dụng giá trị đó
         INSERT INTO comment (id_kh, id_product, description, date, id_rep) 
         VALUES (id_kh, id_product, description, CURRENT_DATE(), id_rep);
+
+        -- Lấy id_cmt của hàng vừa được chèn
+        SET last_insert_id = LAST_INSERT_ID();
     END IF;
+
+    -- Trả về id_cmt
+    SELECT last_insert_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddProductToCart` (IN `customerId` INT, IN `productId` INT)  BEGIN
@@ -371,8 +383,11 @@ CREATE TABLE `comment` (
 
 INSERT INTO `comment` (`id_cmt`, `id_kh`, `id_product`, `description`, `date`, `id_rep`) VALUES
 (0, 24, 3, 'đồn như lời', '2024-06-07', NULL),
-(68, 2, 3, 'huhu', '2024-06-07', 0),
-(69, 2, 3, 'cc', '2024-06-07', 0);
+(83, 2, 2, 'cc gì', '2024-06-09', NULL),
+(85, 2, 2, 'sss', '2024-06-09', NULL),
+(86, 2, 2, 'sssssaaaa', '2024-06-09', NULL),
+(116, 2, 3, 'cc', '2024-06-10', 0),
+(117, 2, 3, 'cc', '2024-06-10', NULL);
 
 -- --------------------------------------------------------
 
@@ -543,7 +558,7 @@ ALTER TABLE `bill`
 -- AUTO_INCREMENT cho bảng `comment`
 --
 ALTER TABLE `comment`
-  MODIFY `id_cmt` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id_cmt` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
 
 --
 -- AUTO_INCREMENT cho bảng `customer`

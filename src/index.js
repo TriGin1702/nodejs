@@ -12,19 +12,19 @@ const port = process.env.PORT || 3001;
 app.use(express.static(path.join(__dirname, 'public')));
 console.log('__dirname: ', path.join(__dirname, './public'));
 app.use(
-  express.urlencoded({
-    extended: true,
-  })
+    express.urlencoded({
+        extended: true,
+    })
 );
 app.use(express.json());
 app.use(morgan('combined'));
 //Template engine
 app.set('port', port);
 app.engine(
-  '.hbs',
-  handlebars.engine({
-    extname: '.hbs',
-  })
+    '.hbs',
+    handlebars.engine({
+        extname: '.hbs',
+    })
 );
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, './resource/views'));

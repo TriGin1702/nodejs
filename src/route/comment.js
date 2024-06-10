@@ -80,10 +80,10 @@ router.post("/add_comment", async(req, res) => {
     }
 
     try {
-        await axios.post(
-            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_COMMENT}`, { user_id: user.id_kh, description: description, id_product: id_product, id_rep: id_rep }
+        const respond = await axios.post(
+            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_COMMENT}`, { user: user, description: description, id_product: id_product, id_rep: id_rep }
         );
-        return res.status(200).send("success");
+        return res.status(200).send(respond.data.comment);
     } catch (error) {
         console.error("API Error:", error);
         return res.status(500).json({ error: "Failed to add comment" });

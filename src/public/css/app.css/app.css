@@ -1,54 +1,44 @@
 @charset "UTF-8";
 h1 {
-  color: red;
-}
+  color: red; }
 
 h2 {
-  color: red;
-}
+  color: red; }
 
 .product-img {
   max-width: 100%;
   align-items: center;
-  height: 200px;
-}
+  height: 200px; }
 
 .pagination {
   margin-right: 10%;
-  margin-top: 30px;
-}
+  margin-top: 30px; }
 
 .col-3 {
   margin-top: 5px;
-  margin-bottom: 5px;
-}
+  margin-bottom: 5px; }
 
 .card2 {
   border: 2px solid #000;
   border-radius: 7px;
-  height: 95%;
-}
+  height: 95%; }
 
 .card-text {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  overflow: hidden;
-}
+  overflow: hidden; }
 
 .figure-caption {
-  text-align: center;
-}
+  text-align: center; }
 
 .card2-box {
   color: inherit;
-  text-decoration: none;
-}
+  text-decoration: none; }
 
 .card2-box:hover {
   color: #e14343;
-  text-decoration: none;
-}
+  text-decoration: none; }
 
 .card2 {
   position: relative;
@@ -56,13 +46,11 @@ h2 {
   transition: transform linear 0.1s;
   margin-bottom: 5px;
   min-height: 333px;
-  padding-bottom: 5px;
-}
+  padding-bottom: 5px; }
 
 .card2:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0.0625rem 20px 0 rgba(0, 0, 0, 0.05);
-}
+  box-shadow: 0 0.0625rem 20px 0 rgba(0, 0, 0, 0.05); }
 
 .addToCart {
   border: none;
@@ -73,15 +61,13 @@ h2 {
   padding: 0;
   margin: 0;
   border-radius: 30%;
-  /* Xóa tất cả margin */
-}
+  /* Xóa tất cả margin */ }
 
 .addToCart:hover {
   transform: translateY(-1px);
   box-shadow: 0 0.0625rem 20px 0 rgba(0, 0, 0, 0.05);
   background-color: #dbb4b4;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
 .addToCart-detail {
   border: none;
@@ -92,15 +78,13 @@ h2 {
   height: 50px;
   margin: 0px 0px 0px 20px;
   border-radius: 30%;
-  /* Xóa tất cả margin */
-}
+  /* Xóa tất cả margin */ }
 
 .addToCart-detail:hover {
   transform: translateY(-2px);
   box-shadow: 0 0.0625rem 20px 0 rgba(0, 0, 0, 0.05);
   background-color: #dbb4b4;
-  cursor: pointer;
-}
+  cursor: pointer; }
 
 .select_option {
   display: flex;
@@ -109,8 +93,7 @@ h2 {
   width: 100%;
   height: 36px;
   background-color: #b5b0b0;
-  border-radius: 12px;
-}
+  border-radius: 12px; }
 
 .quantity_cart {
   position: absolute;
@@ -124,16 +107,14 @@ h2 {
   z-index: 1;
   font-stretch: expanded;
   color: #d86969;
-  text-align: center;
-}
+  text-align: center; }
 
 /* ======= Toast message ======== */
 #toast {
   position: fixed;
   top: 32px;
   right: 32px;
-  z-index: 999999;
-}
+  z-index: 999999; }
 
 .toast {
   display: flex;
@@ -145,99 +126,77 @@ h2 {
   max-width: 400px;
   border-left: 4px solid;
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.08);
-  transition: all linear 0.3s;
-}
+  transition: all linear 0.3s; }
 
 @keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateX(calc(100% + 32px));
-  }
+    transform: translateX(calc(100% + 32px)); }
   to {
     opacity: 1;
-    transform: translateX(0);
-  }
-}
+    transform: translateX(0); } }
 
 @keyframes fadeOut {
   to {
-    opacity: 0;
-  }
-}
+    opacity: 0; } }
 
 .toast--success {
-  border-color: #47d864;
-}
+  border-color: #47d864; }
 
 .toast--success .toast__icon {
-  color: #47d864;
-}
+  color: #47d864; }
 
 .toast--info {
-  border-color: #2f86eb;
-}
+  border-color: #2f86eb; }
 
 .toast--info .toast__icon {
-  color: #2f86eb;
-}
+  color: #2f86eb; }
 
 .toast--warning {
-  border-color: #ffc021;
-}
+  border-color: #ffc021; }
 
 .toast--warning .toast__icon {
-  color: #ffc021;
-}
+  color: #ffc021; }
 
 .toast--error {
-  border-color: #ff623d;
-}
+  border-color: #ff623d; }
 
 .toast--error .toast__icon {
-  color: #ff623d;
-}
+  color: #ff623d; }
 
 .toast + .toast {
-  margin-top: 24px;
-}
+  margin-top: 24px; }
 
 .toast__icon {
-  font-size: 24px;
-}
+  font-size: 24px; }
 
 .toast__icon,
 .toast__close {
-  padding: 0 16px;
-}
+  padding: 0 16px; }
 
 .toast__body {
-  flex-grow: 1;
-}
+  flex-grow: 1; }
 
 .toast__title {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
-}
+  color: #333; }
 
 .toast__msg {
   font-size: 14px;
   color: #888;
   margin-top: 6px;
-  line-height: 1.5;
-}
+  line-height: 1.5; }
 
 .toast__close {
   font-size: 20px;
   color: rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-}
+  cursor: pointer; }
 
 .image-slider {
   overflow: hidden;
   height: auto;
-  /* Thiết lập chiều cao tự động cho slider */
-}
+  /* Thiết lập chiều cao tự động cho slider */ }
 
 .slides-container {
   display: flex;
@@ -250,8 +209,7 @@ h2 {
   margin-bottom: 20px;
   /* Khoảng cách dưới cùng */
   align-items: center;
-  /* Canh giữa các phần tử con */
-}
+  /* Canh giữa các phần tử con */ }
 
 .slide {
   flex: 0 0 100%;
@@ -261,9 +219,28 @@ h2 {
   height: 360px;
   object-fit: fill;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
-}
+  transition: opacity 1s ease-in-out; }
 
 .slide.active {
-  opacity: 1;
-}
+  opacity: 1; }
+
+.img-comment {
+  max-width: 56px;
+  max-height: 36px;
+  margin-right: 10px; }
+
+.description-comment {
+  border-top: solid 1px #d8d8d8;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  margin-top: 12px;
+  max-width: 100%;
+  padding-left: 0; }
+
+.reply-cmt {
+  width: 100%;
+  display: inline-flex;
+  list-style-type: none;
+  justify-content: flex-end;
+  margin-bottom: 0; }
