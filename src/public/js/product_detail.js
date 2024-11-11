@@ -57,7 +57,7 @@ async function showSuccessToast(event) {
     if (input) {
         const idProduct = input.value;
         const formData = new FormData();
-        formData.append('id_product', idProduct);
+        formData.append('idProduct', idProduct);
 
         try {
             // Gửi dữ liệu sử dụng Axios

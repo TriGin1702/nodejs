@@ -1,0 +1,142 @@
+<form class="form" action="/homepage/create" method="post" enctype="multipart/form-data">
+  <div class="more">
+    <div class="mb-3" style="padding-top: 50px; width:100%;">
+      <label for="Product name" class="form-label">Product name</label>
+      <input type="text" class="form-control name" name="name" placeholder="unico" required />
+    </div>
+    <div class="mb-3">
+      <label for="Description" class="form-label">Description</label>
+      <textarea class="form-control description" name="description" rows="3" required></textarea>
+    </div>
+    <div class="mb-3 row" style="display: flex; justify-content:space-between; align-items: center;">
+      <div class="col-auto">
+        <label for="Price" class="form-label">Price</label>
+        <input type="text" class="form-control-plaintextl price" name="price" required />
+      </div>
+      <div class="col-auto">
+        <label class="form-label" for="Brand">Brand</label>
+        <select class="form-select brand" aria-label="Default select example" name="brand">
+          {{#each brand}}
+            <option value="{{this.id_brand}}">{{this.name}}</option>
+          {{/each}}
+        </select>
+        <button type="button" class="btn btn-info" onclick="showBrand()">Tạo</button>
+      </div>
+      <div class="col-auto">
+        <label class="form-label" for="Type">Type</label>
+        <select class="form-select type" aria-label="Default select example" name="type">
+          {{#each type}}
+            <option value="{{this.id_type}}">{{this.name}}</option>
+          {{/each}}
+        </select>
+        <button type="button" class="btn btn-info" onclick="showType()">Tạo</button>
+      </div>
+      <div class="col-auto">
+        <label for="Image" class="form-label">Image</label>
+        <input class="image" type="file" name="image" onchange="previewImage(event)" multiple />
+        {{! <img class="preview" src="#" alt="Preview" style="max-width: 200px; max-height:90px;" /> }}
+      </div>
+    </div>
+    <div class="mb-3">
+      <button type="button" onclick="Moreproduct()" class="btn btn-success" style="float:right; margin-bottom: 50px;">More product</button>
+      <button type="button" class="btn btn-success btn2" style="float:right;margin-right:30px" onclick="inputForm(event)">Save</button>
+      <a href="/homepage">
+        <button type="button" class="btn btn-success" style="float:right; margin-right: 30px;">Come Back</button>
+      </a>
+    </div>
+  </div>
+</form>
+<div class="create" id="create"></div>
+<script src="/js/view.js"></script>
+{{!-- <div class="pay" id="pay"><div
+    class="notify"
+    style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center;"
+  >
+    <div
+      class="notify_overlay"
+      style="background-color: rgba(0, 0, 0, 0.4); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;"
+    >
+      <div
+        class="notify_body"
+        style="display: block; width: 40%; height: 50%; background-color:aliceblue; border-radius: 4px; border: 1px solid black; padding: 20px;  position: relative;"
+      >
+        <button class="close" style="position: absolute; top:0; right:0; background-color:red; border-radius: 4px; border: 1px solid black"><i
+            class="bi bi-x-lg"
+            style="color: aliceblue;"
+          ></i></button>
+        <form class="row g-3" id="paymentForm">
+          <div class="col-md-6">
+            <label for="validationDefault01" class="form-label">First name</label>
+            <input type="text" class="form-control" id="validationDefault01" required />
+          </div>
+
+          <div class="col-md-6">
+            <label for="validationDefault02" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="validationDefault02" required />
+          </div>
+          <div style="display: flex; justify-content:center; align-items:center; width: 100%; height: 100%">
+            <div class="col-md-3" style=" margin: 12px 0">
+              <label for="validationDefault03" class="form-label" style="display: block;">City</label>
+              <select class="form-select" id="validationDefault03" required>
+                <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                <option value="Hà Nội">Hà Nội</option>
+                <option value="Quảng Ngãi">Quảng Ngãi</option>
+              </select>
+            </div>
+            <div class="col-md-3" style=" margin: 12px 0">
+              <label for="validationDefault04" class="form-label" style="display: block;">District</label>
+              <select class="form-select" id="validationDefault04" required>
+                <option value="Quận 1">Quận 1</option>
+                <option value="Quận 12">Quận 12</option>
+                <option value="Quận 10">Quận 10</option>
+              </select>
+            </div>
+            <div class="col-md-6" style=" margin: 12px 0">
+              <label for="validationDefault05" class="form-label">Address</label>
+              <input type="text" class="form-control" id="validationDefault05" required />
+            </div>
+
+          </div>
+          <div class="col-12" style="display: inline-flex; justify-content:stretch; align-items:center; width: 100%; margin: 12px 0">
+            <label class="form-check-label" for="invalidCheck2" style="margin-right:12px;">
+              Choose your Payment
+            </label>
+            <div class="form-check form-check-inline" style="margin: 0 12px;">
+              {{! <img src="/image/momo.png" alt="" srcset="" style="width: 100%; height: 36px;" /> }}
+              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" />
+              <label class="form-check-label label-ordered" for="inlineRadio3" style="padding-bottom: 2px;">Đã đặt hàng</label>
+            </div>
+            <div class="form-check form-check-inline" style="margin: 0 12px;">
+              {{! <img src="/image/vnpay.png" alt="" srcset="" style="width: 100%; height: 36px;" /> }}
+              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" />
+              <label class="form-check-label label-shipping" for="inlineRadio3" style="padding-bottom: 2px;">Đang giao hàng nhập</label>
+            </div>
+            <div class="form-check form-check-inline" style="margin: 0 12px;">
+              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3" checked />
+              <label class="form-check-label label-paid" for="inlineRadio3" style="padding-bottom: 2px;">Đã nhận hàng và thanh toán</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-check-label" for="invalidCheck2" style="margin-right:12px;">
+              Choose product to import
+            </label>
+            <div class="form-check form-check-inline">
+              <select class="form-check" id="createUserRole" onchange="updateSelectedRoles()">
+                <option disabled selected>Choose the role</option>
+                <option value="1">User</option>
+                <option value="2">Admin</option>
+                <option value="1">Manager</option>
+                <option value="2">Editor</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-12" style="display: inline-flex; justify-content:stretch; align-items:center; width: 100%; margin: 12px 0">
+            <div id="selectedRoles" class="mt-3" style="width: 100%;"></div></div>
+          <div class="col-12" style="display: flex; justify-content: flex-end; margin-top:12px;">
+            <button class="btn btn-primary" type="button" onclick="submitPayment()">Submit form</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div></div>
+<script src="/js/home.js"></script> --}}

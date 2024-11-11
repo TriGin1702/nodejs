@@ -1,97 +1,50 @@
-<form
-  class='form'
-  action='/homepage/create'
-  method='post'
-  enctype='multipart/form-data'
->
-  <div class='more'>
-    <div class='mb-3' style='padding-top: 50px; width:100%;'>
-      <label for='Product name' class='form-label'>Product name</label>
-      <input
-        type='text'
-        class='form-control name'
-        name='name'
-        placeholder='unico'
-      />
+<form class="form" action="/homepage/create" method="post" enctype="multipart/form-data">
+  <div class="more">
+    <div class="mb-3" style="padding-top: 50px; width:100%;">
+      <label for="Product name" class="form-label">Product name</label>
+      <input type="text" class="form-control name" name="name" placeholder="unico" required />
     </div>
-    <div class='mb-3'>
-      <label for='Description' class='form-label'>Description</label>
-      <textarea
-        class='form-control description'
-        name='description'
-        rows='3'
-      ></textarea>
+    <div class="mb-3">
+      <label for="Description" class="form-label">Description</label>
+      <textarea class="form-control description" name="description" rows="3" required></textarea>
     </div>
-    <div
-      class='mb-3 row'
-      style='display: flex; justify-content:space-between; align-items: center;'
-    >
-      <div class='col-auto'>
-        <label for='Price' class='form-label'>Price</label>
-        <input type='text' class='form-control-plaintextl gia' name='gia' />
+    <div class="mb-3 row" style="display: flex; justify-content:space-between; align-items: center;">
+      <div class="col-auto">
+        <label for="Price" class="form-label">Price</label>
+        <input type="text" class="form-control-plaintextl price" name="price" required />
       </div>
-      <div class='col-auto'>
-        <label class='form-label' for='Brand'>Brand</label>
-        <select
-          class='form-select brand'
-          aria-label='Default select example'
-          name='brand'
-        >
+      <div class="col-auto">
+        <label class="form-label" for="Brand">Brand</label>
+        <select class="form-select brand" aria-label="Default select example" name="brand">
           {{#each brand}}
-            <option value='{{this.brand_id}}'>{{this.name}}</option>
+            <option value="{{this.id_brand}}">{{this.name}}</option>
           {{/each}}
         </select>
+        <button type="button" class="btn btn-info" onclick="showBrand()">Tạo</button>
       </div>
-      <div class='col-auto'>
-        <label class='form-label' for='Type'>Type</label>
-        <select
-          class='form-select type'
-          aria-label='Default select example'
-          name='type'
-        >
-          <option value='normal'>normal</option>
-          <option value='good'>good</option>
-          <option value='order'>order</option>
+      <div class="col-auto">
+        <label class="form-label" for="Type">Type</label>
+        <select class="form-select type" aria-label="Default select example" name="type">
+          {{#each type}}
+            <option value="{{this.id_type}}">{{this.name}}</option>
+          {{/each}}
         </select>
+        <button type="button" class="btn btn-info" onclick="showType()">Tạo</button>
       </div>
-      <div class='col-auto'>
-        <label for='Image' class='form-label'>Image</label>
-        <input
-          class='image'
-          type='file'
-          name='image'
-          onchange='previewImage(event)'
-          multiple
-        />
-        <img
-          class='preview'
-          src='#'
-          alt='Preview'
-          style='max-width: 200px; max-height:90px;'
-        />
+      <div class="col-auto">
+        <label for="Image" class="form-label">Image</label>
+        <input class="image" type="file" name="image" onchange="previewImage(event)" multiple />
+        {{! <img class="preview" src="#" alt="Preview" style="max-width: 200px; max-height:90px;" /> }}
       </div>
     </div>
-    <div class='mb-3'>
-      <button
-        type='button'
-        onclick='Moreproduct()'
-        class='btn btn-success'
-        style='float:right; margin-bottom: 50px;'
-      >More product</button>
-      <button
-        type='button'
-        class='btn btn-success btn2'
-        style='float:right;margin-right:30px'
-        onclick='inputForm(event)'
-      >Save</button>
-      <a href='/homepage'>
-        <button
-          type='button'
-          class='btn btn-success'
-          style='float:right; margin-right: 30px;'
-        >Come Back</button>
+    <div class="mb-3">
+      <button type="button" onclick="Moreproduct()" class="btn btn-success" style="float:right; margin-bottom: 50px;">More product</button>
+      <button type="button" class="btn btn-success btn2" style="float:right;margin-right:30px" onclick="inputForm(event)">Save</button>
+      <a href="/homepage">
+        <button type="button" class="btn btn-success" style="float:right; margin-right: 30px;">Come Back</button>
       </a>
     </div>
   </div>
 </form>
-<script src='/js/view2.js'></script>
+<div class="create" id="create"></div>
+<script src="/js/view.js"></script>

@@ -1,73 +1,54 @@
-const express = require('express');
+const express = require("express");
 const router1 = express.Router();
-const axios = require('axios');
-const multer = require('multer'); // Import multer
-// const cookieParser = require("cookie-parser"); // Import cookie-parser
+const axios = require("axios");
+const multer = require("multer"); // Import multer
 
 const upload = multer(); // Khởi tạo multer
 
-// Sử dụng cookie-parser middleware để xử lý cookie
-// router1.use(cookieParser());
 // Route để hiển thị trang đăng nhập
-router1.get('/', async (req, res) => {
+router1.get("/", async (req, res) => {
   try {
-    // res.clearCookie("user");
-    req.session.destroy();
-    return res.render('login');
+    // Trả về trang đăng nhập mà không cần xóa cookie hay session
+    return res.render("login");
   } catch (err) {
     console.error(err);
-    return res.send('error');
+    return res.send("error");
   }
 });
+
 // Route để xử lý việc đăng nhập
-router1.post('/', upload.none(), async (req, res) => {
+router1.post("/", upload.none(), async (req, res) => {
   // Sử dụng upload.none() để xử lý form không có files
   try {
-    // Gửi yêu cầu POST đến API để kiểm tra thông tin đăng nhập
-    const apiResponse = await axios.post(
-      `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ACC}`,
-      {
-        accountName: req.body.accountName,
-        password: req.body.password,
-      }
-    );
+    // Nếu đăng nhập thành công
+    // if (req.body.accountName.match("system") && req.body.password.match("master123")) {
+    //   // Chuyển hướng đến trang homepage
+    //   return res.redirect("/homepage");
+    // }
+    const apiResponse = await axios.post(`${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ACC}`, {
+      accountName: req.body.accountName,
+      password: req.body.password,
+    });
     const account = apiResponse.data;
-    // Nếu đăng nhập thành công, lưu thông tin người dùng vào cookie và chuyển hướng đến trang tin tức
-    console.log(account);
-    const maxAge = 3 * 60 * 60 * 1000;
-    if (account && account.id_kh) {
-      req.session.user = account;
-      console.log(req.session.user);
-      // res.cookie("user", account, maxAge);
-      // console.log(req.session.user);
-      return res.redirect('/news');
-    } else if (
-      req.body.accountName.match('system') &&
-      req.body.password.match('master123')
-    ) {
-      // const admin = {
-      //   admin: "system",
-      //   password: "master123",
-      // };
-      req.session.admin = {
-        admin: 'system',
-        password: 'master123',
-      };
-      // res.cookie("admin", admin, maxAge);
-      // console.log(req.cookies.admin);
-      return res.redirect('/homepage');
+    if (account) {
+      res.cookie("userId", account.id, { maxAge: 3 * 60 * 60 * 1000 }); // Lưu ID người dùng vào cookie
+    }
+    if (account.role_name.match("user")) {
+      // Chuyển hướng đến trang tin tức
+      req.session.user = account; // Lưu toàn bộ thông tin người dùng vào session
+      return res.redirect("/news");
+    } else if (account.role_name.match("admin")) {
+      req.session.admin = account;
+      return res.redirect("/homepage");
     } else {
       // Nếu thông tin đăng nhập không chính xác, hiển thị thông báo lỗi
-      return res.send(
-        "<script>alert('Incorrect account or password'); window.location.href = '/';</script>"
-      );
+      return res.send("<script>alert('Incorrect account or password'); window.location.href = '/';</script>");
     }
   } catch (err) {
     console.error(err);
-    return res.send('Error');
+    return res.send("Error");
   }
 });
 
-// Sử dụng route /news cho module news
-
+// Xuất module router
 module.exports = router1;

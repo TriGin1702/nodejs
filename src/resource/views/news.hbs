@@ -6,11 +6,7 @@
 
 <div class="select_option">
   <span style="padding: 0 12px;">Sắp xếp theo: </span>
-  <select
-    id="sortingSelect"
-    style="margin-right: 12px; border-radius: 8px"
-    onchange="sortproducts()"
-  >
+  <select id="sortingSelect" style="margin-right: 12px; border-radius: 8px" onchange="sortproducts()">
     <option value="" hidden selected>Giá</option>
     <option value="top">Giá từ cao đến thấp</option>
     <option value="down">Giá từ thấp đến cao</option>
@@ -22,28 +18,18 @@
       <div class="card2">
         <a class="card2-box" href="/cmt/{{this.id_product}}">
           <input type="hidden" name="id_product" value="{{this.id_product}}" />
-          <img
-            src="/image/{{this.image}}"
-            class="card-img-top product-img"
-            alt="..."
-          />
+          {{#if (firstImage this.image)}}
+            <img src="/image/{{firstImage this.image}}" class="card-img-top product-img" alt="..." />
+          {{/if}}
           <div class="card-body" style="min-height: 200px;">
-            <h7
-              class="card-title"
-              style="display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"
-            ><b>{{this.name}}</b></h7>
-            <h5>brand:{{this.brands}}</h5>
+            <h7 class="card-title" style="display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"><b
+              >{{this.name}}</b></h7>
+            <h5>brand:{{this.brand_name}}</h5>
             <p class="card-text">Mô tả: {{this.description}}</p>
-            <div
-              style="display: inline-flex; justify-content:space-between; width:100%;align-items:center"
-            >
+            <div style="display: inline-flex; justify-content:space-between; width:100%;align-items:center">
 
               <span class="btn btn-primary mt-auto">Xem chi tiết</span>
-              <button
-                id="addToCart"
-                class="addToCart"
-                onclick="showSuccessToast(event)"
-              >
+              <button id="addToCart" class="addToCart" onclick="showSuccessToast(event)">
                 <i class="bi bi-cart-plus-fill"></i>
               </button>
             </div>
@@ -54,24 +40,4 @@
   {{/each}}
 </div>
 <div id="toast"></div>
-{{!-- <script type="text/javascript" src="/js/product_new2.js"></script> --}}
-<script>
-  async function loadScript() {
-    const url = '/api_product/js'; // Đặt URL của bạn ở đây
-    try {
-      const response = await fetch(url);
-      if (response.ok) {
-        const scriptText = await response.text();
-        const scriptElement = document.createElement('script');
-        scriptElement.text = scriptText;
-        document.body.appendChild(scriptElement);
-      } else {
-        console.error('Không thể tải tệp: ' + url);
-      }
-    } catch (error) {
-      console.error('Lỗi khi tải tệp: ' + error);
-    }
-  }
-
-  loadScript();
-</script>
+<script type="text/javascript" src="/js/product_new2.js"></script>

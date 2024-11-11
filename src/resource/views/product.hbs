@@ -22,7 +22,7 @@
     style="display: flex; flex-direction: column; margin-left: 20px; max-width:500px;"
   >
     <h3 style="margin-bottom: 10px; color: rgba(200, 0, 0, 0.7);">Brand:
-      {{product.brands}}</h3>
+      {{product.brand_name}}</h3>
     <p style="margin-bottom: 10px; font-size: 24px; "><b>Mô tả:</b>
       {{product.description}}</p>
     <span
@@ -69,10 +69,10 @@
   <div class="comments-list mb-4"  style="width: 100%;display: flex; align-items:flex-start;justify-content:center; flex-wrap: wrap;">
     {{#each comments_and_replies}}
     <!-- Hiển thị nội dung của comment nếu id_product khớp -->
-    <div class="comment border-bottom pb-3 mb-3 form-control" id="cmt-{{this.id_cmt}}" style="width:100%;">
+    <div class="comment-render border-bottom pb-3 mb-3 form-control" id="cmt-{{this.id_cmt}}" style="width:100%;">
         <!-- Hiển thị thông tin của người dùng -->
         <img class="img-comment" src="/image/{{this.gender}}.jpg" alt="" srcset="">
-        <span><b>{{user.name}}</b></span>
+        <span><b>{{this.name}}</b></span>
         <span style="float: right;">đã đăng vào ngày {{formatDate this.date}}</span>
         <p class="form-control description-comment">{{this.description}}</p>
 
@@ -106,16 +106,17 @@
                 <li class="reply-Comment" onclick="renderComment(event)"><i class="bi bi-chat" style="margin-right: 12px;"> Reply</i></li>
             {{/ifEqual}}
             </ul>
-        </div>
       <!-- Nơi chèn form trả lời -->
         <div class="reply-form-container" style="width:100%; margin-right:12px;" data-replied="false">
           <input type="hidden" name="product_id" value="{{this.id_product}}" />
           <input type="hidden" name="comment_id" value="{{this.id_cmt}}" />
+        </div>
         </div>
       {{/each}}
     <button id="loadMoreComments" class="btn btn-primary" style="width:100%; margin-top:20px;" type="button">Tải thêm 3 bình luận tiếp theo ...</button>
   </div>
 </div>
 </div>
-<script src="/js/comment2.js"></script>
+{{!-- <script type="text" src="/socket.io/socket.io.js"></script> --}}
+<script type="text/javascript" src="/js/comment2.js"></script>
 <script type="text/javascript" src="/js/product_detail2.js"></script>

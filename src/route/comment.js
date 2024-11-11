@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const Handlebars = require('handlebars');
+// const io = require("../index");
 Handlebars.registerHelper('formatDate', function(date) {
     const formattedDate = new Date(date).toLocaleDateString('en-GB');
     return formattedDate;
@@ -9,10 +10,19 @@ Handlebars.registerHelper('formatDate', function(date) {
 Handlebars.registerHelper('ifEqual', function(arg1, arg2, options) {
     return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
 });
+// io.on('connection', (socket) => {
+//     console.log('A user connected');
+
+//     // Xử lý các sự kiện khác tại đây
+//     socket.on('disconnect', () => {
+//         console.log('User disconnected');
+//     });
+// });
 router.get("/delete/:id", async(req, res) => {
     const id = req.params.id;
     const [id_cmt, id_product] = id.split('-');
     const user = req.session.user || null;
+    const token = req.cookies.token;
     // Sử dụng id_cmt và id_product theo yêu cầu của bạn
     console.log("id_cmt:", id_cmt);
     console.log("id_product:", id_product);
@@ -21,8 +31,13 @@ router.get("/delete/:id", async(req, res) => {
     }
     try {
         await axios.delete(
-            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_COMMENT}/delete/${id_cmt}-${user.id_kh}`
+            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_COMMENT}/delete/${id_cmt}-${user.id_kh}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Gửi token qua header Authorization
+                }
+            }
         );
+        global.io.emit('delete_comment', id_cmt); // Phát id của bình luận đã xóa đến tất cả client
         console.log(user);
         console.log("id_cmt:", id_cmt);
         console.log("id_product:", id_product);
@@ -35,15 +50,24 @@ router.get("/delete/:id", async(req, res) => {
 router.get("/:id", async(req, res) => {
     const id_product = req.params.id;
     const user = req.session.user || null;
+    const token = req.cookies.token;
     if (user === null) {
         return res.redirect("/");
     }
     try {
         const listproducts = await axios.get(
-            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_PRODUCT}`
+            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_PRODUCT}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Gửi token qua header Authorization
+                }
+            }
         );
         const listcomments = await axios.get(
-            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_COMMENT}/${id_product}`
+            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_COMMENT}/${id_product}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Gửi token qua header Authorization
+                }
+            }
         );
 
         const products = listproducts.data;
@@ -68,9 +92,11 @@ router.get("/:id", async(req, res) => {
         return res.send("error");
     }
 });
+
 router.post("/add_comment", async(req, res) => {
     const user = req.session.user || null;
     const { description, id_product, id_rep } = req.body;
+    const token = req.cookies.token;
     console.log(description, id_product, id_rep);
     // if (id_rep === undefined) {
     //     id_rep = null;
@@ -78,11 +104,26 @@ router.post("/add_comment", async(req, res) => {
     if (user === null) {
         return res.redirect("/");
     }
-
     try {
         const respond = await axios.post(
-            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_COMMENT}`, { user: user, description: description, id_product: id_product, id_rep: id_rep }
+            `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_COMMENT}`, {
+                user: user,
+                description: description,
+                id_product: id_product,
+                id_rep: id_rep
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Gửi token qua header Authorization
+                },
+            }
         );
+        // Phát bình luận mới đến tất cả client qua `socket.io`
+        // Sử dụng socket.io
+        if (id_rep === undefined) {
+            global.io.to(`product_${id_product}`).emit('new_comment', respond.data.comment);
+        } else {
+            global.io.to(`product_${id_product}`).emit('reply_comment', respond.data.comment);
+        }
         return res.status(200).send(respond.data.comment);
     } catch (error) {
         console.error("API Error:", error);

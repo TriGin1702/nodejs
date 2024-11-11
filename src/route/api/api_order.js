@@ -1,78 +1,82 @@
 const express = require('express');
 const connect = require('../../app/control/connect');
 const router = express.Router();
+const authenticateToken = require("./authenticateToken");
+router.get('/:user_id', authenticateToken, async function(req, res) {
+    try {
 
-router.get('/:user_id', async function (req, res) {
-  try {
-    const user_id = req.params.user_id;
-    if (!user_id) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'User ID not found in request body' });
-    }
-
-    const data_cart = await new Promise((resolve, reject) => {
-      connect.query(
-        'CALL GetBillDetailsByUserId(?)',
-        [user_id],
-        function (error, results) {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(results[0]);
-          }
+        const user_id = req.params.user_id;
+        if (!user_id) {
+            return res
+                .status(400)
+                .json({ success: false, message: 'User ID not found in request body' });
         }
-      );
-    });
 
-    res.json({ success: true, data: data_cart });
-  } catch (err) {
-    console.error('Error:', err);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
+        const data_cart = await new Promise((resolve, reject) => {
+            connect.query(
+                'CALL GetBillDetailsByUserId(?)', [user_id],
+                function(error, results) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(results[0]);
+                    }
+                }
+            );
+        });
+
+        res.json({ success: true, data: data_cart });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    } finally {
+        // await connect.end();
+    }
 });
 
-router.post('/:user_id', async (req, res) => {
-  try {
-    const user_id = req.params.user_id;
-    const {
-      id_ad,
-      firstName,
-      phoneNumber,
-      selectedCity,
-      selectedDistrict,
-      address,
-    } = req.body;
-    console.log(user_id);
+router.post('/:user_id', authenticateToken, async(req, res) => {
+    try {
 
-    await new Promise((resolve, reject) => {
-      connect.query(
-        'CALL UpdateAddressAndUserAddressWithDate(?,?,?,?,?,?,?)',
-        [
-          user_id,
-          id_ad,
-          firstName,
-          phoneNumber,
-          selectedCity,
-          selectedDistrict,
-          address,
-        ],
-        function (error, results) {
-          if (error) {
-            console.error('Error:', error);
-            reject(error);
-          } else {
-            resolve(results);
-          }
-        }
-      );
-    });
+        const user_id = req.params.user_id;
+        const {
+            id_ad,
+            firstName,
+            phoneNumber,
+            selectedCity,
+            selectedDistrict,
+            address,
+        } = req.body;
+        console.log(user_id);
 
-    res.status(200).json({ success: true, message: 'Update successful' });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
+        await new Promise((resolve, reject) => {
+            connect.query(
+                'CALL UpdateAddressAndUserAddressWithDate(?,?,?,?,?,?,?)', [
+                    user_id,
+                    id_ad,
+                    firstName,
+                    phoneNumber,
+                    selectedCity,
+                    selectedDistrict,
+                    address,
+                ],
+                function(error, results) {
+                    if (error) {
+                        console.error('Error:', error);
+                        reject(error);
+                    } else {
+                        resolve(results);
+                    }
+                }
+            );
+        });
+
+        res.status(200).json({ success: true, message: 'Update successful' });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    } finally {
+        // await connect.end();
+    }
 });
 
 module.exports = router;

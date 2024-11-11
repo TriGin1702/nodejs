@@ -1,6 +1,10 @@
 let totalCommentsLoaded = 0; // Số bình luận đã hiển thị
 const commentsPerPage = 3; // Số bình luận cần hiển thị mỗi lần
-
+// // Kết nối với `socket.io`
+// const socket = io('http://localhost:3000');
+const id_socket = document.getElementById('addcmt').value;
+const socket = io();
+socket.emit('joinRoom', `product_${id_socket}`);
 document.getElementById('loadMoreComments').addEventListener('click', loadMoreComments);
 
 function loadMoreComments() {
@@ -14,6 +18,16 @@ function loadMoreComments() {
     if (totalCommentsLoaded >= comments.length) {
         document.getElementById('loadMoreComments').style.display = 'none';
     }
+}
+
+function findParentElementByClass(element, className) {
+    while (element) {
+        if (element.classList && element.classList.contains(className)) {
+            return element; // Trả về phần tử cha nếu có className
+        }
+        element = element.parentElement; // Di chuyển lên phần tử cha
+    }
+    return null; // Trả về null nếu không tìm thấy
 }
 
 // Hiển thị 5 bình luận đầu tiên khi trang được tải
@@ -39,12 +53,13 @@ const formatDate = (date) => {
 
 function renderComment(event) {
     // Tìm phần tử cha gần nhất chứa phần tử cần chèn
-    const commentElement = event.target.closest(".comments-list");
+    const commentElement = document.querySelector(".comments-list");
     if (commentElement) {
         // Kiểm tra xem phần tử cha đã có form trả lời chưa
-        const replyFormContainer = commentElement.querySelector(
-            ".reply-form-container"
-        );
+        const replyForm = findParentElementByClass(event.target, "comment-render");
+        // console.log(replyForm);
+        const replyFormContainer = replyForm.querySelector(".reply-form-container");
+        // console.log(commentElement, replyFormContainer);
         // Hiển thị form trả lời nếu chưa trả lời hoặc đã trả lời nhưng được đặt lại về "false"
         if (replyFormContainer.dataset.replied !== "true") {
             // Tạo một đối tượng HTML từ chuỗi HTML cmt
@@ -61,67 +76,81 @@ function renderComment(event) {
         }
     }
 }
+// Lắng nghe sự kiện `new_comment`
+socket.on('new_comment', function(comment) {
+    const viewcomment = document.querySelector('.comments-list');
+    const newComment = `
+        <div class="comment border-bottom pb-3 mb-3 form-control" id="cmt-${comment.id_cmt}" style="width:100%;">
+            <img class="img-comment" src="/image/${comment.gender}.jpg" alt="" srcset="">
+            <span><b>${comment.name}</b></span>
+            <span style="float: right;">đã đăng vào ngày ${formatDate(Date.now())}</span>
+            <p class="form-control description-comment">${comment.description}</p>
+            <ul class="list-option-cmt reply-cmt">
+                <li class="reply-Comment" onclick="renderComment(event)" style="margin-right: 12px; margin-bottom:12px;"><i class="bi bi-chat" style="margin-right: 12px;"> Reply</i></li>
+            </ul>
+        </div>`;
+    viewcomment.innerHTML += newComment;
+});
+
 async function AddComment() {
     const id_product = document.getElementById('addcmt').value;
     const description = document.getElementById('comment-content').value;
     try {
         await axios.post('/cmt/add_comment', { id_product, description })
-            .then(function(response) {
-                console.log(response);
-                const viewcomment = document.querySelector('.comments-list');
-                const comment = `<div class="comment border-bottom pb-3 mb-3 form-control" id="cmt-${response.data.id_cmt}" style="width:100%;">
-                                    <!-- Hiển thị thông tin của người dùng -->
-                                        <img class="img-comment" src="/image/${response.data.gender}.jpg" alt="" srcset="">
-                                        <span><b>${response.data.name}</b></span>
-                                        <span style="float: right;">đã đăng vào ngày ${formatDate(Date.now())}</span>
-                                        <p class="form-control description-comment">${response.data.description}</p>
-                                    <ul class="list-option-cmt reply-cmt">
-                                        <li onclick="DeleteComment(${response.data.id_cmt}, ${response.data.id_product})" style="cursor:pointer;"><i class="bi bi-trash3" style="margin-right: 12px;"> Remove</i></li>
-                                    </ul>
-                                </div>`;
-                viewcomment.innerHTML += comment;
-            });
     } catch (err) {
         console.error('Error:', err);
+    } finally {
+        document.getElementById('comment-content').value = "";
     }
 }
 async function ReplyComment(event) {
     const id_rep = event.target.closest('.reply-form-container').querySelector('input[name="comment_id"]').value;
     const id_product = event.target.closest('.reply-form-container').querySelector('input[name="product_id"]').value;
-    const description = event.target.closest('.reply-form').querySelector('textarea[name="content"]').value;
-    console.log(id_rep, id_product, description);
+    const textarea = event.target.closest('.reply-form').querySelector('textarea[name="content"]');
+    // console.log(textarea, textarea.value);
+    const description = textarea.value;
+    // console.log(id_rep, id_product, description);
     try {
-        const respond = await axios.post('/cmt/add_comment', { id_product, description, id_rep });
-        const commentreply = document.getElementById(`cmt-${id_rep}`);
-        const comment = `<div class="reply border-bottom pb-2 mb-2" id="cmt-${respond.data.id_cmt}" style="width: 96%; margin-right: auto; float:right;">
-                        <div style="display: inline-flex;">
-                            <img src="/image/${respond.data.gender}.jpg" alt="" srcset="" style="max-width: 56px; max-height: 36px; margin-right: 10px;">
-                            <p><b>${respond.data.name}</b></p>
-                        </div>
-                        <span class="text-muted fs-6" style="float: right;">đã trả lời vào ngày: ${formatDate(Date.now())}</span>
-                        <p>${respond.data.description}</p>
-                        <ul class="list-option-cmt reply-cmt" >
-                          <li onclick="DeleteComment('${respond.data.id_cmt}', '${respond.data.id_product}')" style="margin-right: 12px; margin-bottom:12px; cursor:pointer;"><i class="bi bi-trash3" style="margin-right: 12px;"> Remove</i></li>
-                        </ul>
-                    </div>`;
-        const reply = commentreply.querySelector('.replies');
-        reply.innerHTML += comment;
-        document.querySelector('.reply-form').remove();
-        // Đặt lại replied về "false" để cho phép render lại form trả lời
-        const replyFormContainer = document.querySelector(".comments-list").querySelector(".reply-form-container");
-        replyFormContainer.dataset.replied = "false";
-
-        // Gọi lại hàm renderComment để kiểm tra xem form trả lời có cần hiển thị lại không
-        renderComment(event);
+        await axios.post('/cmt/add_comment', { id_product, description, id_rep });
+        // renderComment(event);
+        textarea.value = "";
     } catch (err) {
         console.error('Error:', err);
     }
 }
+socket.on('reply_comment', (comment) => {
+        const commentreply = document.getElementById(`cmt-${comment.id_rep}`);
+        const comments = `<div class="reply border-bottom pb-2 mb-2" id="cmt-${comment.id_cmt}" style="width: 96%; margin-right: auto; float:right;">
+                <div style="display: inline-flex;">
+                    <img src="/image/${comment.gender}.jpg" alt="" srcset="" style="max-width: 56px; max-height: 36px; margin-right: 10px;">
+                    <p><b>${comment.name}</b></p>
+                </div>
+                <span class="text-muted fs-6" style="float: right;">đã trả lời vào ngày: ${formatDate(Date.now())}</span>
+                <p>${comment.description}</p>
+                <ul class="list-option-cmt reply-cmt" >
+                  <li class="reply-Comment" onclick="renderComment(event)" style="margin-right: 12px; margin-bottom:12px;"><i class="bi bi-chat" style="margin-right: 12px;"> Reply</i></li>
+                </ul>
+            </div>`;
+        const reply = commentreply.querySelector('.replies');
+        reply.innerHTML += comments;
+        // document.querySelector('.reply-form').remove();
+        // Đặt lại replied về "false" để cho phép render lại form trả lời
+        const replyFormContainer = document.querySelector(".comments-list").querySelector(".reply-form-container");
+        replyFormContainer.dataset.replied = "false";
+
+    })
+    // Lắng nghe sự kiện `delete_comment` để xóa bình luận trên client
+socket.on('delete_comment', function(id_cmt) {
+    const commentdelete = document.getElementById(`cmt-${id_cmt}`);
+    if (commentdelete) {
+        commentdelete.remove();
+    }
+});
 async function DeleteComment(data1, data2) {
     try {
         await axios.get(`/cmt/delete/${data1}-${data2}`);
         const commentdelete = document.getElementById(`cmt-${data1}`);
-        commentdelete.remove();
+        // commentdelete.remove();
         // window.location.reload();
     } catch (err) {
         console.error('Error:', err);

@@ -189,6 +189,55 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateQuantityAndPrice` (IN `p_prod
     WHERE id_product = p_product_id AND id_kh = p_user_id;
 END$$
 
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `HiddenProduct` (IN `productId` INT)  BEGIN
+    -- Cập nhật cột is_hidden thành TRUE
+    UPDATE product
+    SET is_hidden = TRUE
+    WHERE id_product = productId;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteProduct` (IN `productId` INT)  BEGIN
+
+    -- Lấy danh sách id_dh từ bảng bill tương ứng với productId
+    DECLARE dhId INT;
+    DECLARE done INT DEFAULT FALSE;
+    
+    DECLARE dhCursor CURSOR FOR
+        SELECT id_dh FROM bill WHERE id_product = productId;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN dhCursor;
+
+    -- Vòng lặp để kiểm tra điều kiện và xóa sản phẩm cùng dữ liệu liên quan
+    read_loop: LOOP
+        FETCH dhCursor INTO dhId;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Kiểm tra nếu tất cả các dòng trong bảng bill_address có cùng id_dh và ttnh = 1
+        IF (SELECT COUNT(*) FROM bill_address WHERE id_dh = dhId AND ttnh != 1) = 0 THEN
+            -- Xóa dữ liệu liên quan từ bảng comment trước
+            DELETE FROM comment WHERE id_product = productId;
+
+            -- Xóa dữ liệu từ bảng bill_address trước khi xóa trong bill
+            DELETE FROM bill_address WHERE id_dh = dhId;
+            
+            -- Sau khi đã xóa từ bill_address, mới xóa từ bảng bill
+            DELETE FROM bill WHERE id_dh = dhId AND id_product = productId;
+        END IF;
+
+    END LOOP;
+
+    CLOSE dhCursor;
+
+    -- Xóa sản phẩm từ bảng product nếu is_hidden = TRUE
+    DELETE FROM product WHERE id_product = productId AND is_hidden = TRUE;
+
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -357,9 +406,9 @@ CREATE TABLE `brand` (
 --
 
 INSERT INTO `brand` (`brand_id`, `name`, `sdt`, `email`) VALUES
-('anpha', 'anpha', '0987654979', 'taiyeu99@gmail.com'),
-('Bandai Namco.', 'Bandai Namco.', '0987364365', 'tai99@gmail.com'),
-('GoodSmile', 'Good Smile', '0987369367', 'taiyeu99@gmail.com'),
+('anpha', 'anpha', '0987654979', 'taiyeu29@gmail.com'),
+('Bandai Namco.', 'Bandai Namco', '0987364365', 'tai12@gmail.com'),
+('GoodSmile', 'Good Smile', '0987369367', 'taiyeu03@gmail.com'),
 ('MegaHouse', 'MegaHouse', '0987361234', 'ptk95@gmail.com');
 
 -- --------------------------------------------------------
@@ -431,7 +480,8 @@ CREATE TABLE `product` (
   `description` longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `type` varchar(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `gia` int(11) NOT NULL,
-  `image` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `image` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `is_hidden` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -546,31 +596,31 @@ ALTER TABLE `user_address`
 -- AUTO_INCREMENT cho bảng `address`
 --
 ALTER TABLE `address`
-  MODIFY `id_ad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id_ad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 
 --
 -- AUTO_INCREMENT cho bảng `bill`
 --
 ALTER TABLE `bill`
-  MODIFY `id_dh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id_dh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 
 --
 -- AUTO_INCREMENT cho bảng `comment`
 --
 ALTER TABLE `comment`
-  MODIFY `id_cmt` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
+  MODIFY `id_cmt` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 
 --
 -- AUTO_INCREMENT cho bảng `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id_kh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id_kh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 
 --
 -- AUTO_INCREMENT cho bảng `product`
 --
 ALTER TABLE `product`
-  MODIFY `id_product` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id_product` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -615,3 +665,10 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+DELIMITER $$
+--
+-- Sự kiện
+--
+CREATE DEFINER=`root`@`localhost` EVENT `delete_hidden_products_event` ON SCHEDULE EVERY 1 HOUR STARTS '2024-09-18 00:15:20' ON COMPLETION NOT PRESERVE ENABLE DO CALL DeleteHiddenProducts()$$
+
+DELIMITER ;
