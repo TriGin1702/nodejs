@@ -84,9 +84,7 @@
       <!-- Cập nhật (button) -->
       <td style="vertical-align: middle; text-align:center;">
       {{#if isFirstOccurrence}}
-        <button type="button" class="btn btn-info btn-sm" onclick="showPayment(event,{{json ../citys}},{{json ../user_address}})">Update</button>
-        <button type="button" class="btn btn-danger btn-sm" onclick="DeleteBillData(event)">Delete</button>
-        <input type="hidden" name="id_bill" value="{{this.id_bill}}" />
+        <button type="button" class="btn btn-info btn-sm"><a href="/homepage/bill_admin/{{this.id_bill}}">Confirm</a></button>
       {{/if}}
         <input type="hidden" name="id_billdetail" value="{{this.id_billdetail}}" />
         <input type="hidden" name="id_cart" value="{{this.id_cart}}" />
@@ -194,6 +192,3 @@
   <a href="/cart">
     <button type="button" class="btn btn-success" style="float: right; margin-left: 16px">Quay lại đơn hàng</button>
   </a>
-
-<div class="pay" id="pay"></div>
-<script src="/js/order.js"></script>

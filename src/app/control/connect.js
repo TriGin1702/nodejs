@@ -19,7 +19,9 @@ const mysql = require("mysql2");
 // });
 let connect = mysql.createPool({
   host: "localhost",
+  port: "5000",
   user: "root",
+  password: "gin@17022001",
   database: "web2",
   waitForConnections: true,
   connectionLimit: 10, // Số lượng kết nối tối đa trong pool

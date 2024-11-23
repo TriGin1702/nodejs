@@ -4,11 +4,19 @@
 >
   <input type="hidden" value="{{product.id_product}}" name="id_product">
   <figure class="figure" style="margin-bottom: 10px;">
-    <img
-      src="/image/{{product.image}}"
-      class="figure-img img-fluid rounded"
-      style="max-height: 540px; max-width: 500px;"
-    />
+    {{#if (firstImage product.image)}}
+        <img id="mainImage" src="/image/{{firstImage product.image}}" class="figure-img img-fluid rounded" style="max-height: 540px; max-width: 500px;" alt="Product Image" style="width: 90px; height: 90px;" />
+    {{/if}}
+    <div class="thumbnails" 
+         style="display: flex; justify-content: space-between; margin-top: 10px; max-width: 500px;">
+      {{#each (parseJSON product.image)}}
+        <img src="/image/{{this}}" 
+             class="img-thumbnail rounded" 
+             style="width: 19%; max-height: 100px; object-fit: cover; cursor: pointer;" 
+             alt="Thumbnail" 
+             onclick="updateMainImage('{{this}}')" />
+      {{/each}}
+    </div>
     <h3><figcaption
         class="figure-caption"
         style="color: rgba(200, 0, 0, 0.7)"
@@ -88,11 +96,11 @@
                         <span class="text-muted fs-6" style="float: right;">đã trả lời vào ngày: {{formatDate this.date}}</span>
                         <p>{{this.description}}</p>
                         <ul class="list-option-cmt reply-cmt" >
-                        {{#ifEqual this.id_kh ../../user.id_kh}}
+                        {{#ifEquals this.id_user ../../user.id_user}}
                           <li onclick="DeleteComment('{{this.id_cmt}}', '{{../../product.id_product}}')" style="margin-right: 12px; margin-bottom:12px; cursor:pointer;"><i class="bi bi-trash3" style="margin-right: 12px;"> Remove</i></li>
                         {{else}}
                           <li class="reply-Comment" onclick="renderComment(event)" style="margin-right: 12px; margin-bottom:12px;"><i class="bi bi-chat" style="margin-right: 12px;"> Reply</i></li>
-                        {{/ifEqual}}
+                        {{/ifEquals}}
                         </ul>
                     </div>
                 {{/each}}
@@ -100,11 +108,11 @@
 
         <!-- Hiển thị các tùy chọn -->
             <ul class="list-option-cmt reply-cmt">
-            {{#ifEqual this.id_kh ../user.id_kh}}
+            {{#ifEquals this.id_user ../user.id_user}}
                 <li onclick="DeleteComment('{{this.id_cmt}}', '{{../product.id_product}}')" style="cursor:pointer;"><i class="bi bi-trash3" style="margin-right: 12px;"> Remove</i></li>
             {{else}}
                 <li class="reply-Comment" onclick="renderComment(event)"><i class="bi bi-chat" style="margin-right: 12px;"> Reply</i></li>
-            {{/ifEqual}}
+            {{/ifEquals}}
             </ul>
       <!-- Nơi chèn form trả lời -->
         <div class="reply-form-container" style="width:100%; margin-right:12px;" data-replied="false">
@@ -118,5 +126,5 @@
 </div>
 </div>
 {{!-- <script type="text" src="/socket.io/socket.io.js"></script> --}}
-<script type="text/javascript" src="/js/comment2.js"></script>
-<script type="text/javascript" src="/js/product_detail2.js"></script>
+<script type="text/javascript" src="/js/comment.js"></script>
+<script type="text/javascript" src="/js/product_detail.js"></script>

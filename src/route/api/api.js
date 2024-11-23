@@ -5,11 +5,10 @@ const fs = require("fs");
 const path = require("path");
 const authenticateToken = require("./authenticateToken");
 const js = path.join(__dirname, "../../public/js/");
-
 router2.get("/quantity_product/:user_id", authenticateToken, async (req, res) => {
   const userId = req.params.user_id;
   try {
-    const query = `SELECT SUM(quantity) AS totalQuantity FROM bill WHERE id_kh = ?`;
+    const query = `SELECT SUM(quantity) AS totalQuantity FROM cart WHERE id_user = ?`;
 
     const result = await new Promise((resolve, reject) => {
       connect.query(query, [userId], (err, result) => {
@@ -33,24 +32,34 @@ router2.get("/quantity_product/:user_id", authenticateToken, async (req, res) =>
 router2.get("/", async (req, res) => {
   try {
     let sortQuery = "";
-    const sortValue = req.query.sort; // Lấy giá trị của tham số "sort" từ query string
+    const sortValue = req.query.sort; // Lấy giá trị của tham số "sort"
     const searchValue = req.query.search;
-    // Xử lý giá trị của tham số "sort" để tạo câu truy vấn sắp xếp phù hợp
+
+    // Xử lý giá trị của tham số "sort"
     if (sortValue == "top") {
-      sortQuery = "ORDER BY gia DESC"; // Sắp xếp từ cao đến thấp dựa trên trường "price"
+      sortQuery = "ORDER BY price DESC"; // Sắp xếp từ cao đến thấp
     } else if (sortValue == "down") {
-      sortQuery = "ORDER BY gia ASC"; // Sắp xếp từ thấp đến cao dựa trên trường "price"
+      sortQuery = "ORDER BY price ASC"; // Sắp xếp từ thấp đến cao
     }
+
     let checkquery = "";
     if (searchValue) {
-      checkquery = `SELECT * FROM product JOIN brand p ON product.id_brand = p.id_brand where (p.name = ? or product.name = ?) and is_hidden = 0 ${sortQuery}`;
+      checkquery = `
+        SELECT product.*, p.name AS brand_name 
+        FROM product 
+        JOIN brand p ON product.id_brand = p.id_brand 
+        WHERE (p.name LIKE ? OR product.name LIKE ?) 
+        AND product.is_hidden = 0 
+        ${sortQuery}`;
     } else {
-      checkquery = `SELECT product.*, p.name AS brand_name 
-                FROM product 
-                JOIN brand p ON product.id_brand = p.id_brand
-                WHERE product.is_hidden = 0 
-                ${sortQuery}`; // Tạo câu truy vấn SQL hoàn chỉnh
+      checkquery = `
+        SELECT product.*, p.name AS brand_name 
+        FROM product 
+        JOIN brand p ON product.id_brand = p.id_brand
+        WHERE product.is_hidden = 0 
+        ${sortQuery}`; // Câu truy vấn khi không có giá trị tìm kiếm
     }
+
     const query = checkquery;
     const product = await new Promise((resolve, reject) => {
       connect.query(query, [searchValue, searchValue], (err, rows) => {
@@ -59,32 +68,38 @@ router2.get("/", async (req, res) => {
       });
     });
 
-    return res.json(product); // Chuyển dữ liệu brand sang dạng JSON và gửi về client
+    return res.json(product); // Trả về kết quả dưới dạng JSON
   } catch (err) {
     console.error(err);
-    return res.send("error"); // Xử lý lỗi nếu truy vấn không thành công
+    return res.send("error"); // Xử lý lỗi nếu có
   }
 });
+
 router2.delete("/:id", authenticateToken, async (req, res) => {
   try {
-    if (req.user.admin == "system") {
-      const id_product = req.params.id;
-      console.log(id_product);
-      // Thực hiện xóa sản phẩm từ cơ sở dữ liệu
-      await new Promise((resolve, reject) => {
-        connect.query("UPDATE product SET is_hidden = true; where id_product = ?", [id_product], (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
+    // Dùng req.user để truy cập thông tin user sau khi xác thực
+    console.log(req.user);
+    const id_product = req.params.id;
+    console.log(id_product);
+    // Thực hiện xóa sản phẩm từ cơ sở dữ liệu
+    await new Promise((resolve, reject) => {
+      connect.query("UPDATE product SET is_hidden = true WHERE id_product = ?", [id_product], (err, result) => {
+        if (err) reject(err);
+        resolve(result);
       });
+    });
 
-      res.send("Product deleted successfully");
-    }
+    res.send("Product deleted successfully");
+    // if (req.user.role === "admin") {
+    // } else {
+    //   res.status(403).send("Permission denied");
+    // }
   } catch (err) {
     console.error(err);
     res.status(500).send("Error deleting product");
   }
 });
+
 // router2.get("/js", async function(req, res) {
 //     try {
 //         const jsContent = fs.readFileSync(js + "product_new2.js", "utf8");

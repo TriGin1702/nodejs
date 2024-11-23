@@ -127,8 +127,8 @@ function showCreateUser(role, user = {}) {
             <div class="form-group">
               <label for="createUserGender">Gender</label>
               <select class="form-control" id="createUserGender" name="gender">
-                <option value="Nam" ${gender === "Nam" ? "selected" : ""}>Nam</option>
-                <option value="Nữ" ${gender === "Nữ" ? "selected" : ""}>Nữ</option>
+                <option value="Nam" ${gender === "Male" ? "selected" : ""}>Nam</option>
+                <option value="Nữ" ${gender === "Female" ? "selected" : ""}>Nữ</option>
               </select>
             </div>
             <div class="form-group">
@@ -167,8 +167,15 @@ function showCreateRole(authority, role = {}) {
   // Tạo các option động cho authority
   let authorityOptions = "";
   if (Array.isArray(authority)) {
+    // Tạo một Set để lưu các id_au đã chèn
+    const insertedIds = new Set();
+
     authority.forEach((auth) => {
-      authorityOptions += `<option value="${auth.id_au}-${auth.name}">${auth.id_au}-${auth.name}</option>`;
+      if (!insertedIds.has(auth.id_au)) {
+        // Nếu id_au chưa tồn tại, thêm vào Set và chèn vào option
+        insertedIds.add(auth.id_au);
+        authorityOptions += `<option value="${auth.id_au}-${auth.name}">${auth.id_au}-${auth.name}</option>`;
+      }
     });
   }
 

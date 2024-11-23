@@ -216,7 +216,7 @@ h2 {
   /* Sử dụng transition để tạo hiệu ứng mờ dần */
   width: 100%;
   /* Chiếm toàn bộ chiều rộng của slider */
-  height: 360px;
+  height: 432px;
   object-fit: fill;
   opacity: 0;
   transition: opacity 1s ease-in-out; }

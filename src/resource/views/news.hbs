@@ -19,18 +19,21 @@
         <a class="card2-box" href="/cmt/{{this.id_product}}">
           <input type="hidden" name="id_product" value="{{this.id_product}}" />
           {{#if (firstImage this.image)}}
-            <img src="/image/{{firstImage this.image}}" class="card-img-top product-img" alt="..." />
+            <img src="/image/{{firstImage this.image}}" class="card-img-top product-img" alt="..." style="min-height: 360px;" />
           {{/if}}
           <div class="card-body" style="min-height: 200px;">
-            <h7 class="card-title" style="display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"><b
-              >{{this.name}}</b></h7>
-            <h5>brand:{{this.brand_name}}</h5>
+            <h4 class="card-title" style="display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;overflow: hidden;"><b
+              >{{this.name}}</b></h4>
+            <div style="display: inline-flex; justify-content:space-between; width:100%">
+              <h5 style="color: brown;">brand:{{this.brand_name}}</h5>
+              <h5>{{this.price}}$</h5>
+            </div>
             <p class="card-text">Mô tả: {{this.description}}</p>
             <div style="display: inline-flex; justify-content:space-between; width:100%;align-items:center">
 
               <span class="btn btn-primary mt-auto">Xem chi tiết</span>
               <button id="addToCart" class="addToCart" onclick="showSuccessToast(event)">
-                <i class="bi bi-cart-plus-fill"></i>
+                <i class="bi bi-cart-plus-fill" style="font-size: 24px;"></i>
               </button>
             </div>
           </div>
@@ -40,4 +43,4 @@
   {{/each}}
 </div>
 <div id="toast"></div>
-<script type="text/javascript" src="/js/product_new2.js"></script>
+<script type="text/javascript" src="/js/product_new.js"></script>

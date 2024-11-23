@@ -81,7 +81,7 @@ router2.post("/", upload.array("image", 15), async (req, res) => {
   const images = req.files; // Lấy danh sách ảnh từ req.files
   const names = req.body.name;
   const descriptions = req.body.description;
-  const prices = req.body.gia;
+  const prices = req.body.price;
   const brands = req.body.brand;
   const types = req.body.type;
 
@@ -90,7 +90,7 @@ router2.post("/", upload.array("image", 15), async (req, res) => {
     const imageArray = []; // Mảng để chứa tên ảnh
     if (images && images.length > 0) {
       // Lặp qua các file ảnh đã upload
-      for (let j = 0; j < images.length; j++) {
+      for (let j = i * 5; j < i * 5 + 5; j++) {
         // Kiểm tra và lưu tên file
         const fileName = time + "-" + images[j].originalname;
         imageArray.push(fileName); // Thêm tên file vào mảng
@@ -184,6 +184,7 @@ router2.post("/brand/deleteBrand", async (req, res) => {
 // Route cho Product Type
 router2.post("/type/addType", async (req, res) => {
   const { name } = req.body;
+  console.log(name);
   const sql = "INSERT INTO product_type (name) VALUES (?)";
 
   try {

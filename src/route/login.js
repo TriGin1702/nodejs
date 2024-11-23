@@ -2,7 +2,7 @@ const express = require("express");
 const router1 = express.Router();
 const axios = require("axios");
 const multer = require("multer"); // Import multer
-
+const jwt = require("jsonwebtoken");
 const upload = multer(); // Khởi tạo multer
 
 // Route để hiển thị trang đăng nhập
@@ -31,17 +31,28 @@ router1.post("/", upload.none(), async (req, res) => {
     });
     const account = apiResponse.data;
     if (account) {
-      res.cookie("userId", account.id, { maxAge: 3 * 60 * 60 * 1000 }); // Lưu ID người dùng vào cookie
-    }
-    if (account.role_name.match("user")) {
-      // Chuyển hướng đến trang tin tức
-      req.session.user = account; // Lưu toàn bộ thông tin người dùng vào session
-      return res.redirect("/news");
-    } else if (account.role_name.match("admin")) {
-      req.session.admin = account;
-      return res.redirect("/homepage");
+      // Tạo JWT
+      const token = jwt.sign(
+        {
+          id: account.id,
+          role: account.role_name,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "3h" } // Token hết hạn sau 3 giờ
+      );
+
+      // Gửi token dưới dạng cookie tới client
+      res.cookie("token", token, { maxAge: 3 * 60 * 60 * 1000, httpOnly: true });
+
+      // Chuyển hướng người dùng dựa trên vai trò
+      if (account.role_name === "user") {
+        req.session.user = account;
+        return res.redirect("/news");
+      } else if (account.role_name != "user") {
+        req.session.admin = account;
+        return res.redirect("/homepage");
+      }
     } else {
-      // Nếu thông tin đăng nhập không chính xác, hiển thị thông báo lỗi
       return res.send("<script>alert('Incorrect account or password'); window.location.href = '/';</script>");
     }
   } catch (err) {

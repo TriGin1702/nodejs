@@ -91,6 +91,7 @@ function previewImage(event) {
 
 // Giới hạn số lần thêm "More product" tối đa 3 lần
 let moreProductCount = 1;
+var moreProductClicked = false;
 
 function Moreproduct() {
   const elements = document.querySelector(".more");
@@ -246,7 +247,7 @@ async function handleFormSubmit(event, actionUrl, successMessage, errorMessage) 
     });
 
     // Xử lý phản hồi
-    if (response.status === 201) {
+    if (response.status != 404 || response.status != 301) {
       showAlert(successMessage); // Hiển thị thông báo thành công
       location.reload(); // Tải lại trang sau khi thành công
     } else {

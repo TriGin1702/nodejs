@@ -12,7 +12,7 @@ const axios = require("axios");
 // route.use(cookieParser());
 require("dotenv").config();
 const handlebars = require("handlebars");
-const { router } = require("json-server");
+// const { router } = require("json-server");
 handlebars.registerHelper("json", function (context) {
   return JSON.stringify(context);
 });
@@ -20,15 +20,35 @@ handlebars.registerHelper("json", function (context) {
 handlebars.registerHelper("parseJSON", function (json) {
   return JSON.parse(json);
 });
-handlebars.registerHelper("firstImage", function (array) {
-  const parsedArray = JSON.parse(array); // Parse mảng JSON
-  return parsedArray && parsedArray.length ? parsedArray[0] : null; // Lấy phần tử đầu tiên nếu tồn tại
+handlebars.registerHelper("ifHasAuthority", function (authority, authorities, options) {
+  if (Array.isArray(authorities) && authorities.some((auth) => auth.authority_name === authority)) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+handlebars.registerHelper("firstImage", function (image) {
+  if (typeof image == "string") {
+    try {
+      const parsedArray = JSON.parse(image); // Parse chuỗi JSON thành mảng
+      return parsedArray ? parsedArray[0] : null; // Trả về phần tử đầu tiên nếu tồn tại
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return null; // Trả về null nếu lỗi parse JSON
+    }
+  }
+  return null; // Trả về null nếu image không phải là chuỗi JSON
+});
+handlebars.registerHelper("isFirstOccurrence", function (currentId, previousId, options) {
+  if (currentId !== previousId) {
+    return options.fn(this); // Render nội dung trong block {{#isFirstOccurrence}}
+  }
+  return options.inverse(this); // Render nội dung trong block {{else}}
 });
 handlebars.registerHelper("ifEquals", function (arg1, arg2, options) {
   return arg1 == arg2 ? options.fn(this) : options.inverse(this);
 });
 
-var product = [];
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./src/public/image");
@@ -38,28 +58,6 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage });
-// route.get('/list_users', async(req, res) => {
-//     try {
-//         const admin = req.session.admin || null;
-//         if (admin == null) {
-//             return res.redirect('/');
-//         }
-//         const token = req.cookies.adminToken;
-//         const url = `${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ACC}/list_users`;
-//         console.log('Fetching users from URL:', url);
-
-//         const listusers = await axios.get(url, {
-//             headers: {
-//                 'Authorization': `Bearer ${token}` // Gửi token qua header Authorization
-//             }
-//         });
-//         const users = listusers.data;
-//         console.log(users);
-//         return res.render('list_user', { users: users });
-//     } catch (err) {
-//         return res.send(err);
-//     }
-// });
 route.post("/home", upload.array("image", 5), async (req, res) => {
   const sql = "INSERT INTO product (id_brand, name, description, id_type, price, image) VALUES (?, ?, ?, ?, ?, ?)";
   const { brand, name, description, type, price } = req.body;
@@ -124,7 +122,7 @@ route.get("/update/:id", async (req, res) => {
   }
 });
 
-route.post("/update/:id", upload.array("image", 5), async (req, res) => {
+route.post("/update/:id", upload.array("image", 7), async (req, res) => {
   const admin = req.session.admin || null;
   if (admin == null) {
     return res.redirect("/");
@@ -137,27 +135,38 @@ route.post("/update/:id", upload.array("image", 5), async (req, res) => {
     const currentImages = await new Promise((resolve, reject) => {
       connect.query("SELECT image FROM product WHERE id_product = ?", [idProduct], (err, result) => {
         if (err) reject(err);
-        resolve(JSON.parse(result[0].image)); // Assuming image is stored as JSON
+        resolve(result.length > 0 ? JSON.parse(result[0].image) : []); // Assuming image is stored as JSON
       });
     });
-
+    console.log(currentImages);
     const { brand, name, description, type, price } = req.body;
-    let newImages = [...currentImages]; // Start with current images
-
-    // If new images are uploaded, append them to the existing images
+    let newImages = currentImages; // Giữ nguyên ảnh cũ mặc định
+    // Nếu có ảnh mới được tải lên
     if (req.files && req.files.length) {
-      req.files.forEach((file) => {
-        const fileName = `${time}-${file.originalname}`; // Create a new filename
-        newImages.push(fileName); // Add the new image to the array
+      // Xóa ảnh cũ
+      newImages = [];
+      currentImages.forEach((image) => {
+        const filePath = path.join(imageFilePath, image);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath); // Xóa file
+          console.log(`Deleted: ${filePath}`);
+        } else {
+          console.log(`File not found: ${filePath}`);
+        }
+      });
 
-        // Save the new image to the filesystem
-        const filePath = path.join(imageFilePath, fileName);
-        fs.writeFileSync(filePath, file.buffer); // Save the file
-        console.log(`${fileName} has been saved.`);
+      // Tạo danh sách ảnh mới
+      req.files.forEach((file) => {
+        const sanitizedFileName = file.originalname;
+        const fileName = `${time}-${sanitizedFileName}`; // Tạo tên file mới
+        newImages.push(fileName); // Thêm tên file vào mảng mới
+        // const filePath = path.join(imageFilePath, fileName);
+        // fs.writeFileSync(filePath, fileName); // Lưu file
+        // console.log(`${fileName} has been saved.`);
       });
     }
-
-    // Update the product in the database
+    console.log(newImages);
+    // Cập nhật sản phẩm trong cơ sở dữ liệu
     await new Promise((resolve, reject) => {
       connect.query(
         "UPDATE product SET id_brand = ?, name = ?, description = ?, id_type = ?, price = ?, image = ? WHERE id_product = ?",
@@ -169,7 +178,7 @@ route.post("/update/:id", upload.array("image", 5), async (req, res) => {
       );
     });
 
-    return res.redirect("/homepage");
+    return res.status(200).redirect("/homepage");
   } catch (err) {
     console.error("Error during UPDATE operation:", err);
     return res.status(500).send("Error updating the product.");
@@ -185,14 +194,8 @@ route.get("/delete/:id", upload.none(), async (req, res) => {
   const idProduct = req.params.id; // Get the product ID from the request parameters
   try {
     // Retrieve the current image array from the database to delete files
-    const imagesToDelete = await new Promise((resolve, reject) => {
-      connect.query("SELECT image FROM product WHERE id_product = ?", [idProduct], (err, result) => {
-        if (err) reject(err);
-        resolve(JSON.parse(result[0].image)); // Assuming image is stored as JSON
-      });
-    });
 
-    const token = req.cookies.adminToken;
+    const token = req.cookies.token;
 
     // Call the API to delete the product
     await axios.delete(`${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_PRODUCT}/${idProduct}`, {
@@ -202,15 +205,6 @@ route.get("/delete/:id", upload.none(), async (req, res) => {
     });
 
     // Delete each image file from the filesystem
-    imagesToDelete.forEach((imageName) => {
-      const fullImagePath = path.join(imageFilePath, imageName);
-      if (fs.existsSync(fullImagePath)) {
-        fs.unlinkSync(fullImagePath); // Delete the image if it exists
-        console.log(`${imageName} has been deleted.`);
-      } else {
-        console.log(`File ${imageName} does not exist, no deletion required.`);
-      }
-    });
 
     return res.redirect("/homepage");
   } catch (err) {
@@ -218,15 +212,35 @@ route.get("/delete/:id", upload.none(), async (req, res) => {
     return res.status(500).send("Error deleting the product.");
   }
 });
+route.get("/reset/:id_product", async function (req, res) {
+  const id_product = req.params.id_product;
+
+  try {
+    // Thực hiện cập nhật is_hidden = 0 cho sản phẩm có id_product
+    await new Promise((resolve, reject) => {
+      connect.query("UPDATE product SET is_hidden = 0 WHERE id_product = ?", [id_product], (err, result) => {
+        if (err) reject(err);
+        resolve(result);
+      });
+    });
+
+    // Gửi phản hồi thành công
+    return res.redirect("/homepage");
+  } catch (err) {
+    // Xử lý lỗi
+    console.error(err);
+    res.status(500).send("Error resetting product visibility.");
+  }
+});
 
 // route.use("/create", create);
 route.get("/", async (req, res) => {
   try {
-    // const admin = req.session.admin || null;
-    // if (admin == null) {
-    //   return res.redirect("/");
-    // }
-    let product, city, manufacture;
+    const admin = req.session.admin || null;
+    if (admin == null) {
+      return res.redirect("/");
+    }
+    let product, city, manufacture, authorities;
     await new Promise((resolve, reject) => {
       connect.query(
         "SELECT product.*,p.name AS brand_name, pr.name AS product_nametype FROM product JOIN brand p ON product.id_brand = p.id_brand JOIN product_type pr ON product.id_type = pr.id_type;",
@@ -237,6 +251,8 @@ route.get("/", async (req, res) => {
         }
       );
     });
+    const visibleProducts = product.filter((item) => item.is_hidden === 0);
+    const hiddenProducts = product.filter((item) => item.is_hidden === 1);
     await new Promise((resolve, reject) => {
       connect.query("SELECT * from city", (err, result) => {
         if (err) reject(err);
@@ -251,9 +267,28 @@ route.get("/", async (req, res) => {
         resolve();
       });
     });
+    await new Promise((resolve, reject) => {
+      const query = `
+        SELECT a.name AS authority_name
+          FROM role r
+          JOIN authority a ON r.id_role = a.id_role
+          WHERE r.name = ?;`;
+      connect.query(query, [admin.role_name], (err, result) => {
+        if (err) reject(err);
+        authorities = result;
+        resolve();
+      });
+    });
     console.log(manufacture.data);
+    console.log(authorities);
     // req.app.locals.product = product;
-    return res.render("home", { product: product, city: city, manufacture: manufacture[0] });
+    return res.render("home", {
+      visibleProducts: visibleProducts,
+      hiddenProducts: hiddenProducts,
+      city: city,
+      manufacture: manufacture[0],
+      admin_role: authorities,
+    });
   } catch (err) {
     return res.send(err);
   }
@@ -263,7 +298,8 @@ route.get("/admin", async (req, res) => {
     const role = await new Promise((resolve, reject) => {
       connect.query("SELECT * from role", (err, result) => {
         if (err) reject(err);
-        resolve(result);
+        const filteredRoles = result.filter((role) => role.name !== "user");
+        resolve(filteredRoles);
       });
     });
 
@@ -271,6 +307,13 @@ route.get("/admin", async (req, res) => {
       connect.query("SELECT * from authority", (err, result) => {
         if (err) reject(err);
         resolve(result);
+      });
+    });
+    const authorityforchose = await new Promise((resolve, reject) => {
+      connect.query("SELECT DISTINCT id_au, name FROM authority", (err, result) => {
+        if (err) reject(err);
+        const filteredAuthorities = result.filter((auth) => auth.name !== "buy product");
+        resolve(filteredAuthorities);
       });
     });
 
@@ -281,7 +324,7 @@ route.get("/admin", async (req, res) => {
       });
     });
 
-    return res.render("admin", { user, role, authority });
+    return res.render("admin", { user, role, authority, authorityforchose });
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).send("Error fetching data");
@@ -304,7 +347,7 @@ route.post("/user", async (req, res) => {
         `;
         connect.query(sqlInsert, [id_role, name, gender, email, account, password], (err, results) => {
           if (err) return reject(err);
-          resolve({ message: "User created successfully!", id: results.insertId });
+          resolve();
         });
       } else {
         // Cập nhật người dùng hiện có
@@ -315,12 +358,12 @@ route.post("/user", async (req, res) => {
         `;
         connect.query(sqlUpdate, [id_role, name, gender, email, account, password, id_user], (err, results) => {
           if (err) return reject(err);
-          resolve({ message: "User updated successfully!" });
+          resolve();
         });
       }
     });
 
-    return res.json(result); // Trả về kết quả cho client
+    return res.redirect("/homepage/admin"); // Trả về kết quả cho client
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "An error occurred while processing user data" });
@@ -371,9 +414,67 @@ route.delete("/user/:id", async (req, res) => {
   }
 });
 
-// route.get("/import", (req, res) => {
-//   return res.render("import");
-// });
+route.get("/bill_admin", async (req, res) => {
+  const admin = req.session.admin || null;
+  const sql =
+    "SELECT p.name AS product_name, p.image, b.name AS brand_name, bi.id_bill, bi.create_at, bi.status, bi.price AS total_price, bd.id_billdetail, c.id_cart, c.quantity AS cart_quantity, a.name AS user_name, a.ip_address, a.phone AS address_phone, d.name AS district_name, ci.name AS city_name FROM bill bi JOIN bill_detail bd ON bi.id_bill = bd.id_bill JOIN cart c ON c.id_cart = bd.id_cart JOIN product p ON p.id_product = c.id_product JOIN brand b ON b.id_brand = p.id_brand JOIN bill_address ba ON ba.id_bill = bi.id_bill JOIN user_address ua ON ua.id_useraddress = ba.id_useraddress JOIN address a ON a.id_address = ua.id_address JOIN district d ON d.id_district = a.id_district JOIN city ci ON ci.id_city = d.id_city";
+  if (admin == null) {
+    return res.redirect("/");
+  } else {
+    try {
+      const cart = await new Promise((resolve, reject) => {
+        connect.query(sql, (error, results) => {
+          if (error) {
+            console.error("Error:", error);
+            reject(error); // Reject promise nếu có lỗi
+          } else {
+            resolve(results); // Resolve promise nếu thủ tục thực thi thành công
+          }
+        });
+      });
+
+      let cartorder = cart;
+      // Gắn isFirstOccurrence cho từng dòng
+      cartorder = cartorder.map((item, index, array) => {
+        item.isFirstOccurrence = index === 0 || item.id_bill !== array[index - 1].id_bill;
+        return item;
+      });
+      // Tách ra hai danh sách dựa vào status
+      const pendingOrders = cartorder.filter((item) => item.status === "Pending");
+      const confirmedOrders = cartorder.filter((item) => item.status === "Confirm");
+      const hasOrders = pendingOrders.length > 0 || confirmedOrders.length > 0;
+      return res.render("bill_admin", { pendingOrders, confirmedOrders, hasOrders });
+    } catch (error) {
+      console.error("Error fetching cart orders:", error);
+      return res.status(500).send("Internal Server Error");
+    }
+  }
+});
+route.get("/bill_admin/:id_bill", async (req, res) => {
+  const admin = req.session.admin || null;
+  const id_bill = req.params.id_bill;
+  const sql = "UPDATE bill SET status = 'Confirm' WHERE id_bill = ?";
+  if (admin == null) {
+    return res.redirect("/");
+  } else {
+    try {
+      await new Promise((resolve, reject) => {
+        connect.query(sql, [id_bill], (error, results) => {
+          if (error) {
+            console.error("Error:", error);
+            reject(error); // Reject promise nếu có lỗi
+          } else {
+            resolve(results); // Resolve promise nếu thủ tục thực thi thành công
+          }
+        });
+      });
+      return res.redirect("/homepage/bill_admin");
+    } catch (error) {
+      console.error("Error fetching cart orders:", error);
+      return res.status(500).send("Internal Server Error");
+    }
+  }
+});
 route.post("/imported", upload.none(), async (req, res) => {
   const { id_manufacturer, name, phoneNumber, id_district, address, products, importStatus } = req.body;
 
@@ -414,7 +515,7 @@ route.post("/imported", upload.none(), async (req, res) => {
       console.log("Không có sản phẩm nào được chọn.");
     }
 
-    return res.json({ success: true, message: "Import order created successfully" });
+    return res.redirect("/homepage");
   } catch (error) {
     console.error("Error occurred while processing import:", error);
     return res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -436,7 +537,21 @@ route.get("/district/:id", async (req, res) => {
     return res.status(500).json({ error: "An error occurred while fetching districts" });
   }
 });
-
+route.get("/city", async (req, res) => {
+  const sql = "SELECT * from city";
+  try {
+    const citys = await new Promise((resolve, reject) => {
+      connect.query(sql, (err, results) => {
+        if (err) reject(err);
+        resolve(results); // Trả về kết quả từ cơ sở dữ liệu
+      });
+    });
+    return res.json(citys); // Trả về kết quả cho client
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "An error occurred while fetching districts" });
+  }
+});
 route.post("/role", async (req, res) => {
   const { id_role, name, selectedAuthorities } = req.body;
   console.log(selectedAuthorities, name, id_role);
@@ -478,7 +593,7 @@ route.post("/role", async (req, res) => {
         })
       );
 
-      return res.status(200).json({ message: "Role updated successfully" });
+      return res.redirect("/homepage/admin");
     } else {
       // Tạo role mới và các authority của nó
       const insertRoleQuery = `INSERT INTO role (name) VALUES (?)`;
@@ -503,7 +618,7 @@ route.post("/role", async (req, res) => {
         })
       );
 
-      return res.status(200).json({ message: "Role created successfully" });
+      return res.redirect("/homepage/admin");
     }
   } catch (error) {
     console.error("Error handling role:", error);
