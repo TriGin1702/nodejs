@@ -479,38 +479,38 @@ route.post("/imported", upload.none(), async (req, res) => {
   const { id_manufacturer, name, phoneNumber, id_district, address, products, importStatus } = req.body;
 
   try {
+    // Thêm hoặc cập nhật địa chỉ nhà sản xuất
     const addressResult = await new Promise((resolve, reject) => {
       connect.query(
         "CALL AddOrUpdateManufacturerAddress(?,?,?,?,?)",
         [id_manufacturer, name, phoneNumber, address, id_district],
         (error, results) => {
           if (error) return reject(error);
-          else {
-            resolve(results[0][0].success);
-          }
+          else resolve(results[0][0].success); // Kết quả trả về từ stored procedure
         }
       );
     });
-    console.log(addressResult);
-    // Kiểm tra products là mảng hợp lệ và có phần tử
-    if (Array.isArray(products) && products.length > 0) {
-      const productCount = products.length; // Đếm số lượng sản phẩm
 
-      if (productCount > 0) {
-        for (const product of products) {
-          await new Promise((resolve, reject) => {
-            connect.query(
-              "CALL AddImportOrder(?,?,?,?,?)", // Giả sử cần thêm id_product và quantity cho mỗi sản phẩm
-              [addressResult, product.id_product, product.quantity, product.price, importStatus],
-              (error, results) => {
-                if (error) return reject(error);
-                resolve(results);
-              }
-            );
+    // Tạo một hóa đơn nhập mới
+    const idImportOrder = await new Promise((resolve, reject) => {
+      connect.query("INSERT INTO import_order (id_manufacturer, status) VALUES (?, ?)", [addressResult, importStatus], (error, results) => {
+        if (error) return reject(error);
+        else resolve(results.insertId); // Lấy id_import_order vừa được tạo
+      });
+    });
+
+    // Kiểm tra và xử lý các sản phẩm trong mảng products
+    if (Array.isArray(products) && products.length > 0) {
+      for (const product of products) {
+        // Gọi stored procedure AddImportOrder cho từng sản phẩm
+        await new Promise((resolve, reject) => {
+          connect.query("CALL AddImportOrder(?,?,?,?)", [idImportOrder, product.id_product, product.quantity, product.price], (error, results) => {
+            if (error) return reject(error);
+            resolve(results);
           });
-        }
-        console.log(`Đã thêm ${productCount} sản phẩm vào đơn hàng.`);
+        });
       }
+      console.log(`Đã thêm ${products.length} sản phẩm vào đơn hàng có ID: ${idImportOrder}.`);
     } else {
       console.log("Không có sản phẩm nào được chọn.");
     }
@@ -521,6 +521,7 @@ route.post("/imported", upload.none(), async (req, res) => {
     return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
+
 route.get("/district/:id", async (req, res) => {
   const id_city = req.params.id;
   const sql = "SELECT * from district WHERE id_city = ?";
@@ -652,6 +653,105 @@ route.delete("/role/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "An error occurred while deleting the role" });
+  }
+});
+route.get("/import_bill", async function (req, res) {
+  const importbill = await new Promise((resolve, reject) => {
+    connect.query("CALL GetALLimportBill()", (err, result) => {
+      if (err) return reject(err);
+      resolve(result[0]);
+    });
+  });
+  let city, manufacture;
+  await new Promise((resolve, reject) => {
+    connect.query("SELECT * from city", (err, result) => {
+      if (err) reject(err);
+      city = result;
+      resolve();
+    });
+  });
+  await new Promise((resolve, reject) => {
+    connect.query("CALL GetManufacturerInfo(0)", (err, result) => {
+      if (err) reject(err);
+      manufacture = result;
+      resolve();
+    });
+  });
+  return res.render("import", { importbill: importbill, city: city, manufacture: manufacture[0] });
+});
+route.post("/import_bill", upload.none(), async (req, res) => {
+  const { id_manufacturer, name, phoneNumber, id_district, address, products, importStatus, import_order_id } = req.body;
+
+  try {
+    // Thêm hoặc cập nhật địa chỉ nhà sản xuất
+    const addressResult = await new Promise((resolve, reject) => {
+      connect.query(
+        "CALL AddOrUpdateManufacturerAddress(?,?,?,?,?)",
+        [id_manufacturer, name, phoneNumber, address, id_district],
+        (error, results) => {
+          if (error) return reject(error);
+          else resolve(results[0][0].success); // Kết quả trả về từ stored procedure
+        }
+      );
+    });
+    let total_price = 0;
+    if (Array.isArray(products) && products.length > 0) {
+      for (const product of products) {
+        // Gọi stored procedure AddImportOrder cho từng sản phẩm
+        await new Promise((resolve, reject) => {
+          connect.query(
+            "UPDATE import_order_detail SET quantity = ?, unit_price =?, total_price =?  WHERE id_import_order = ? AND id_product =? ",
+            [product.quantity, product.price, product.quantity * product.price, import_order_id, product.id_product],
+            (error, results) => {
+              if (error) return reject(error);
+              resolve(results);
+            }
+          );
+        });
+        total_price += product.quantity * product.price;
+      }
+    } else {
+      console.log("Không có sản phẩm nào được chọn.");
+    }
+    // Tạo một hóa đơn nhập mới
+    await new Promise((resolve, reject) => {
+      connect.query(
+        "UPDATE import_order SET id_manufacturer = ?, status =?, total_price =? WHERE id_import_order =? ",
+        [addressResult, importStatus, total_price, import_order_id],
+        (error, results) => {
+          if (error) return reject(error);
+          else resolve(results); // Lấy id_import_order vừa được tạo
+        }
+      );
+    });
+
+    return res.redirect("/homepage/import_bill");
+  } catch (error) {
+    console.error("Error occurred while processing import:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+route.delete("/delete_import_order", async (req, res) => {
+  const { import_order_id } = req.body;
+
+  if (!import_order_id) {
+    return res.status(400).json({ success: false, message: "Thiếu thông tin import_order_id." });
+  }
+
+  try {
+    // Gọi stored procedure để xóa import_order và các chi tiết liên quan
+    await new Promise((resolve, reject) => {
+      connect.query("CALL DeleteImportOrder(?)", [import_order_id], (error, results) => {
+        if (error) return reject(error);
+        resolve(results);
+      });
+    });
+
+    // Phản hồi thành công
+    return res.status(200).json({ success: true, message: "Hóa đơn nhập đã được xóa thành công." });
+  } catch (error) {
+    console.error("Error occurred while deleting import order:", error);
+    return res.status(500).json({ success: false, message: "Đã xảy ra lỗi trong quá trình xóa hóa đơn nhập." });
   }
 });
 

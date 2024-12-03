@@ -117,14 +117,7 @@ async function Payment({ id_bill }) {
 }
 var id_ad = "";
 
-async function showPayment(event, citys, user_address) {
-  const selectedRowInput = event.target.closest("tr").querySelector('input[name="id_bill"]');
-  // if (!selectedRowInput) {
-  //   // Không có hàng nào được chọn, bạn có thể hiển thị một thông báo hoặc thực hiện hành động khác ở đây
-  //   console.error("Không có hàng nào được chọn.");
-  //   return;
-  // }
-  id_bill = selectedRowInput.value;
+async function showPayment(citys, user_address, id_bill) {
   Payment({ id_bill });
   console.log(citys, user_address);
 
@@ -208,6 +201,7 @@ async function submitPayment() {
     alert("Địa chỉ không hợp lệ. Vui lòng kiểm tra lại.");
     return;
   }
+  console.log(name);
   if (isValidAddress(address) && isValidPhoneNumber(phone) && isValidName(name)) {
     await axios
       .post("/order/address", {
@@ -231,10 +225,7 @@ async function submitPayment() {
     alert("Xin hãy nhập đúng các thông tin !");
   }
 }
-async function DeleteBillData(event) {
-  // Lấy giá trị id_bill từ hidden input
-  const id_bill = event.target.closest("tr").querySelector('input[name="id_bill"]').value;
-
+async function DeleteBillData(id_bill) {
   // Hiển thị hộp thoại xác nhận bằng confirm() (alert thông thường)
   const isConfirmed = confirm("Bạn có chắc chắn muốn xóa hóa đơn này?");
 

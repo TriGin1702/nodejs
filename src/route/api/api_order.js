@@ -15,10 +15,13 @@ router.get("/:user_id", authenticateToken, async function (req, res) {
           console.error("Error executing query:", error); // In ra lỗi chi tiết để dễ gỡ lỗi
           reject({ success: false, message: "Error fetching data from database", error: error });
         } else {
-          resolve(results[0]);
+          resolve(results[0] || []); // Trả về mảng rỗng nếu không có dữ liệu
         }
       });
     });
+    if (data_cart.length === 0) {
+      return res.json({ success: true, data: [], user_address: [], citys: [] });
+    }
     // Truy vấn địa chỉ chi tiết
     const user_address = await new Promise((resolve, reject) => {
       connect.query(
@@ -48,9 +51,6 @@ router.get("/:user_id", authenticateToken, async function (req, res) {
         }
       );
     });
-    if (data_cart.length === 0) {
-      return res.status(404).json({ success: false, message: "No data found for the given user_id" });
-    }
     const citys = await new Promise((resolve, reject) => {
       connect.query("SELECT * FROM city", (error, results) => {
         if (error) {
@@ -70,7 +70,6 @@ router.post("/:user_id", authenticateToken, async (req, res) => {
   try {
     const user_id = req.params.user_id;
     const { user_address, firstName, phoneNumber, selectedDistrict, address, id_bill } = req.body;
-    console.log(req.body);
 
     console.log("Starting address update...");
     const result_address = await new Promise((resolve, reject) => {

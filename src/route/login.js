@@ -8,7 +8,15 @@ const upload = multer(); // Khởi tạo multer
 // Route để hiển thị trang đăng nhập
 router1.get("/", async (req, res) => {
   try {
-    // Trả về trang đăng nhập mà không cần xóa cookie hay session
+    // Xóa session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Không thể xóa session:", err);
+      }
+    });
+
+    // Xóa cookie "token"
+    res.clearCookie("token");
     return res.render("login");
   } catch (err) {
     console.error(err);

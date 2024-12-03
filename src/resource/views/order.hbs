@@ -1,199 +1,141 @@
 {{#if hasOrders}}
-  <!-- Nội dung bảng đơn hàng -->
   {{#if pendingOrders}}
-    <!-- Hiển thị bảng hóa đơn đang chờ -->
-        <!-- Hiển thị bảng nếu có cartdetail -->
-  <h3 style="text-align: center;">Bảng Hóa Đơn đã đặt hàng</h3>
-  <table class="table table-primary">
-    <thead>
-      <tr class="table-primary">
-        <th scope="col" style="text-align: center;">MS bill</th>
-        <th scope="col" style="text-align: center;">Image</th>
-        <th scope="col" style="text-align: center;">Product</th>
-        <th scope="col" style="text-align: center;">Quantity</th>
-        <th scope="col" style="text-align: center;">Status</th>
-        <th scope="col" style="text-align: center;">Address</th>
-        <th scope="col" style="text-align: center;">Date</th>
-        <th scope="col" style="text-align: center;">Price</th>
-        <th scope="col" style="text-align: center;">Name</th>
-        <th scope="col" style="text-align: center;">Phone</th>
-        <th scope="col" style="text-align: center;">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-  {{#each pendingOrders}}
-    <!-- Kiểm tra xem đây có phải là dòng đầu tiên của id_bill không -->
-    <tr class="table-info" style="{{#if isFirstOccurrence}}margin-top:4px; border-top: 4px solid black ;{{/if}}">
-      <!-- Hiển thị id_bill nếu là dòng đầu tiên -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{this.id_bill}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
+    <h3 class="text-center">Hóa Đơn Đang Chờ</h3>
+    <div class="container">
+      {{#each pendingOrders}}
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <strong>Mã Hóa Đơn:</strong>
+            {{this.id_bill}}
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Cột trái: Thông tin hóa đơn -->
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <strong>Tên người đặt:</strong>
+                  {{this.user_name}}<br />
+                  <strong>Số điện thoại:</strong>
+                  {{this.address_phone}}
+                </div>
+                <div class="mb-3">
+                  <strong>Địa chỉ:</strong>
+                  {{this.ip_address}},
+                  {{this.district_name}},
+                  {{this.city_name}}
+                </div>
+                <div class="mb-3">
+                  <strong>Ngày đặt:</strong>
+                  {{formatDate this.create_at}}<br />
+                  <strong>Tổng giá:</strong>
+                  {{this.total_price}}
+                  VNĐ
+                </div>
+                <div class="mt-3">
+                  <span><strong>Trạng thái:</strong> {{this.status}}</span>
+                </div>
 
-      <!-- Hình ảnh sản phẩm -->
-      <td style="vertical-align: middle; text-align:center;">
-        {{#if (firstImage this.image)}}
-          <img src="/image/{{firstImage this.image}}" style="width: 90px; height:90px;" />
-        {{/if}}
-      </td>
+              </div>
 
-      <!-- Tên sản phẩm và thương hiệu -->
-      <td style="vertical-align: middle; text-align:center;">
-        {{this.product_name}} - Thương hiệu: {{this.brand_name}}
-      </td>
-      <!-- Số lượng -->
-      <td style="vertical-align: middle; text-align:center;">{{this.cart_quantity}}</td>
-      <td style="vertical-align: middle; text-align:center;">{{this.status}}</td>
-      <!-- Địa chỉ -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">
-          {{this.ip_address}} - {{this.district_name}} - {{this.city_name}}
-        </td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-      <!-- Ngày đặt hàng -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{formatDate this.create_at}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
+              <!-- Cột phải: Danh sách sản phẩm -->
+              <div class="col-md-6">
+                <h5>Sản phẩm:</h5>
+                <div class="d-flex flex-wrap">
+                  {{#each this.products}}
+                    <div class="product-item d-flex align-items-center mb-3" style="width: 100%;">
+                      <img
+                        src="/image/{{firstImage this.image}}"
+                        alt="{{this.product_name}}"
+                        class="img-thumbnail"
+                        style="width: 60px; height: 60px; margin-right: 15px;"
+                      />
+                      <div>
+                        <div><strong>{{this.product_name}}</strong></div>
+                        <div>Thương hiệu: {{this.brand_name}}</div>
+                        <div>Số lượng: {{this.cart_quantity}}</div>
+                      </div>
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 d-flex justify-content-end">
+          <button class="btn btn-info btn-sm mr-2 mb-2" onclick="showPayment({{json ../citys}},{{json ../user_address}},{{json this.id_bill}})">Cập nhật</button>
+          <button class="btn btn-danger btn-sm mb-2" onclick="DeleteBillData({{json this.id_bill}})">Xóa</button>
+        </div>
+      {{/each}}
 
-      <!-- Giá sản phẩm -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{this.total_price}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-
-      <!-- Tên người dùng -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{this.user_name}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-
-      <!-- Số điện thoại người dùng -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{this.address_phone}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-
-      <!-- Cập nhật (button) -->
-      <td style="vertical-align: middle; text-align:center;">
-      {{#if isFirstOccurrence}}
-        <button type="button" class="btn btn-info btn-sm" onclick="showPayment(event,{{json ../citys}},{{json ../user_address}})">Update</button>
-        <button type="button" class="btn btn-danger btn-sm" onclick="DeleteBillData(event)">Delete</button>
-        <input type="hidden" name="id_bill" value="{{this.id_bill}}" />
-      {{/if}}
-        <input type="hidden" name="id_billdetail" value="{{this.id_billdetail}}" />
-        <input type="hidden" name="id_cart" value="{{this.id_cart}}" />
-        <input type="hidden" name="id_address" value="{{this.id_ad}}" />
-      </td>
-    </tr>
-  {{/each}}
-</tbody>
-
-</table>
+    </div>
   {{/if}}
+
   {{#if confirmedOrders}}
-    <!-- Hiển thị bảng hóa đơn đã xác nhận -->
-      <h3 style="text-align: center;">Bảng Hóa Đơn đã được xác nhận</h3>
-  <table class="table table-primary">
-    <thead>
-      <tr class="table-primary">
-        <th scope="col" style="text-align: center;">MS bill</th>
-        <th scope="col" style="text-align: center;">Image</th>
-        <th scope="col" style="text-align: center;">Product</th>
-        <th scope="col" style="text-align: center;">Quantity</th>
-        <th scope="col" style="text-align: center;">Status</th>
-        <th scope="col" style="text-align: center;">Address</th>
-        <th scope="col" style="text-align: center;">Date</th>
-        <th scope="col" style="text-align: center;">Price</th>
-        <th scope="col" style="text-align: center;">Name</th>
-        <th scope="col" style="text-align: center;">Phone</th>
-      </tr>
-    </thead>
-    <tbody>
-  {{#each confirmedOrders}}
-    <!-- Kiểm tra xem đây có phải là dòng đầu tiên của id_bill không -->
-    <tr class="table-info" style="{{#if isFirstOccurrence}}margin-top:4px; border-top: 4px solid black ;{{/if}}">
-      <!-- Hiển thị id_bill nếu là dòng đầu tiên -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;" name="id_bill">{{this.id_bill}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
+    <h3 class="text-center">Hóa Đơn Đã Xác Nhận</h3>
+    <div class="container">
+      {{#each confirmedOrders}}
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <strong>Mã Hóa Đơn:</strong>
+            {{this.id_bill}}
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Cột trái: Thông tin hóa đơn -->
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <strong>Tên người đặt:</strong>
+                  {{this.user_name}}<br />
+                  <strong>Số điện thoại:</strong>
+                  {{this.address_phone}}
+                </div>
+                <div class="mb-3">
+                  <strong>Địa chỉ:</strong>
+                  {{this.ip_address}},
+                  {{this.district_name}},
+                  {{this.city_name}}
+                </div>
+                <div class="mb-3">
+                  <strong>Ngày đặt:</strong>
+                  {{formatDate this.create_at}}<br />
+                  <strong>Tổng giá:</strong>
+                  {{this.total_price}}
+                  VNĐ
+                </div>
+              </div>
 
-      <!-- Hình ảnh sản phẩm -->
-      <td style="vertical-align: middle; text-align:center;">
-        {{#if (firstImage this.image)}}
-          <img src="/image/{{firstImage this.image}}" style="width: 90px; height:90px;" />
-        {{/if}}
-      </td>
-
-      <!-- Tên sản phẩm và thương hiệu -->
-      <td style="vertical-align: middle; text-align:center;">
-        {{this.product_name}} - Thương hiệu: {{this.brand_name}}
-      </td>
-      <!-- Số lượng -->
-      <td style="vertical-align: middle; text-align:center;">{{this.cart_quantity}}</td>
-      <td style="vertical-align: middle; text-align:center;">{{this.status}}</td>
-      <!-- Địa chỉ -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">
-          {{this.ip_address}} - {{this.district_name}} - {{this.city_name}}
-        </td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-      <!-- Ngày đặt hàng -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{formatDate this.create_at}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-
-      <!-- Giá sản phẩm -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{this.total_price}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-
-      <!-- Tên người dùng -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{this.user_name}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-
-      <!-- Số điện thoại người dùng -->
-      {{#if isFirstOccurrence}}
-        <td style="vertical-align: middle; text-align:center;">{{this.address_phone}}</td>
-      {{else}}
-        <td style="vertical-align: middle; text-align:center;"></td>
-      {{/if}}
-
-
-    </tr>
-  {{/each}}
-</tbody>
-
-</table>
+              <!-- Cột phải: Danh sách sản phẩm -->
+              <div class="col-md-6">
+                <h5>Sản phẩm:</h5>
+                <div class="d-flex flex-wrap">
+                  {{#each this.products}}
+                    <div class="product-item d-flex align-items-center mb-3" style="width: 100%;">
+                      <img
+                        src="/image/{{firstImage this.image}}"
+                        alt="{{this.product_name}}"
+                        class="img-thumbnail"
+                        style="width: 60px; height: 60px; margin-right: 15px;"
+                      />
+                      <div>
+                        <div><strong>{{this.product_name}}</strong></div>
+                        <div>Thương hiệu: {{this.brand_name}}</div>
+                        <div>Số lượng: {{this.cart_quantity}}</div>
+                      </div>
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
   {{/if}}
 {{else}}
-  <!-- Hiển thị ảnh và nút chờ giao hàng -->
-  <div style="text-align: center;">
-    <img src="/image/image.png" alt="Default Image" style="width: 50%; height: 400px; display: inline-block;" />
+  <div class="text-center">
+    <img src="/image/image.png" alt="Không có hóa đơn" class="img-fluid" style="max-width: 50%; height: auto;" />
   </div>
 {{/if}}
-  <!-- Nút quay lại đơn hàng -->
-  <a href="/cart">
-    <button type="button" class="btn btn-success" style="float: right; margin-left: 16px">Quay lại đơn hàng</button>
-  </a>
-
+<a href="/cart" class="btn btn-success float-right mt-3">Quay lại giỏ hàng</a>
 <div class="pay" id="pay"></div>
 <script src="/js/order.js"></script>

@@ -80,27 +80,34 @@ router.get("/", async function (req, res) {
     return res.redirect("/");
   } else {
     try {
-      const cart = await axios.get(`${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ORDER}/${user.id_user}`, {
+      const cartResponse = await axios.get(`${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ORDER}/${user.id_user}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Gửi token qua header Authorization
         },
       });
+      console.log(`${process.env.DOMAIN}:${process.env.PORT}/${process.env.API_ORDER}/${user.id_user}`);
 
-      let cartorder = cart.data.data;
-      let user_address = cart.data.user_address;
-      // Gắn isFirstOccurrence cho từng dòng
-      cartorder = cartorder.map((item, index, array) => {
-        item.isFirstOccurrence = index === 0 || item.id_bill !== array[index - 1].id_bill;
-        return item;
-      });
-      let citys = cart.data.citys;
-      // Tách ra hai danh sách dựa vào status
-      const pendingOrders = cartorder.filter((item) => item.status === "Pending");
-      const confirmedOrders = cartorder.filter((item) => item.status === "Confirm");
-      const hasOrders = pendingOrders.length > 0 || confirmedOrders.length > 0;
-      // Render với hai danh sách
-      console.log(user_address);
-      return res.render("order", { pendingOrders, confirmedOrders, hasOrders, user_address, citys });
+      if (cartResponse) {
+        let cartorder = cartResponse.data.data || [];
+        let user_address = cartResponse.data.user_address || [];
+        let citys = cartResponse.data.citys || [];
+
+        // Gắn isFirstOccurrence cho từng dòng
+        cartorder = cartorder.map((item, index, array) => {
+          item.isFirstOccurrence = index === 0 || item.id_bill !== array[index - 1].id_bill;
+          return item;
+        });
+
+        // Tách ra hai danh sách dựa vào status
+        const pendingOrders = cartorder.filter((item) => item.status === "Pending");
+        const confirmedOrders = cartorder.filter((item) => item.status === "Confirm");
+        const hasOrders = pendingOrders.length > 0 || confirmedOrders.length > 0;
+
+        // Render với hai danh sách
+        return res.render("order", { pendingOrders, confirmedOrders, hasOrders, user_address, citys });
+      } else {
+        return res.render("order", { pendingOrders: [], confirmedOrders: [], hasOrders: false, user_address: [], citys: [] });
+      }
     } catch (error) {
       console.error("Error fetching cart orders:", error);
       return res.status(500).send("Internal Server Error");

@@ -45,7 +45,7 @@ router2.get("/", async (req, res) => {
     let checkquery = "";
     if (searchValue) {
       checkquery = `
-        SELECT product.*, p.name AS brand_name 
+        SELECT product.*, p.name AS brand_name, pt.name as type
         FROM product 
         JOIN brand p ON product.id_brand = p.id_brand 
         WHERE (p.name LIKE ? OR product.name LIKE ?) 
@@ -53,9 +53,10 @@ router2.get("/", async (req, res) => {
         ${sortQuery}`;
     } else {
       checkquery = `
-        SELECT product.*, p.name AS brand_name 
+        SELECT product.*, p.name AS brand_name, pt.name as type
         FROM product 
-        JOIN brand p ON product.id_brand = p.id_brand
+        JOIN brand p ON product.id_brand = p.id_brand 
+        JOIN product_type pt ON product.id_type = pt.id_type
         WHERE product.is_hidden = 0 
         ${sortQuery}`; // Câu truy vấn khi không có giá trị tìm kiếm
     }
@@ -67,6 +68,7 @@ router2.get("/", async (req, res) => {
         resolve(rows);
       });
     });
+    console.log(product);
 
     return res.json(product); // Trả về kết quả dưới dạng JSON
   } catch (err) {

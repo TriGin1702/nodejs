@@ -42,8 +42,8 @@ router2.post("/register", async (req, res) => {
       return res.status(400).send("Account already exists.");
     } else {
       connect.query(
-        `INSERT INTO user (name, gender, age, account, password) VALUES (?, ?, ?, ?, ?)`,
-        [name, gender, age, accountName, password],
+        `INSERT INTO user (name, gender, age,id_role, account, password) VALUES (?, ?, ?,?, ?, ?)`,
+        [name, gender, age, 1, accountName, password],
         (err, result) => {
           if (err) {
             console.error(err);
