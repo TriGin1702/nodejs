@@ -1,4 +1,4 @@
-{{#if hasOrders}}
+{{!-- {{#if hasOrders}}
   <!-- Nội dung bảng đơn hàng -->
   {{#if pendingOrders}}
     <!-- Hiển thị bảng hóa đơn đang chờ -->
@@ -191,4 +191,138 @@
   <!-- Nút quay lại đơn hàng -->
   <a href="/homepage">
     <button type="button" class="btn btn-success" style="float: right; margin-left: 16px">Quay lại đơn hàng</button>
-  </a>
+  </a> --}}
+
+{{#if hasOrders}}
+  {{#if pendingOrders}}
+    <h3 class="text-center">Hóa Đơn Đang Chờ</h3>
+    <div class="container">
+      {{#each pendingOrders}}
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <strong>Mã Hóa Đơn:</strong>
+            {{this.id_bill}}
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Cột trái: Thông tin hóa đơn -->
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <strong>Tên người đặt:</strong>
+                  {{this.user_name}}<br />
+                  <strong>Số điện thoại:</strong>
+                  {{this.address_phone}}
+                </div>
+                <div class="mb-3">
+                  <strong>Địa chỉ:</strong>
+                  {{this.ip_address}},
+                  {{this.district_name}},
+                  {{this.city_name}}
+                </div>
+                <div class="mb-3">
+                  <strong>Ngày đặt:</strong>
+                  {{formatDate this.create_at}}<br />
+                  <strong>Tổng giá:</strong>
+                  {{this.total_price}}
+                  VNĐ
+                </div>
+                <div class="mt-3">
+                  <span><strong>Trạng thái:</strong> {{this.status}}</span>
+                </div>
+              </div>
+
+              <!-- Cột phải: Danh sách sản phẩm -->
+              <div class="col-md-6">
+                <h5>Sản phẩm:</h5>
+                <div class="d-flex flex-wrap">
+                  {{#each this.products}}
+                    <div class="product-item d-flex align-items-center mb-3" style="width: 100%;">
+                      <img
+                        src="/image/{{this.image}}"
+                        alt="{{this.product_name}}"
+                        class="img-thumbnail"
+                        style="width: 60px; height: 60px; margin-right: 15px;"
+                      />
+                      <div>
+                        <div><strong>{{this.product_name}}</strong></div>
+                        <div>Thương hiệu: {{this.brand_name}}</div>
+                        <div>Số lượng: {{this.cart_quantity}}</div>
+                      </div>
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 d-flex justify-content-end">
+          <button type="button" class="btn btn-info btn-sm"><a href="/homepage/bill_admin/{{this.id_bill}}">Confirm</a></button>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{#if confirmedOrders}}
+    <h3 class="text-center">Hóa Đơn Đã Xác Nhận</h3>
+    <div class="container">
+      {{#each confirmedOrders}}
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            <strong>Mã Hóa Đơn:</strong>
+            {{this.id_bill}}
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Tên người đặt:</strong>
+                {{this.user_name}}<br />
+                <strong>Số điện thoại:</strong>
+                {{this.address_phone}}<br />
+                <strong>Địa chỉ:</strong>
+                {{this.ip_address}},
+                {{this.district_name}},
+                {{this.city_name}}<br />
+                <strong>Ngày đặt:</strong>
+                {{formatDate this.create_at}}<br />
+                <strong>Tổng giá:</strong>
+                {{this.total_price}}
+                VNĐ
+                <div class="mt-3">
+                  <span><strong>Trạng thái:</strong> {{this.status}}</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h5>Sản phẩm:</h5>
+                <div class="d-flex flex-wrap">
+                  {{#each this.products}}
+                    <div class="product-item d-flex align-items-center mb-3" style="width: 100%;">
+                      <img
+                        src="/image/{{this.image}}"
+                        alt="{{this.product_name}}"
+                        class="img-thumbnail"
+                        style="width: 60px; height: 60px; margin-right: 15px;"
+                      />
+                      <div>
+                        <div><strong>{{this.product_name}}</strong></div>
+                        <div>Thương hiệu: {{this.brand_name}}</div>
+                        <div>Số lượng: {{this.cart_quantity}}</div>
+                      </div>
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+{{else}}
+  <div style="text-align: center;">
+    <img src="/image/image.png" alt="Default Image" style="width: 50%; height: 400px; display: inline-block;" />
+    <p class="mt-3">Chưa có hóa đơn nào!</p>
+  </div>
+{{/if}}
+<a href="/homepage">
+  <button type="button" class="btn btn-success" style="float: right; margin-left: 16px">Quay lại đơn hàng</button>
+</a>

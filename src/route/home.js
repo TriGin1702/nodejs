@@ -417,7 +417,7 @@ route.delete("/user/:id", async (req, res) => {
 route.get("/bill_admin", async (req, res) => {
   const admin = req.session.admin || null;
   const sql =
-    "SELECT p.name AS product_name, p.image, b.name AS brand_name, bi.id_bill, bi.create_at, bi.status, bi.price AS total_price, bd.id_billdetail, c.id_cart, c.quantity AS cart_quantity, a.name AS user_name, a.ip_address, a.phone AS address_phone, d.name AS district_name, ci.name AS city_name FROM bill bi JOIN bill_detail bd ON bi.id_bill = bd.id_bill JOIN cart c ON c.id_cart = bd.id_cart JOIN product p ON p.id_product = c.id_product JOIN brand b ON b.id_brand = p.id_brand JOIN bill_address ba ON ba.id_bill = bi.id_bill JOIN user_address ua ON ua.id_useraddress = ba.id_useraddress JOIN address a ON a.id_address = ua.id_address JOIN district d ON d.id_district = a.id_district JOIN city ci ON ci.id_city = d.id_city";
+    "SELECT bi.id_bill, bi.create_at, bi.status, bi.price AS total_price, JSON_ARRAYAGG(JSON_OBJECT('id_product', p.id_product, 'product_name', p.name, 'image', JSON_EXTRACT(p.image, '$[0]'), 'brand_name', b.name, 'cart_quantity', c.quantity)) AS products FROM bill bi JOIN bill_detail bd ON bi.id_bill = bd.id_bill JOIN cart c ON c.id_cart = bd.id_cart JOIN product p ON p.id_product = c.id_product JOIN brand b ON b.id_brand = p.id_brand GROUP BY bi.id_bill;";
   if (admin == null) {
     return res.redirect("/");
   } else {
