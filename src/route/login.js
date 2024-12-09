@@ -38,8 +38,9 @@ router1.post("/", upload.none(), async (req, res) => {
       password: req.body.password,
     });
     const account = apiResponse.data;
-    if (account) {
+    if (!(account === "Account not found")) {
       // Tạo JWT
+      console.log("Account: " + account);
       const token = jwt.sign(
         {
           id: account.id,
@@ -56,7 +57,7 @@ router1.post("/", upload.none(), async (req, res) => {
       if (account.role_name === "user") {
         req.session.user = account;
         return res.redirect("/news");
-      } else if (account.role_name != "user") {
+      } else if (account.role_name !== "user") {
         req.session.admin = account;
         return res.redirect("/homepage");
       }

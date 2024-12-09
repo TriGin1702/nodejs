@@ -83,8 +83,6 @@ router2.post("/", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.send("error");
-  } finally {
-    // await connect.end(); // Bạn có thể bỏ comment nếu cần đóng kết nối
   }
 });
 
