@@ -323,7 +323,7 @@ route.get("/admin", async (req, res) => {
         resolve(result);
       });
     });
-
+    console.log(user);
     return res.render("admin", { user, role, authority, authorityforchose });
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -331,9 +331,17 @@ route.get("/admin", async (req, res) => {
   }
 });
 
-// route.get("/user", (req, res) => {
-//   return res.render("createUser");
-// });
+route.get("/reset_user/:id", async (req, res) => {
+  const id_user = req.params.id;
+  await new Promise((resolve, reject) => {
+    const sqlUpdateIsBan = `UPDATE user SET is_ban = 0 WHERE id_user = ?`;
+    connect.query(sqlUpdateIsBan, [id_user], (err, results) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+  return res.redirect("/homepage/admin");
+});
 route.post("/user", async (req, res) => {
   const { id_user, id_role, name, gender, email, account, password } = req.body;
 
@@ -375,18 +383,18 @@ route.delete("/user/:id", async (req, res) => {
   try {
     // Kiểm tra tên của người dùng để xác định hành động
     const user = await new Promise((resolve, reject) => {
-      const sqlCheckUser = `SELECT name FROM user WHERE id_user = ?`;
+      const sqlCheckUser = `SELECT r.name FROM user u,role r WHERE id_user = ? AND u.id_role = r.id_role`;
       connect.query(sqlCheckUser, [id_user], (err, results) => {
         if (err) return reject(err);
         if (results.length === 0) return reject(new Error("User not found"));
         resolve(results[0]);
       });
     });
-
-    if (user.name === "user") {
+    console.log(user);
+    if (user.name == "user") {
       // Nếu tên là "user", chỉ cập nhật cột is_ban thành true
       await new Promise((resolve, reject) => {
-        const sqlUpdateIsBan = `UPDATE user SET is_ban = true WHERE id_user = ?`;
+        const sqlUpdateIsBan = `UPDATE user SET is_ban = 1 WHERE id_user = ?`;
         connect.query(sqlUpdateIsBan, [id_user], (err, results) => {
           if (err) return reject(err);
           resolve();
@@ -394,7 +402,7 @@ route.delete("/user/:id", async (req, res) => {
       });
 
       // Chuyển hướng đến trang admin sau khi cấm người dùng
-      return res.redirect("/homepage/admin");
+      return res.send("OK");
     } else {
       // Nếu không, xóa người dùng
       await new Promise((resolve, reject) => {
@@ -406,7 +414,7 @@ route.delete("/user/:id", async (req, res) => {
       });
 
       // Chuyển hướng đến trang admin sau khi xóa người dùng
-      return res.redirect("/homepage/admin");
+      return res.send("OK");
     }
   } catch (error) {
     console.error(error);
@@ -417,7 +425,7 @@ route.delete("/user/:id", async (req, res) => {
 route.get("/bill_admin", async (req, res) => {
   const admin = req.session.admin || null;
   const sql =
-    "SELECT bi.id_bill, bi.create_at, bi.status, bi.price AS total_price, JSON_ARRAYAGG(JSON_OBJECT('id_product', p.id_product, 'product_name', p.name, 'image', JSON_EXTRACT(p.image, '$[0]'), 'brand_name', b.name, 'cart_quantity', c.quantity)) AS products FROM bill bi JOIN bill_detail bd ON bi.id_bill = bd.id_bill JOIN cart c ON c.id_cart = bd.id_cart JOIN product p ON p.id_product = c.id_product JOIN brand b ON b.id_brand = p.id_brand GROUP BY bi.id_bill;";
+    "SELECT bi.id_bill,bi.id_user, bi.create_at, bi.status, bi.price AS total_price, JSON_ARRAYAGG(JSON_OBJECT('id_product', p.id_product, 'product_name', p.name, 'image', JSON_EXTRACT(p.image, '$[0]'), 'brand_name', b.name, 'cart_quantity', c.quantity)) AS products FROM bill bi JOIN bill_detail bd ON bi.id_bill = bd.id_bill JOIN cart c ON c.id_cart = bd.id_cart JOIN product p ON p.id_product = c.id_product JOIN brand b ON b.id_brand = p.id_brand GROUP BY bi.id_bill;";
   if (admin == null) {
     return res.redirect("/");
   } else {
@@ -700,8 +708,8 @@ route.post("/import_bill", upload.none(), async (req, res) => {
         // Gọi stored procedure AddImportOrder cho từng sản phẩm
         await new Promise((resolve, reject) => {
           connect.query(
-            "UPDATE import_order_detail SET quantity = ?, unit_price =?, total_price =?  WHERE id_import_order = ? AND id_product =? ",
-            [product.quantity, product.price, product.quantity * product.price, import_order_id, product.id_product],
+            "CALL UpdateProductAndImportOrderDetail(?,?,?,?)",
+            [import_order_id, product.id_product, product.quantity, product.price],
             (error, results) => {
               if (error) return reject(error);
               resolve(results);

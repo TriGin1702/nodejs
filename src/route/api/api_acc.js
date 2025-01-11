@@ -25,7 +25,7 @@ const router2 = express.Router();
 
 router2.post("/register", async (req, res) => {
   try {
-    const { name, gender, age, accountName, password } = req.body;
+    const { name, gender, age, email, accountName, password } = req.body;
 
     const existingUser = await new Promise((resolve, reject) => {
       connect.query(`SELECT * FROM user WHERE account = ?`, [accountName, password], (err, result) => {
@@ -42,8 +42,8 @@ router2.post("/register", async (req, res) => {
       return res.status(400).send("Account already exists.");
     } else {
       connect.query(
-        `INSERT INTO user (name, gender, age,id_role, account, password) VALUES (?, ?, ?,?, ?, ?)`,
-        [name, gender, age, 1, accountName, password],
+        `INSERT INTO user (name, gender, age,email,id_role, account, password) VALUES (?, ?, ?,?,?, ?, ?)`,
+        [name, gender, age, email, 1, accountName, password],
         (err, result) => {
           if (err) {
             console.error(err);

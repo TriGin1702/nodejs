@@ -105,6 +105,7 @@ router.post("/address", authenticateToken, async (req, res) => {
           }
         });
       });
+      console.log("PRODUCT_CART", product.id_cart);
     }
 
     res.status(200).json({ success: true, message: "Data processed successfully" });

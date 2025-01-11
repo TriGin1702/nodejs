@@ -22,9 +22,23 @@
           <td>{{this.account}}</td>
           <td>{{this.password}}</td>
           <td>
-            <button class="btn btn-warning btn-sm" data-toggle="modal" onclick="showCreateUser({{json ../role}},{{json this}})"><i class="bi bi-pencil"></i> Edit</button>
-            <button class="btn btn-danger btn-sm" data-toggle="modal" onclick="deleteUser({{this.id_user}})"><i class="bi bi-trash"></i> Delete</button>
+            {{#if is_ban}}
+    <!-- Nếu is_ban là 1, chỉ hiển thị nút Edit -->
+              <button class="btn btn-warning btn-sm" data-toggle="modal" onclick="showCreateUser({{json ../role}},{{json this}})">
+                  <i class="bi bi-pencil"></i> Edit
+              </button>
+              <button class="btn btn-primary" data-toggle="modal"></i> <a href="/homepage/reset_user/{{this.id_user}}" class="text-white fs-5 text-decoration-none">Reset Ban</a></button>
+            {{else}}
+    <!-- Nếu is_ban là 0, hiển thị cả hai nút Edit và Delete -->
+              <button class="btn btn-warning btn-sm" data-toggle="modal" onclick="showCreateUser({{json ../role}},{{json this}})">
+                <i class="bi bi-pencil"></i> Edit
+              </button>
+              <button class="btn btn-danger btn-sm" data-toggle="modal" onclick="deleteUser({{this.id_user}})">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            {{/if}}
           </td>
+
         </tr>
       {{/each}}
     </tbody>

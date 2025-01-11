@@ -54,7 +54,7 @@ router1.post("/", upload.none(), async (req, res) => {
       res.cookie("token", token, { maxAge: 3 * 60 * 60 * 1000, httpOnly: true });
 
       // Chuyển hướng người dùng dựa trên vai trò
-      if (account.role_name === "user") {
+      if (account.role_name === "user" && account.is_ban != true) {
         req.session.user = account;
         return res.redirect("/news");
       } else if (account.role_name !== "user") {

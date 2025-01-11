@@ -43,14 +43,20 @@ router2.get("/", async (req, res) => {
     }
 
     let checkquery = "";
+    let queryParams = []; // Mảng chứa các tham số cho câu truy vấn
+
     if (searchValue) {
+      // Thêm ký tự % vào searchValue để tìm kiếm giống như LIKE
       checkquery = `
         SELECT product.*, p.name AS brand_name, pt.name as type
         FROM product 
-        JOIN brand p ON product.id_brand = p.id_brand 
-        WHERE (p.name LIKE ? OR product.name LIKE ?) 
-        AND product.is_hidden = 0 
+        JOIN brand p ON product.id_brand = p.id_brand
+        JOIN product_type pt ON product.id_type = pt.id_type
+        WHERE (p.name LIKE ? OR product.name LIKE ? OR pt.name LIKE ?) AND product.is_hidden = 0 
         ${sortQuery}`;
+
+      // Thêm các tham số vào mảng queryParams, bao gồm dấu % cho tìm kiếm LIKE
+      queryParams = [`%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`];
     } else {
       checkquery = `
         SELECT product.*, p.name AS brand_name, pt.name as type
@@ -58,18 +64,18 @@ router2.get("/", async (req, res) => {
         JOIN brand p ON product.id_brand = p.id_brand 
         JOIN product_type pt ON product.id_type = pt.id_type
         WHERE product.is_hidden = 0 
-        ${sortQuery}`; // Câu truy vấn khi không có giá trị tìm kiếm
+        ${sortQuery}`;
     }
 
     const query = checkquery;
     const product = await new Promise((resolve, reject) => {
-      connect.query(query, [searchValue, searchValue], (err, rows) => {
+      connect.query(query, queryParams, (err, rows) => {
         if (err) reject(err);
         resolve(rows);
       });
     });
-    console.log(product);
 
+    console.log(product);
     return res.json(product); // Trả về kết quả dưới dạng JSON
   } catch (err) {
     console.error(err);
@@ -84,6 +90,12 @@ router2.delete("/:id", authenticateToken, async (req, res) => {
     const id_product = req.params.id;
     console.log(id_product);
     // Thực hiện xóa sản phẩm từ cơ sở dữ liệu
+    // await new Promise((resolve, reject) => {
+    //   connect.query("CALL ManageProductVisibility(?)", [id_product], (err, result) => {
+    //     if (err) reject(err);
+    //     resolve(result);
+    //   });
+    // });
     await new Promise((resolve, reject) => {
       connect.query("UPDATE product SET is_hidden = true WHERE id_product = ?", [id_product], (err, result) => {
         if (err) reject(err);

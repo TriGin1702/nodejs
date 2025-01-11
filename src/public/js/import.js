@@ -12,6 +12,12 @@ function isValidAddress(address) {
   // Kiểm tra xem địa chỉ có chứa cả chữ cái và số không
   return /[a-zA-Z]/.test(address) && /\d/.test(address);
 }
+
+function isValidPositiveNumber(value) {
+  // Kiểm tra giá trị là số lớn hơn 0
+  return !isNaN(value) && parseFloat(value) > 0;
+}
+
 async function Import({ checkedProducts }, import_order_id) {
   const main = document.querySelector("#pay");
   const Import = document.createElement("div");
@@ -278,48 +284,95 @@ async function submitImport() {
   console.log(id_manufacturer);
   // Lấy giá trị của radio button đã chọn
   const importStatus = document.querySelector('input[name="inlineRadioOptions"]:checked').value;
-
   // Duyệt qua từng sản phẩm và lấy giá trị price và quantity
-  const productsWithDetails = checkedProducts.map((product) => {
+  let isValid = true; // Cờ kiểm tra tổng thể tính hợp lệ
+  const productsWithDetails = [];
+
+  checkedProducts.forEach((product) => {
     const priceInput = document.querySelector(`input[data-id="${product.id}"][data-field="price"]`);
     const quantityInput = document.querySelector(`input[data-id="${product.id}"][data-field="quantity"]`);
 
-    return {
+    let price = 0;
+    let quantity = 0;
+
+    // Kiểm tra giá trị price
+    if (priceInput) {
+      if (isValidPositiveNumber(priceInput.value)) {
+        price = parseFloat(priceInput.value);
+      } else {
+        alert(`Giá sản phẩm không hợp lệ cho sản phẩm: ${product.name || "N/A"}! Vui lòng nhập lại.`);
+        priceInput.focus(); // Đưa con trỏ về input để người dùng sửa
+        isValid = false;
+        return; // Thoát vòng lặp hiện tại
+      }
+    }
+
+    // Kiểm tra giá trị quantity
+    if (quantityInput) {
+      if (isValidPositiveNumber(quantityInput.value)) {
+        quantity = parseInt(quantityInput.value);
+      } else {
+        alert(`Số lượng không hợp lệ cho sản phẩm: ${product.name || "N/A"}! Vui lòng nhập lại.`);
+        quantityInput.focus(); // Đưa con trỏ về input để người dùng sửa
+        isValid = false;
+        return; // Thoát vòng lặp hiện tại
+      }
+    }
+
+    // Thêm sản phẩm hợp lệ vào danh sách
+    productsWithDetails.push({
       id_product: product.id,
       name: product.name,
-      price: priceInput ? parseFloat(priceInput.value) : 0,
-      quantity: quantityInput ? parseInt(quantityInput.value) : 0,
-    };
+      price: price,
+      quantity: quantity,
+    });
   });
 
-  // Kiểm tra nếu danh sách sản phẩm có ít nhất một sản phẩm
-  if (productsWithDetails.length > 0) {
-    const data = {
-      id_manufacturer,
-      name,
-      phoneNumber,
-      id_district,
-      address,
-      products: productsWithDetails,
-      importStatus, // Thêm giá trị trạng thái import
-      import_order_id,
-    };
+  // Kiểm tra nếu danh sách sản phẩm có ít nhất một sản phẩm hợp lệ
+  if (!isValid || productsWithDetails.length === 0) {
+    alert("Vui lòng nhập các sản phẩm hợp lệ!");
+    return;
+  }
 
-    if (isValidAddress(address) && isValidPhoneNumber(phoneNumber) && isValidName(name)) {
-      try {
-        await axios.post("/homepage/import_bill", data);
-        alert("Import successful!");
-        checkedProducts = [];
-        window.location.reload();
-      } catch (error) {
-        console.error(error);
-        alert("An error occurred while processing your Import. Please try again later.");
-      }
-    } else {
-      alert("Xin hãy nhập đúng các thông tin!");
-    }
-  } else {
-    alert("Please select products to import.");
+  // Kiểm tra các trường thông tin khác
+  if (!isValidAddress(address)) {
+    alert("Địa chỉ không hợp lệ. Vui lòng nhập lại.");
+    document.querySelector("#address").focus();
+    return;
+  }
+
+  if (!isValidPhoneNumber(phoneNumber)) {
+    alert("Số điện thoại không hợp lệ. Vui lòng nhập lại.");
+    document.querySelector("#phoneNumber").focus();
+    return;
+  }
+
+  if (!isValidName(name)) {
+    alert("Tên nhà cung cấp không hợp lệ. Vui lòng nhập lại.");
+    document.querySelector("#name").focus();
+    return;
+  }
+
+  // Nếu tất cả hợp lệ, chuẩn bị dữ liệu để gửi
+  const data = {
+    id_manufacturer,
+    name,
+    phoneNumber,
+    id_district,
+    address,
+    products: productsWithDetails,
+    importStatus, // Trạng thái import
+    import_order_id,
+  };
+
+  try {
+    const response = await axios.post("/homepage/import_bill", data);
+    alert("Import thành công!");
+    checkedProducts = [];
+    window.location.reload();
+  } catch (error) {
+    console.error(error);
+    alert("Có lỗi xảy ra khi xử lý đơn hàng nhập. Vui lòng thử lại sau.");
   }
 }
 async function DeleteimportData(import_order_id) {

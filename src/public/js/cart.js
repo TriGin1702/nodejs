@@ -278,6 +278,15 @@ async function submitPayment() {
     alert("Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.");
   }
 }
+
+function confirmDelete(id_cart) {
+  // Hiển thị hộp thoại xác nhận
+  if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+    // Nếu người dùng đồng ý, chuyển hướng tới đường dẫn xóa
+    window.location.href = `/cart/delete/${id_cart}`;
+  }
+  // Nếu không đồng ý, không làm gì cả
+}
 async function updateQuantity(data) {
   try {
     const response = await axios.post("/cart/quantity", data);

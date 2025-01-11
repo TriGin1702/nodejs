@@ -51,22 +51,34 @@
     <button type="button" class="btn btn-success" style="float: right; margin-left: 16px;margin-bottom: 20px">Add Product</button>
   </a>
 {{/ifHasAuthority}}
-<button
-  type="button"
-  class="btn btn-success"
-  style="float: right; margin-left: 16px;margin-bottom: 20px"
-  onclick="showImport({{json city}},{{json manufacture}})"
->Import</button>
-<div class="pay" id="pay"></div>
-<a href="/homepage/admin" style="color: #F8F9FA;">
-  <button type="button" class="btn btn-success" style="float: right; margin-left: 16px;margin-bottom: 20px">Role and User</button>
-</a>
-<a href="/homepage/bill_admin" style="color: #F8F9FA;">
-  <button type="button" class="btn btn-success" style="float: right; margin-left: 16px;margin-bottom: 20px">Bill User</button>
-</a>
-<a href="/homepage/import_bill" style="color: #F8F9FA;">
-  <button type="button" class="btn btn-success" style="float: right; margin-left: 16px;margin-bottom: 20px">Bill Import</button>
-</a>
+{{#ifHasAuthority "add import invoice" admin_role}}
+  <button
+    type="button"
+    class="btn btn-success"
+    style="float: right; margin-left: 16px; margin-bottom: 20px"
+    onclick="showImport({{json city}},{{json manufacture}})"
+  >
+    Import
+  </button>
+{{/ifHasAuthority}}
+
+{{#ifHasAuthority "manage roles" admin_role}}
+  <a href="/homepage/admin" style="color: #F8F9FA;">
+    <button type="button" class="btn btn-success" style="float: right; margin-left: 16px; margin-bottom: 20px">Role and User</button>
+  </a>
+{{/ifHasAuthority}}
+
+{{#ifHasAuthority "confirm user invoice" admin_role}}
+  <a href="/homepage/bill_admin" style="color: #F8F9FA;">
+    <button type="button" class="btn btn-success" style="float: right; margin-left: 16px; margin-bottom: 20px">Bill User</button>
+  </a>
+{{/ifHasAuthority}}
+
+{{#ifHasAuthority "manage import invoices" admin_role}}
+  <a href="/homepage/import_bill" style="color: #F8F9FA;">
+    <button type="button" class="btn btn-success" style="float: right; margin-left: 16px; margin-bottom: 20px">Bill Import</button>
+  </a>
+{{/ifHasAuthority}}
 <script src="/js/home.js"></script>
 {{! <a href='/homepage/list_users'>
   <button
