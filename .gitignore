@@ -1,0 +1,2 @@
+# Loại trừ file chứa biến môi trường nhạy cảm
+.env

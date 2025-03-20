@@ -71,9 +71,16 @@ async function Payment({}) {
               Choose your Payment
             </label>
             <div class="form-check form-check-inline" style="margin: 0 12px;">
-              <select class="form-select" id="select_payment" required>
+              <select class="form-select" id="select_payment" required onchange="updatePaymentImage()">
+                <option disabled value="0" selected>Chọn phương thức</option>
+                <!-- Các option khác sẽ được thêm vào từ JavaScript -->
               </select>
+              <!-- Thẻ hiển thị tổng số tiền -->
+              <div id="totalAmountDisplay" style="margin-left: 12px; font-weight: bold;">
+                Total: 0
+              </div>
             </div>
+
             
           </div>
           
@@ -82,6 +89,11 @@ async function Payment({}) {
           </div>
           <div class="col-12" style="display: flex; justify-content: flex-end; margin-top:12px;">
             <button class="btn btn-primary" type="button" onclick="submitPayment()">Submit form</button>
+            <img 
+              id="paymentImage" 
+                src="" 
+                alt="Payment Method" 
+              style="position: absolute; left: 0; bottom: 0; max-width: 100px; display: none;">
           </div>
         </form>
       </div>
@@ -89,6 +101,23 @@ async function Payment({}) {
   </div>
 `;
   main.appendChild(Payment);
+}
+function updatePaymentImage() {
+  const paymentSelect = document.getElementById("select_payment");
+  const paymentImage = document.getElementById("paymentImage");
+
+  // Lấy giá trị và text của option được chọn
+  const selectedPayment = paymentSelect.value;
+  const selectedText = paymentSelect.options[paymentSelect.selectedIndex].text;
+
+  // Nếu giá trị được chọn khác với option mặc định (ví dụ "0" hoặc "2")
+  if (selectedPayment !== "0" && selectedPayment !== "2") {
+    // Cập nhật src theo mẫu: /image/{option_text}-qr.jpg
+    paymentImage.src = `/image/${selectedText}_qr.jpg`;
+    paymentImage.style.display = "block"; // Hiển thị ảnh
+  } else {
+    paymentImage.style.display = "none"; // Ẩn ảnh nếu không chọn gì
+  }
 }
 
 var checkedProducts = [];
@@ -177,6 +206,7 @@ async function showPayment(citys, user_address, payment) {
         document.querySelector("#validationDefault05").value = "";
       }
     };
+    updateTotalAmount();
   } else {
     alert("Vui lòng chọn ít nhất một sản phẩm để nhập.");
   }
@@ -302,13 +332,57 @@ async function updateQuantity(data) {
     }
   }
 }
-
 function increaseQuantity(event) {
   const row = event.target.closest("tr");
-  const quantity = row.querySelector("input[type='number']").value;
+  const newQuantity = parseInt(event.target.value);
+
+  // Tìm ô chứa giá với class "priceCell"
+  const priceCell = row.querySelector(".priceCell");
+  // Lấy giá trị ban đầu và số lượng ban đầu từ data-attribute
+  const initialQuantity = parseFloat(priceCell.getAttribute("data-initial-quantity"));
+  const initialPrice = parseFloat(priceCell.getAttribute("data-initial-price"));
+
+  // Tính đơn giá
+  const unitPrice = initialPrice / initialQuantity;
+  // Tính giá mới dựa trên số lượng mới
+  const newPrice = unitPrice * newQuantity;
+
+  // Cập nhật ô hiển thị giá và có thể cập nhật lại data (nếu cần)
+  priceCell.innerText = newPrice;
+  // Nếu bạn muốn cập nhật data-attribute, có thể làm:
+  // priceCell.setAttribute("data-initial-quantity", newQuantity);
+
+  // Gọi hàm updateQuantity (giả sử gửi yêu cầu API)
   const id_cart = row.querySelector("input[name='id_cart']").value;
-  updateQuantity({ id_cart, quantity }); // Gọi hàm để cập nhật số lượng, truyền brand, name và số lượng mới
+  updateQuantity({ id_cart, quantity: newQuantity });
+
+  // Cập nhật lại tổng số tiền trong popup (nếu mở)
+  updateTotalAmount();
 }
+function updateTotalAmount() {
+  // Lấy tất cả checkbox đã tick
+  const checkedProducts = document.querySelectorAll('td input[type="checkbox"]:checked');
+  let total = 0;
+  checkedProducts.forEach((checkbox) => {
+    const row = checkbox.closest("tr");
+    const priceCell = row.querySelector(".priceCell");
+    const price = parseFloat(priceCell.innerText) || 0;
+    total += price;
+  });
+
+  // Cập nhật tổng số tiền vào thẻ hiển thị
+  const totalDisplay = document.getElementById("totalAmountDisplay");
+  if (totalDisplay) {
+    totalDisplay.innerText = "Total: " + total;
+  }
+}
+
+// function increaseQuantity(event) {
+//   const row = event.target.closest("tr");
+//   const quantity = row.querySelector("input[type='number']").value;
+//   const id_cart = row.querySelector("input[name='id_cart']").value;
+//   updateQuantity({ id_cart, quantity }); // Gọi hàm để cập nhật số lượng, truyền brand, name và số lượng mới
+// }
 // Thêm spinner khi đợi API
 // async function district(id_city) {
 //   try {

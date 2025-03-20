@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Upload 3 Images</title>
+  </head>
+  <body>
+    <h1>Upload 3 Images</h1>
+    <form action="/test" method="POST" enctype="multipart/form-data">
+      <div>
+        <label>Front Image:</label>
+        <input type="file" name="front" accept="image/*" required />
+      </div>
+      <div>
+        <label>Back Image:</label>
+        <input type="file" name="back" accept="image/*" required />
+      </div>
+      <div>
+        <label>Selfie Image:</label>
+        <input type="file" name="selfie" accept="image/*" required />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>

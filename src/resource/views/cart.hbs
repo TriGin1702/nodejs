@@ -31,7 +31,15 @@
           <td style="vertical-align: middle; text-align:center;">
             <input type="number" min="1" max="50" style="width: 56%;" value="{{this.quantity}}" onchange="increaseQuantity(event)" />
           </td>
-          <td style="vertical-align: middle; text-align:center;">{{this.price}}</td>
+          <td
+            class="priceCell"
+            data-initial-quantity="{{this.quantity}}"
+            data-initial-price="{{this.price}}"
+            style="vertical-align: middle; text-align:center;"
+          >
+            {{this.price}}
+          </td>
+
           <td style="vertical-align: middle; text-align:center;">
             <input type="checkbox" style="transform: scale(1.5);" />
           </td>

@@ -11,6 +11,7 @@ const cart = require("./cart");
 const order = require("./order");
 const api_cmt = require("./api/api_cmt");
 const cmt = require("./comment");
+const about = require("./about");
 const session = require("express-session");
 require("dotenv").config();
 // const { exec } = require("child_process");
@@ -44,6 +45,7 @@ function route(app) {
   app.use("/cart", cart);
   app.use("/news", news);
   app.use("/cmt", cmt);
+  app.use("/about", about);
   // app.use("/comments", comments);
   app.use("/register", register);
   app.use("/order", order);
